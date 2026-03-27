@@ -3,8 +3,9 @@ import type { Route } from "../types";
 export const routes: Route[] = [
     {
         id: 1,
-        name: "Ballard → South Lake Union",
-        description: "Neighborhood to tech hub via Leary Way / Westlake corridor",
+        name: "Ballard \u2192 South Lake Union",
+        description:
+            "Neighborhood to tech hub via Leary Way / Westlake corridor",
         coordinates: [
             [47.6677, -122.3849],
             [47.6598, -122.3721],
@@ -16,11 +17,13 @@ export const routes: Route[] = [
         carMinutes: 14,
         transitMinutes: 25,
         transitModes: ["RapidRide D Line", "Metro Bus 40"],
+        dailyCommuters: 18500,
     },
     {
         id: 2,
-        name: "Capitol Hill → South Lake Union",
-        description: "Dense residential area to Amazon/tech campus via Eastlake",
+        name: "Capitol Hill \u2192 South Lake Union",
+        description:
+            "Dense residential area to Amazon/tech campus via Eastlake",
         coordinates: [
             [47.6253, -122.3222],
             [47.6271, -122.3281],
@@ -31,10 +34,11 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 14,
         transitModes: ["Metro Bus 8", "Seattle Streetcar"],
+        dailyCommuters: 22000,
     },
     {
         id: 3,
-        name: "U-District → South Lake Union",
+        name: "U-District \u2192 South Lake Union",
         description: "University area to SLU tech corridor via Eastlake Ave",
         coordinates: [
             [47.6615, -122.3132],
@@ -47,10 +51,11 @@ export const routes: Route[] = [
         carMinutes: 10,
         transitMinutes: 18,
         transitModes: ["Metro Bus 70", "RapidRide J Line"],
+        dailyCommuters: 15000,
     },
     {
         id: 4,
-        name: "Beacon Hill → First Hill",
+        name: "Beacon Hill \u2192 First Hill",
         description: "Residential hilltop to hospital district via 12th Ave S",
         coordinates: [
             [47.5682, -122.3108],
@@ -63,11 +68,13 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 12,
         transitModes: ["Link Light Rail Line 1", "Metro Bus 36"],
+        dailyCommuters: 9500,
     },
     {
         id: 5,
-        name: "Columbia City → UW",
-        description: "Rainier Valley to University of Washington via Link Light Rail",
+        name: "Columbia City \u2192 UW",
+        description:
+            "Rainier Valley to University of Washington via Link Light Rail",
         coordinates: [
             [47.5596, -122.2864],
             [47.5682, -122.2955],
@@ -81,11 +88,13 @@ export const routes: Route[] = [
         carMinutes: 15,
         transitMinutes: 22,
         transitModes: ["Link Light Rail Line 1"],
+        dailyCommuters: 11000,
     },
     {
         id: 6,
-        name: "Fremont → UW",
-        description: "Quirky neighborhood to campus via N 34th St and University Bridge",
+        name: "Fremont \u2192 UW",
+        description:
+            "Quirky neighborhood to campus via N 34th St and University Bridge",
         coordinates: [
             [47.6511, -122.3502],
             [47.6528, -122.3421],
@@ -97,11 +106,13 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 15,
         transitModes: ["Metro Bus 31", "Metro Bus 32"],
+        dailyCommuters: 8500,
     },
     {
         id: 7,
-        name: "West Seattle → SoDo / Industrial District",
-        description: "Residential peninsula to industrial jobs via West Seattle Bridge",
+        name: "West Seattle \u2192 SoDo / Industrial District",
+        description:
+            "Residential peninsula to industrial jobs via West Seattle Bridge",
         coordinates: [
             [47.5614, -122.3862],
             [47.5693, -122.3713],
@@ -112,10 +123,11 @@ export const routes: Route[] = [
         carMinutes: 10,
         transitMinutes: 22,
         transitModes: ["RapidRide C Line", "Metro Bus 21"],
+        dailyCommuters: 12000,
     },
     {
         id: 8,
-        name: "Northgate → UW",
+        name: "Northgate \u2192 UW",
         description: "North end mall area to campus via I-5 or Link Light Rail",
         coordinates: [
             [47.7076, -122.3271],
@@ -127,11 +139,13 @@ export const routes: Route[] = [
         carMinutes: 10,
         transitMinutes: 12,
         transitModes: ["Link Light Rail Line 1"],
+        dailyCommuters: 14000,
     },
     {
         id: 9,
-        name: "Green Lake → Children's Hospital",
-        description: "Lakeside neighborhood to Seattle Children's via Sand Point Way",
+        name: "Green Lake \u2192 Children's Hospital",
+        description:
+            "Lakeside neighborhood to Seattle Children's via Sand Point Way",
         coordinates: [
             [47.6801, -122.3284],
             [47.6792, -122.3188],
@@ -142,10 +156,11 @@ export const routes: Route[] = [
         carMinutes: 10,
         transitMinutes: 22,
         transitModes: ["Metro Bus 62", "Metro Bus 45"],
+        dailyCommuters: 5500,
     },
     {
         id: 10,
-        name: "Wallingford → South Lake Union",
+        name: "Wallingford \u2192 South Lake Union",
         description: "Family neighborhood south to the SLU tech campus",
         coordinates: [
             [47.6612, -122.3358],
@@ -158,10 +173,11 @@ export const routes: Route[] = [
         carMinutes: 9,
         transitMinutes: 18,
         transitModes: ["Metro Bus 62", "Metro Bus 44"],
+        dailyCommuters: 10000,
     },
     {
         id: 11,
-        name: "Ravenna → UW",
+        name: "Ravenna \u2192 UW",
         description: "Quiet residential pocket to the university campus",
         coordinates: [
             [47.6741, -122.3072],
@@ -173,11 +189,13 @@ export const routes: Route[] = [
         carMinutes: 5,
         transitMinutes: 10,
         transitModes: ["Metro Bus 65", "Metro Bus 372"],
+        dailyCommuters: 6000,
     },
     {
         id: 12,
-        name: "Georgetown → SoDo",
-        description: "Artist / industrial neighborhood to stadium district workplaces",
+        name: "Georgetown \u2192 SoDo",
+        description:
+            "Artist / industrial neighborhood to stadium district workplaces",
         coordinates: [
             [47.5432, -122.3212],
             [47.5511, -122.3241],
@@ -188,10 +206,11 @@ export const routes: Route[] = [
         carMinutes: 7,
         transitMinutes: 14,
         transitModes: ["Metro Bus 124", "Metro Bus 60"],
+        dailyCommuters: 7000,
     },
     {
         id: 13,
-        name: "Capitol Hill → UW",
+        name: "Capitol Hill \u2192 UW",
         description: "Via Montlake Blvd or Link Light Rail (one stop)",
         coordinates: [
             [47.6253, -122.3222],
@@ -204,10 +223,11 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 6,
         transitModes: ["Link Light Rail Line 1"],
+        dailyCommuters: 16000,
     },
     {
         id: 14,
-        name: "Ballard → UW",
+        name: "Ballard \u2192 UW",
         description: "Via NW Market St and 15th Ave NE across the Ship Canal",
         coordinates: [
             [47.6677, -122.3849],
@@ -220,10 +240,11 @@ export const routes: Route[] = [
         carMinutes: 14,
         transitMinutes: 30,
         transitModes: ["Metro Bus 44"],
+        dailyCommuters: 9000,
     },
     {
         id: 15,
-        name: "Rainier Beach → Beacon Hill",
+        name: "Rainier Beach \u2192 Beacon Hill",
         description: "South Rainier Valley to Beacon Hill via MLK Jr Way",
         coordinates: [
             [47.5222, -122.2868],
@@ -235,10 +256,11 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 10,
         transitModes: ["Link Light Rail Line 1", "Metro Bus 7"],
+        dailyCommuters: 6500,
     },
     {
         id: 16,
-        name: "Phinney Ridge → Fremont",
+        name: "Phinney Ridge \u2192 Fremont",
         description: "Hilltop residential to Fremont hub via Greenwood Ave",
         coordinates: [
             [47.6741, -122.3546],
@@ -250,10 +272,11 @@ export const routes: Route[] = [
         carMinutes: 5,
         transitMinutes: 10,
         transitModes: ["Metro Bus 5"],
+        dailyCommuters: 4000,
     },
     {
         id: 17,
-        name: "Madison Park → First Hill",
+        name: "Madison Park \u2192 First Hill",
         description: "Lakeside enclave to hospital row via Madison St",
         coordinates: [
             [47.6341, -122.2811],
@@ -266,11 +289,13 @@ export const routes: Route[] = [
         carMinutes: 8,
         transitMinutes: 16,
         transitModes: ["Metro Bus 11"],
+        dailyCommuters: 5000,
     },
     {
         id: 18,
-        name: "Beacon Hill → Chinatown-ID",
-        description: "Quick hop north to the International District via Lander St",
+        name: "Beacon Hill \u2192 Chinatown-ID",
+        description:
+            "Quick hop north to the International District via Lander St",
         coordinates: [
             [47.5682, -122.3108],
             [47.5761, -122.3148],
@@ -281,10 +306,11 @@ export const routes: Route[] = [
         carMinutes: 6,
         transitMinutes: 6,
         transitModes: ["Link Light Rail Line 1"],
+        dailyCommuters: 8000,
     },
     {
         id: 19,
-        name: "West Seattle → Georgetown",
+        name: "West Seattle \u2192 Georgetown",
         description: "Across the Duwamish via 1st Ave S Bridge",
         coordinates: [
             [47.5614, -122.3862],
@@ -297,11 +323,13 @@ export const routes: Route[] = [
         carMinutes: 10,
         transitMinutes: 28,
         transitModes: ["Metro Bus 60", "RapidRide H Line"],
+        dailyCommuters: 4500,
     },
     {
         id: 20,
-        name: "Greenwood → Northgate",
-        description: "Adjacent north-end neighborhoods via Holman Rd or 3rd Ave NW",
+        name: "Greenwood \u2192 Northgate",
+        description:
+            "Adjacent north-end neighborhoods via Holman Rd or 3rd Ave NW",
         coordinates: [
             [47.6921, -122.3558],
             [47.6951, -122.3478],
@@ -312,5 +340,6 @@ export const routes: Route[] = [
         carMinutes: 6,
         transitMinutes: 14,
         transitModes: ["Metro Bus 345", "Metro Bus 40"],
+        dailyCommuters: 7500,
     },
 ];

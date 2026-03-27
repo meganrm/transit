@@ -4,6 +4,12 @@ const items = [
     { color: "#ef4444", label: "Transit >50% slower" },
 ];
 
+const thicknessItems = [
+    { weight: 2, label: "~4k/day" },
+    { weight: 5, label: "~12k/day" },
+    { weight: 8, label: "~22k/day" },
+];
+
 export function Legend() {
     return (
         <div
@@ -39,6 +45,33 @@ export function Legend() {
                             height: 4,
                             borderRadius: 2,
                             background: item.color,
+                            display: "inline-block",
+                        }}
+                    />
+                    <span>{item.label}</span>
+                </div>
+            ))}
+            <strong
+                style={{ display: "block", marginTop: 10, marginBottom: 6 }}
+            >
+                Daily Commuters
+            </strong>
+            {thicknessItems.map((item) => (
+                <div
+                    key={item.label}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 3,
+                    }}
+                >
+                    <span
+                        style={{
+                            width: 24,
+                            height: item.weight,
+                            borderRadius: item.weight / 2,
+                            background: "#94a3b8",
                             display: "inline-block",
                         }}
                     />

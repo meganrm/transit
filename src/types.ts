@@ -8,4 +8,5 @@ export interface Route {
     carMinutes: number;
     transitMinutes: number;
     transitModes: string[];
+    dailyCommuters: number;
 }
