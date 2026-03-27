@@ -1,10 +1,9 @@
 import { theme } from "../constants";
 
-export type ViewMode = "all" | "routes" | "neighborhoods";
+export type ViewMode = "all" | "neighborhoods";
 
 const MODES: { value: ViewMode; label: string }[] = [
     { value: "all", label: "All Routes" },
-    { value: "routes", label: "Underserved Routes" },
     { value: "neighborhoods", label: "Underserved Areas" },
 ];
 

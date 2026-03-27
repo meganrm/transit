@@ -1,5 +1,7 @@
 import type { LatLngExpression } from "leaflet";
 
+export type ColorMode = "no-traffic" | "peak-traffic" | "person-minutes";
+
 export interface Route {
     id: number;
     name: string;

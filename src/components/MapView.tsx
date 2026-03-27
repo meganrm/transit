@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { routes } from "../data/routes";
 import { RoutePolyline } from "./RoutePolyline";
@@ -6,6 +6,7 @@ import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { ViewToggle } from "./ViewToggle";
 import type { ViewMode } from "./ViewToggle";
+import type { ColorMode } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
 import { getRouteMetrics, getNeighborhoodMetrics } from "../data/analytics";
@@ -18,7 +19,11 @@ interface HomeState {
     zoom: number;
 }
 
-function FitBounds({ homeRef }: { homeRef: React.RefObject<HomeState | null> }) {
+function FitBounds({
+    homeRef,
+}: {
+    homeRef: React.RefObject<HomeState | null>;
+}) {
     const map = useMap();
     const fitted = useRef(false);
     useEffect(() => {
@@ -34,7 +39,27 @@ function FitBounds({ homeRef }: { homeRef: React.RefObject<HomeState | null> }) 
     return null;
 }
 
-function HomeButton({ homeRef }: { homeRef: React.RefObject<HomeState | null> }) {
+function MapClickClear({ onClear }: { onClear: () => void }) {
+    useMapEvents({
+        click: (event) => {
+            const target = event.originalEvent.target;
+            if (
+                target instanceof Element &&
+                target.closest(".leaflet-interactive")
+            ) {
+                return;
+            }
+            onClear();
+        },
+    });
+    return null;
+}
+
+function HomeButton({
+    homeRef,
+}: {
+    homeRef: React.RefObject<HomeState | null>;
+}) {
     const map = useMap();
     return (
         <button
@@ -63,12 +88,15 @@ function HomeButton({ homeRef }: { homeRef: React.RefObject<HomeState | null> })
     );
 }
 
-const TOP_N_ROUTES = 5;
-
 interface MapViewProps {
     onRouteSelect: (id: number) => void;
     viewMode: ViewMode;
     onViewModeChange: (mode: ViewMode) => void;
+    colorMode: ColorMode;
+    onColorModeChange: (mode: ColorMode) => void;
+    onClearSelection: () => void;
+    focusLevel: number;
+    onFocusLevelChange: (level: number) => void;
     selectedNeighborhood: string | null;
     selectedNeighborhoodRouteIds: Set<number> | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
@@ -78,6 +106,11 @@ export function MapView({
     onRouteSelect,
     viewMode,
     onViewModeChange,
+    colorMode,
+    onColorModeChange,
+    onClearSelection,
+    focusLevel,
+    onFocusLevelChange,
     selectedNeighborhood,
     selectedNeighborhoodRouteIds,
     onNeighborhoodSelect,
@@ -86,15 +119,17 @@ export function MapView({
     const homeRef = useRef<HomeState | null>(null);
 
     const highlightedRouteIds = useMemo<Set<number> | null>(() => {
-        if (selectedNeighborhoodRouteIds !== null) return selectedNeighborhoodRouteIds;
-        if (viewMode !== "routes") return null;
+        if (selectedNeighborhoodRouteIds !== null)
+            return selectedNeighborhoodRouteIds;
+        if (focusLevel === 0) return null;
         const metrics = getRouteMetrics(routes);
+        const topN = routes.length - focusLevel;
         const topIds = metrics
             .filter((m) => m.personMinutesLost > 0)
-            .slice(0, TOP_N_ROUTES)
+            .slice(0, topN)
             .map((m) => m.routeId);
-        return new Set(topIds);
-    }, [selectedNeighborhoodRouteIds, viewMode]);
+        return topIds.length > 0 ? new Set(topIds) : null;
+    }, [selectedNeighborhoodRouteIds, focusLevel]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         if (viewMode !== "neighborhoods") return null;
@@ -117,6 +152,7 @@ export function MapView({
             >
                 <FitBounds homeRef={homeRef} />
                 <HomeButton homeRef={homeRef} />
+                <MapClickClear onClear={onClearSelection} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -132,6 +168,7 @@ export function MapView({
                                 : activeRouteId !== null &&
                                   activeRouteId !== route.id
                         }
+                        colorMode={colorMode}
                         onHover={setActiveRouteId}
                         onRouteClick={onRouteSelect}
                     />
@@ -143,7 +180,12 @@ export function MapView({
                     onNeighborhoodSelect={onNeighborhoodSelect}
                 />
             </MapContainer>
-            <Legend />
+            <Legend
+                colorMode={colorMode}
+                onColorModeChange={onColorModeChange}
+                focusLevel={focusLevel}
+                onFocusLevelChange={onFocusLevelChange}
+            />
             <ViewToggle viewMode={viewMode} onChange={onViewModeChange} />
         </div>
     );

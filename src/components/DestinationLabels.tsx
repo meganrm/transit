@@ -1,4 +1,5 @@
 import { Marker, CircleMarker } from "react-leaflet";
+import type { LeafletMouseEvent } from "leaflet";
 import L from "leaflet";
 import { destinations } from "../data/destinations";
 import { routes } from "../data/routes";
@@ -113,7 +114,8 @@ export function DestinationLabels({
                 const handlers = {
                     mouseover: () => setHoveredDest(dest.name),
                     mouseout: () => setHoveredDest(null),
-                    click: () => {
+                    click: (e: LeafletMouseEvent) => {
+                        L.DomEvent.stopPropagation(e.originalEvent);
                         if (isSelected) {
                             onNeighborhoodSelect(null);
                         } else {

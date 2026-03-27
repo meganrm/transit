@@ -5,30 +5,56 @@ import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
 import { routes } from "./data/routes";
 import { getNeighborhoodDetail } from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
+import type { ColorMode } from "./types";
 
 function App() {
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
-    const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
+    const [selectedNeighborhood, setSelectedNeighborhood] = useState<
+        string | null
+    >(null);
     const [selectedNeighborhoodRouteIds, setSelectedNeighborhoodRouteIds] =
         useState<Set<number> | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>("all");
+    const [colorMode, setColorMode] = useState<ColorMode>("peak-traffic");
+    const [focusLevel, setFocusLevel] = useState(0);
 
     const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? null;
     const neighborhoodDetail =
         selectedNeighborhood && selectedNeighborhoodRouteIds
-            ? getNeighborhoodDetail(routes, selectedNeighborhood, selectedNeighborhoodRouteIds)
+            ? getNeighborhoodDetail(
+                  routes,
+                  selectedNeighborhood,
+                  selectedNeighborhoodRouteIds,
+              )
             : null;
 
     const handleRouteSelect = (id: number) => {
         setSelectedNeighborhood(null);
         setSelectedNeighborhoodRouteIds(null);
+        console.log("Selecting route ID:", id);
         setSelectedRouteId(id);
     };
 
-    const handleNeighborhoodSelect = (name: string | null, routeIds?: Set<number>) => {
+    const handleNeighborhoodSelect = (
+        name: string | null,
+        routeIds?: Set<number>,
+    ) => {
         setSelectedRouteId(null);
         setSelectedNeighborhood(name);
         setSelectedNeighborhoodRouteIds(routeIds ?? null);
+    };
+
+    const handleViewModeChange = (mode: ViewMode) => {
+        setViewMode(mode);
+        setSelectedRouteId(null);
+        setSelectedNeighborhood(null);
+        setSelectedNeighborhoodRouteIds(null);
+    };
+
+    const handleClearSelection = () => {
+        setSelectedRouteId(null);
+        setSelectedNeighborhood(null);
+        setSelectedNeighborhoodRouteIds(null);
     };
 
     return (
@@ -37,12 +63,18 @@ function App() {
                 <MapView
                     onRouteSelect={handleRouteSelect}
                     viewMode={viewMode}
-                    onViewModeChange={setViewMode}
+                    onViewModeChange={handleViewModeChange}
+                    onClearSelection={handleClearSelection}
+                    colorMode={colorMode}
+                    onColorModeChange={setColorMode}
+                    focusLevel={focusLevel}
+                    onFocusLevelChange={setFocusLevel}
                     selectedNeighborhood={selectedNeighborhood}
                     selectedNeighborhoodRouteIds={selectedNeighborhoodRouteIds}
                     onNeighborhoodSelect={handleNeighborhoodSelect}
                 />
             </div>
+
             {selectedRoute && (
                 <RoutePanel
                     route={selectedRoute}

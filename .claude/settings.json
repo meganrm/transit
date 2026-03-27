@@ -1,5 +1,4 @@
 {
-  "_comment": "Copy to .claude/settings.json in your repo root. Customize allow/deny lists for your project.",
   "permissions": {
     "allow": [
       "Bash(git status:*)",
@@ -91,5 +90,9 @@
       "Bash(git clean -f:*)",
       "Bash(git branch -D:*)"
     ]
+  },
+  "_comment": "Copy to .claude/settings.json in your repo root. Customize allow/deny lists for your project.",
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
   }
 }

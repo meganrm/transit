@@ -109,3 +109,43 @@ body,
 .destination-label.highlighted span {
     color: var(--color-text-bright);
 }
+
+/* Route focus slider */
+.focus-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+        to right,
+        #6366f1 var(--pct, 0%),
+        rgba(148, 163, 184, 0.2) var(--pct, 0%)
+    );
+    outline: none;
+    cursor: pointer;
+    display: block;
+}
+.focus-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.15s;
+}
+.focus-slider::-webkit-slider-thumb:hover {
+    border-color: #a5b4fc;
+}
+.focus-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
