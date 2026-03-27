@@ -1,13 +1,24 @@
+import { routeColors, weightScale, theme } from "../constants";
+
 const items = [
-    { color: "#22c55e", label: "Transit faster or equal" },
-    { color: "#eab308", label: "Transit up to 50% slower" },
-    { color: "#ef4444", label: "Transit >50% slower" },
+    { color: routeColors.green, label: "Transit faster or equal" },
+    { color: routeColors.yellow, label: "Transit up to 50% slower" },
+    { color: routeColors.red, label: "Transit >50% slower" },
 ];
 
 const thicknessItems = [
-    { weight: 2, label: "~4k/day" },
-    { weight: 5, label: "~12k/day" },
-    { weight: 8, label: "~22k/day" },
+    {
+        weight: weightScale.minWeight,
+        label: `~${weightScale.minCommuters / 1000}k/day`,
+    },
+    {
+        weight: weightScale.midWeight,
+        label: `~${weightScale.midCommuters / 1000}k/day`,
+    },
+    {
+        weight: weightScale.maxWeight,
+        label: `~${weightScale.maxCommuters / 1000}k/day`,
+    },
 ];
 
 export function Legend() {
@@ -17,8 +28,8 @@ export function Legend() {
                 position: "absolute",
                 bottom: 24,
                 left: 12,
-                background: "rgba(15, 23, 42, 0.92)",
-                color: "#e2e8f0",
+                background: theme.bgOverlay,
+                color: theme.textPrimary,
                 borderRadius: 8,
                 padding: "12px 16px",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
@@ -71,7 +82,7 @@ export function Legend() {
                             width: 24,
                             height: item.weight,
                             borderRadius: item.weight / 2,
-                            background: "#94a3b8",
+                            background: theme.textSecondary,
                             display: "inline-block",
                         }}
                     />

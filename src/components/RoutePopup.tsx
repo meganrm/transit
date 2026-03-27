@@ -10,6 +10,7 @@ import {
 import type { ChartOptions } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import type { Route } from "../types";
+import { theme } from "../constants";
 
 ChartJS.register(
     CategoryScale,
@@ -59,8 +60,12 @@ export function RoutePopup({ route }: Props) {
         scales: {
             x: {
                 beginAtZero: true,
-                title: { display: true, text: "Minutes", color: "#94a3b8" },
-                ticks: { color: "#94a3b8" },
+                title: {
+                    display: true,
+                    text: "Minutes",
+                    color: theme.textSecondary,
+                },
+                ticks: { color: theme.textSecondary },
                 grid: { color: "rgba(148, 163, 184, 0.15)" },
             },
             y: {
@@ -71,11 +76,17 @@ export function RoutePopup({ route }: Props) {
     };
 
     return (
-        <div style={{ minWidth: 260, color: "#e2e8f0" }}>
+        <div style={{ minWidth: 260, color: theme.textPrimary }}>
             <h3 style={{ margin: "0 0 4px 0", fontSize: 15, color: "#f1f5f9" }}>
                 {route.name}
             </h3>
-            <p style={{ margin: "0 0 8px 0", fontSize: 12, color: "#94a3b8" }}>
+            <p
+                style={{
+                    margin: "0 0 8px 0",
+                    fontSize: 12,
+                    color: theme.textSecondary,
+                }}
+            >
                 {route.description}
             </p>
             <div style={{ height: 90 }}>
@@ -91,7 +102,7 @@ export function RoutePopup({ route }: Props) {
                             ? "#f87171"
                             : delta < 0
                               ? "#4ade80"
-                              : "#94a3b8",
+                              : theme.textSecondary,
                 }}
             >
                 {deltaLabel}

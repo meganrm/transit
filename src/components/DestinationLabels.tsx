@@ -2,6 +2,7 @@ import { Marker, CircleMarker } from "react-leaflet";
 import L from "leaflet";
 import { destinations } from "../data/destinations";
 import { routes } from "../data/routes";
+import { theme } from "../constants";
 import { useMemo } from "react";
 
 function createLabelIcon(name: string, highlighted: boolean) {
@@ -61,8 +62,12 @@ export function DestinationLabels({ activeRouteId }: Props) {
                             center={dest.position}
                             radius={highlighted ? 5 : 3}
                             pathOptions={{
-                                color: highlighted ? "#f8fafc" : "#64748b",
-                                fillColor: highlighted ? "#f8fafc" : "#94a3b8",
+                                color: highlighted
+                                    ? theme.textBright
+                                    : theme.textDim,
+                                fillColor: highlighted
+                                    ? theme.textBright
+                                    : theme.textSecondary,
                                 fillOpacity: highlighted ? 1 : 0.6,
                                 weight: highlighted ? 2 : 1,
                             }}
