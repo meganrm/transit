@@ -28,7 +28,7 @@ export function Header() {
                     Seattle Commute: Car vs Transit
                 </h1>
                 <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>
-                    10 most common routes — click a route for details
+                    20 common routes across Seattle — click a route for details
                 </p>
             </div>
         </header>

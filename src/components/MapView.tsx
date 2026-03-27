@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer } from "react-leaflet";
 import { routes } from "../data/routes";
 import { RoutePolyline } from "./RoutePolyline";
+import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { useState } from "react";
 
@@ -30,6 +31,7 @@ export function MapView() {
                         onHover={setActiveRouteId}
                     />
                 ))}
+                <DestinationLabels activeRouteId={activeRouteId} />
             </MapContainer>
             <Legend />
         </div>
