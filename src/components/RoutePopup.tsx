@@ -59,15 +59,23 @@ export function RoutePopup({ route }: Props) {
         scales: {
             x: {
                 beginAtZero: true,
-                title: { display: true, text: "Minutes" },
+                title: { display: true, text: "Minutes", color: "#94a3b8" },
+                ticks: { color: "#94a3b8" },
+                grid: { color: "rgba(148, 163, 184, 0.15)" },
+            },
+            y: {
+                ticks: { color: "#cbd5e1" },
+                grid: { display: false },
             },
         },
     };
 
     return (
-        <div style={{ minWidth: 260 }}>
-            <h3 style={{ margin: "0 0 4px 0", fontSize: 15 }}>{route.name}</h3>
-            <p style={{ margin: "0 0 8px 0", fontSize: 12, color: "#666" }}>
+        <div style={{ minWidth: 260, color: "#e2e8f0" }}>
+            <h3 style={{ margin: "0 0 4px 0", fontSize: 15, color: "#f1f5f9" }}>
+                {route.name}
+            </h3>
+            <p style={{ margin: "0 0 8px 0", fontSize: 12, color: "#94a3b8" }}>
                 {route.description}
             </p>
             <div style={{ height: 90 }}>
@@ -79,7 +87,11 @@ export function RoutePopup({ route }: Props) {
                     fontSize: 13,
                     fontWeight: 600,
                     color:
-                        delta > 0 ? "#ef4444" : delta < 0 ? "#22c55e" : "#666",
+                        delta > 0
+                            ? "#f87171"
+                            : delta < 0
+                              ? "#4ade80"
+                              : "#94a3b8",
                 }}
             >
                 {deltaLabel}
@@ -90,8 +102,8 @@ export function RoutePopup({ route }: Props) {
                         key={mode}
                         style={{
                             fontSize: 11,
-                            background: "#e0e7ff",
-                            color: "#3730a3",
+                            background: "rgba(99, 102, 241, 0.2)",
+                            color: "#a5b4fc",
                             padding: "2px 8px",
                             borderRadius: 12,
                         }}

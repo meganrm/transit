@@ -11,10 +11,11 @@ export function Legend() {
                 position: "absolute",
                 bottom: 24,
                 left: 12,
-                background: "rgba(255,255,255,0.92)",
+                background: "rgba(15, 23, 42, 0.92)",
+                color: "#e2e8f0",
                 borderRadius: 8,
                 padding: "12px 16px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
                 zIndex: 1000,
                 fontSize: 13,
             }}
