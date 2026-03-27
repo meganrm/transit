@@ -1,5 +1,6 @@
 import type { MetricMode, TrafficMode } from "../types";
 import { weightScale, theme } from "../constants";
+import { routes } from "../data/routes";
 import {
     buildLegendGradient,
     getLegendEqualPct,
@@ -15,7 +16,7 @@ const SECTION_HEADER: React.CSSProperties = {
     marginBottom: 6,
 };
 
-const TOTAL_ROUTES = 37;
+const TOTAL_ROUTES = routes.length;
 
 interface Props {
     trafficMode: TrafficMode;

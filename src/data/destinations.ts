@@ -29,8 +29,11 @@ export const destinations: Destination[] = [
     { name: "Greenwood", position: [47.6921, -122.3558] },
     { name: "Rainier Beach", position: [47.5222, -122.2868] },
     { name: "Queen Anne", position: [47.6365, -122.3566] },
-    { name: "Belltown", position: [47.6140, -122.3530] },
+    { name: "Belltown", position: [47.614, -122.353] },
     { name: "Central District", position: [47.6062, -122.3082] },
     { name: "Madrona", position: [47.6123, -122.2934] },
     { name: "Leschi", position: [47.6053, -122.2889] },
+    { name: "Magnolia", position: [47.6469, -122.3997] },
+    { name: "North Ballard", position: [47.6906, -122.3865] },
+    { name: "Lake City", position: [47.7213, -122.2957] },
 ];

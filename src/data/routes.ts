@@ -440,7 +440,8 @@ export const routes: Route[] = [
     {
         id: 24,
         name: "Georgetown \u2192 Chinatown-ID",
-        description: "South industrial neighborhood to International District via 4th Ave S",
+        description:
+            "South industrial neighborhood to International District via 4th Ave S",
         coordinates: [
             [47.5432, -122.3212],
             [47.5511, -122.3231],
@@ -459,7 +460,8 @@ export const routes: Route[] = [
     {
         id: 25,
         name: "West Seattle \u2192 First Hill",
-        description: "Residential peninsula to hospital district via downtown connector",
+        description:
+            "Residential peninsula to hospital district via downtown connector",
         coordinates: [
             [47.5614, -122.3862],
             [47.5701, -122.3681],
@@ -478,7 +480,8 @@ export const routes: Route[] = [
     {
         id: 26,
         name: "Madison Park \u2192 U-District",
-        description: "Lakeside enclave to campus via Montlake Blvd and E Madison St",
+        description:
+            "Lakeside enclave to campus via Montlake Blvd and E Madison St",
         coordinates: [
             [47.6341, -122.2811],
             [47.6388, -122.2921],
@@ -552,7 +555,8 @@ export const routes: Route[] = [
     {
         id: 30,
         name: "Queen Anne \u2192 First Hill",
-        description: "Queen Anne Hill to hospital district via 1st Ave and Madison St",
+        description:
+            "Queen Anne Hill to hospital district via 1st Ave and Madison St",
         coordinates: [
             [47.6365, -122.3566],
             [47.6301, -122.3508],
@@ -573,7 +577,7 @@ export const routes: Route[] = [
         name: "Belltown \u2192 South Lake Union",
         description: "Dense urban core to SLU campus via Westlake Ave N",
         coordinates: [
-            [47.6140, -122.3530],
+            [47.614, -122.353],
             [47.6178, -122.3491],
             [47.6218, -122.3448],
             [47.6276, -122.3387],
@@ -588,9 +592,10 @@ export const routes: Route[] = [
     {
         id: 32,
         name: "Belltown \u2192 First Hill",
-        description: "Downtown-adjacent neighborhood to hospital row via Pike St",
+        description:
+            "Downtown-adjacent neighborhood to hospital row via Pike St",
         coordinates: [
-            [47.6140, -122.3530],
+            [47.614, -122.353],
             [47.6132, -122.3451],
             [47.6124, -122.3371],
             [47.6118, -122.3241],
@@ -605,7 +610,8 @@ export const routes: Route[] = [
     {
         id: 33,
         name: "Central District \u2192 First Hill",
-        description: "Historic neighborhood to hospital district via E Jefferson St",
+        description:
+            "Historic neighborhood to hospital district via E Jefferson St",
         coordinates: [
             [47.6062, -122.3082],
             [47.6073, -122.3131],
@@ -690,6 +696,70 @@ export const routes: Route[] = [
         transitMinutes: 18,
         transitModes: ["Metro Bus 14", "Metro Bus 36"],
         dailyCommuters: 6000,
+        peakHours: "7–9 AM & 4–6 PM",
+    },
+    {
+        id: 38,
+        name: "Magnolia \u2192 South Lake Union",
+        description:
+            "Bluff neighborhood to SLU via Dravus St and Westlake corridor",
+        coordinates: [
+            [47.6469, -122.3997],
+            [47.6451, -122.3908],
+            [47.6421, -122.3811],
+            [47.6382, -122.3698],
+            [47.6341, -122.3572],
+            [47.6308, -122.3461],
+            [47.6276, -122.3387],
+        ],
+        carMinutes: 13,
+        carMinutesPeak: 24,
+        transitMinutes: 31,
+        transitModes: ["Metro Bus 24", "RapidRide D Line"],
+        dailyCommuters: 6200,
+        peakHours: "7–9 AM & 4–6 PM",
+    },
+    {
+        id: 39,
+        name: "North Ballard \u2192 U-District",
+        description:
+            "North Ballard to UW area via 15th Ave NW and NE 45th corridor",
+        coordinates: [
+            [47.6906, -122.3865],
+            [47.6878, -122.3771],
+            [47.6841, -122.3651],
+            [47.6792, -122.3521],
+            [47.6731, -122.3388],
+            [47.6678, -122.3261],
+            [47.6615, -122.3132],
+        ],
+        carMinutes: 17,
+        carMinutesPeak: 31,
+        transitMinutes: 38,
+        transitModes: ["Metro Bus 45", "Metro Bus 44"],
+        dailyCommuters: 5800,
+        peakHours: "7–9 AM & 4–6 PM",
+    },
+    {
+        id: 40,
+        name: "Lake City \u2192 UW",
+        description:
+            "Area north of the university to UW campus via Lake City Way NE",
+        coordinates: [
+            [47.7213, -122.2957],
+            [47.7142, -122.2981],
+            [47.7068, -122.3011],
+            [47.6982, -122.3048],
+            [47.6888, -122.3088],
+            [47.6782, -122.3111],
+            [47.6692, -122.3121],
+            [47.6615, -122.3132],
+        ],
+        carMinutes: 14,
+        carMinutesPeak: 25,
+        transitMinutes: 28,
+        transitModes: ["Metro Bus 372", "RapidRide J Line"],
+        dailyCommuters: 9300,
         peakHours: "7–9 AM & 4–6 PM",
     },
 ];
