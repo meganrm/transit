@@ -20,5 +20,5 @@ export const HOME_BOUNDS: [[number, number], [number, number]] = [
     [Math.max(...lats), Math.max(...lngs)],
 ];
 
-/** Padding in pixels used when fitting bounds */
-export const HOME_PADDING = 20;
+/** Padding in pixels applied to all sides when fitting bounds */
+export const HOME_PADDING = 10;

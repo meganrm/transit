@@ -28,4 +28,9 @@ export const destinations: Destination[] = [
     { name: "Phinney Ridge", position: [47.6741, -122.3546] },
     { name: "Greenwood", position: [47.6921, -122.3558] },
     { name: "Rainier Beach", position: [47.5222, -122.2868] },
+    { name: "Queen Anne", position: [47.6365, -122.3566] },
+    { name: "Belltown", position: [47.6140, -122.3530] },
+    { name: "Central District", position: [47.6062, -122.3082] },
+    { name: "Madrona", position: [47.6123, -122.2934] },
+    { name: "Leschi", position: [47.6053, -122.2889] },
 ];

@@ -1,10 +1,8 @@
-import { routeColors, weightScale, theme } from "../constants";
+import { weightScale, theme } from "../constants";
+import { buildLegendGradient, getLegendEqualPct } from "../utils/routeColor";
 
-const items = [
-    { color: routeColors.green, label: "Transit faster or equal" },
-    { color: routeColors.yellow, label: "Transit up to 50% slower" },
-    { color: routeColors.red, label: "Transit >50% slower" },
-];
+const GRADIENT = buildLegendGradient();
+const EQUAL_PCT = getLegendEqualPct();
 
 const thicknessItems = [
     {
@@ -37,31 +35,55 @@ export function Legend() {
                 fontSize: 13,
             }}
         >
-            <strong style={{ display: "block", marginBottom: 6 }}>
-                Transit vs Car
+            <strong style={{ display: "block", marginBottom: 8 }}>
+                Transit vs Peak Traffic
             </strong>
-            {items.map((item) => (
+            <div style={{ position: "relative", width: 160, marginBottom: 16 }}>
                 <div
-                    key={item.label}
+                    style={{
+                        width: 160,
+                        height: 6,
+                        borderRadius: 3,
+                        background: GRADIENT,
+                        marginBottom: 4,
+                    }}
+                />
+                {/* Tick at ratio 1.0 (equal), position derived from data range */}
+                <div
+                    style={{
+                        position: "absolute",
+                        left: EQUAL_PCT,
+                        top: 0,
+                        width: 1,
+                        height: 10,
+                        background: theme.textSecondary,
+                        transform: "translateX(-50%)",
+                    }}
+                />
+                <div
                     style={{
                         display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        marginBottom: 3,
+                        justifyContent: "space-between",
+                        fontSize: 11,
+                        color: theme.textSecondary,
+                        marginTop: 8,
                     }}
                 >
+                    <span style={{ color: "#4d9221" }}>Faster</span>
                     <span
                         style={{
-                            width: 24,
-                            height: 4,
-                            borderRadius: 2,
-                            background: item.color,
-                            display: "inline-block",
+                            position: "absolute",
+                            left: EQUAL_PCT,
+                            transform: "translateX(-50%)",
+                            color: theme.textSecondary,
+                            whiteSpace: "nowrap",
                         }}
-                    />
-                    <span>{item.label}</span>
+                    >
+                        equal
+                    </span>
+                    <span style={{ color: "#c51b7d" }}>Slower</span>
                 </div>
-            ))}
+            </div>
             <strong
                 style={{ display: "block", marginTop: 10, marginBottom: 6 }}
             >

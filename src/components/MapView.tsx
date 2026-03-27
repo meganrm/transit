@@ -4,54 +4,46 @@ import { routes } from "../data/routes";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
-import { useState, useEffect, useRef } from "react";
-import { HOME_CENTER, HOME_BOUNDS, HOME_PADDING } from "../homeView";
+import { ViewToggle } from "./ViewToggle";
+import type { ViewMode } from "./ViewToggle";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
+import { getRouteMetrics, getNeighborhoodMetrics } from "../data/analytics";
 
 const homeBounds = L.latLngBounds(HOME_BOUNDS[0], HOME_BOUNDS[1]);
 
-/**
- * On first mount, fit to bounds + zoom in one level.
- * Stores the resulting zoom in the ref so HomeButton can reuse it.
- */
-function FitBounds({
-    zoomRef,
-}: {
-    zoomRef: React.MutableRefObject<number | null>;
-}) {
+interface HomeState {
+    lat: number;
+    lng: number;
+    zoom: number;
+}
+
+function FitBounds({ homeRef }: { homeRef: React.RefObject<HomeState | null> }) {
     const map = useMap();
     const fitted = useRef(false);
     useEffect(() => {
         if (fitted.current) return;
         fitted.current = true;
-        // fitBounds picks the right zoom for the current viewport
         map.fitBounds(homeBounds, {
             padding: [HOME_PADDING, HOME_PADDING],
             animate: false,
         });
-        // Zoom in one extra level and cache it
-        const zoom = map.getZoom() + 1;
-        zoomRef.current = zoom;
-        map.setView(HOME_CENTER, zoom, { animate: false });
-    }, [map, zoomRef]);
+        const c = map.getCenter();
+        homeRef.current = { lat: c.lat, lng: c.lng, zoom: map.getZoom() };
+    }, [map, homeRef]);
     return null;
 }
 
-function HomeButton({
-    zoomRef,
-}: {
-    zoomRef: React.MutableRefObject<number | null>;
-}) {
+function HomeButton({ homeRef }: { homeRef: React.RefObject<HomeState | null> }) {
     const map = useMap();
     return (
         <button
             className="home-button"
             title="Reset view"
             onClick={() => {
-                // Always snap — never animate — to prevent drift
-                map.stop();
-                map.setView(HOME_CENTER, zoomRef.current ?? 13, {
-                    animate: false,
-                });
+                if (!homeRef.current) return;
+                const { lat, lng, zoom } = homeRef.current;
+                map.setView([lat, lng], zoom, { animate: false });
             }}
         >
             <svg
@@ -71,20 +63,49 @@ function HomeButton({
     );
 }
 
-export function MapView() {
+const TOP_N_ROUTES = 5;
+
+interface MapViewProps {
+    onRouteSelect: (id: number) => void;
+    viewMode: ViewMode;
+    onViewModeChange: (mode: ViewMode) => void;
+}
+
+export function MapView({ onRouteSelect, viewMode, onViewModeChange }: MapViewProps) {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
-    const zoomRef = useRef<number | null>(null);
+    const homeRef = useRef<HomeState | null>(null);
+
+    const highlightedRouteIds = useMemo<Set<number> | null>(() => {
+        if (viewMode !== "routes") return null;
+        const metrics = getRouteMetrics(routes);
+        const topIds = metrics
+            .filter((m) => m.personMinutesLost > 0)
+            .slice(0, TOP_N_ROUTES)
+            .map((m) => m.routeId);
+        return new Set(topIds);
+    }, [viewMode]);
+
+    const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
+        if (viewMode !== "neighborhoods") return null;
+        const metrics = getNeighborhoodMetrics(routes);
+        const map = new Map<string, number>();
+        for (const m of metrics) {
+            map.set(m.neighborhood, m.personMinutesLost);
+        }
+        return map;
+    }, [viewMode]);
 
     return (
         <div style={{ height: "100%", width: "100%", position: "relative" }}>
             <MapContainer
-                center={HOME_CENTER}
-                zoom={13}
+                center={HOME_BOUNDS[0]}
+                zoom={11}
+                zoomSnap={0}
                 style={{ height: "100%", width: "100%" }}
                 zoomControl={true}
             >
-                <FitBounds zoomRef={zoomRef} />
-                <HomeButton zoomRef={zoomRef} />
+                <FitBounds homeRef={homeRef} />
+                <HomeButton homeRef={homeRef} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -95,14 +116,21 @@ export function MapView() {
                         route={route}
                         isActive={activeRouteId === route.id}
                         isDimmed={
-                            activeRouteId !== null && activeRouteId !== route.id
+                            highlightedRouteIds !== null
+                                ? !highlightedRouteIds.has(route.id)
+                                : activeRouteId !== null && activeRouteId !== route.id
                         }
                         onHover={setActiveRouteId}
+                        onRouteClick={onRouteSelect}
                     />
                 ))}
-                <DestinationLabels activeRouteId={activeRouteId} />
+                <DestinationLabels
+                    activeRouteId={activeRouteId}
+                    neighborhoodScores={neighborhoodScores}
+                />
             </MapContainer>
             <Legend />
+            <ViewToggle viewMode={viewMode} onChange={onViewModeChange} />
         </div>
     );
 }

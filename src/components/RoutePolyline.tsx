@@ -1,20 +1,14 @@
-import { Polyline, Popup } from "react-leaflet";
+import { Polyline } from "react-leaflet";
 import type { Route } from "../types";
-import { RoutePopup } from "./RoutePopup";
-import { routeColors, ratioThresholds, weightScale } from "../constants";
-
-function getRouteColor(route: Route): string {
-    const ratio = route.transitMinutes / route.carMinutes;
-    if (ratio <= ratioThresholds.equal) return routeColors.green;
-    if (ratio <= ratioThresholds.moderate) return routeColors.yellow;
-    return routeColors.red;
-}
+import { weightScale } from "../constants";
+import { getRouteColor } from "../utils/routeColor";
 
 interface Props {
     route: Route;
     isActive: boolean;
     isDimmed: boolean;
     onHover: (id: number | null) => void;
+    onRouteClick: (id: number) => void;
 }
 
 function getRouteWeight(dailyCommuters: number): number {
@@ -32,7 +26,13 @@ function getRouteWeight(dailyCommuters: number): number {
     );
 }
 
-export function RoutePolyline({ route, isActive, isDimmed, onHover }: Props) {
+export function RoutePolyline({
+    route,
+    isActive,
+    isDimmed,
+    onHover,
+    onRouteClick,
+}: Props) {
     const color = getRouteColor(route);
     const baseWeight = getRouteWeight(route.dailyCommuters);
     const weight = isActive ? baseWeight + weightScale.hoverBoost : baseWeight;
@@ -45,11 +45,8 @@ export function RoutePolyline({ route, isActive, isDimmed, onHover }: Props) {
             eventHandlers={{
                 mouseover: () => onHover(route.id),
                 mouseout: () => onHover(null),
+                click: () => onRouteClick(route.id),
             }}
-        >
-            <Popup minWidth={280} maxWidth={320}>
-                <RoutePopup route={route} />
-            </Popup>
-        </Polyline>
+        />
     );
 }

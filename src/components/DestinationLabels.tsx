@@ -40,12 +40,31 @@ function buildDestRouteMap() {
     return map;
 }
 
-interface Props {
-    activeRouteId: number | null;
+function scoreToColor(score: number, maxScore: number): string {
+    if (score <= 0 || maxScore <= 0) return theme.textDim;
+    const t = Math.min(1, score / maxScore);
+    const r = Math.round(253 + t * (197 - 253));
+    const g = Math.round(224 + t * (27 - 224));
+    const b = Math.round(239 + t * (125 - 239));
+    return `rgb(${r},${g},${b})`;
 }
 
-export function DestinationLabels({ activeRouteId }: Props) {
+interface Props {
+    activeRouteId: number | null;
+    neighborhoodScores: Map<string, number> | null;
+}
+
+export function DestinationLabels({ activeRouteId, neighborhoodScores }: Props) {
     const destRouteMap = useMemo(buildDestRouteMap, []);
+
+    const maxScore = useMemo(() => {
+        if (!neighborhoodScores) return 0;
+        let max = 0;
+        for (const v of neighborhoodScores.values()) {
+            if (v > max) max = v;
+        }
+        return max;
+    }, [neighborhoodScores]);
 
     return (
         <>
@@ -56,19 +75,28 @@ export function DestinationLabels({ activeRouteId }: Props) {
                     routeIds !== undefined &&
                     routeIds.has(activeRouteId);
 
+                const score = neighborhoodScores?.get(dest.name) ?? null;
+                const useScoreColor = neighborhoodScores !== null && score !== null;
+                const dotColor = useScoreColor
+                    ? scoreToColor(score!, maxScore)
+                    : highlighted
+                      ? theme.textBright
+                      : theme.textSecondary;
+                const dotRadius = useScoreColor
+                    ? 3 + Math.min(5, (Math.max(0, score!) / maxScore) * 5)
+                    : highlighted
+                      ? 5
+                      : 3;
+
                 return (
                     <span key={dest.name}>
                         <CircleMarker
                             center={dest.position}
-                            radius={highlighted ? 5 : 3}
+                            radius={dotRadius}
                             pathOptions={{
-                                color: highlighted
-                                    ? theme.textBright
-                                    : theme.textDim,
-                                fillColor: highlighted
-                                    ? theme.textBright
-                                    : theme.textSecondary,
-                                fillOpacity: highlighted ? 1 : 0.6,
+                                color: useScoreColor ? dotColor : highlighted ? theme.textBright : theme.textDim,
+                                fillColor: dotColor,
+                                fillOpacity: useScoreColor ? 0.9 : highlighted ? 1 : 0.6,
                                 weight: highlighted ? 2 : 1,
                             }}
                             interactive={false}
