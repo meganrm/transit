@@ -5,7 +5,7 @@ import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
 import { routes } from "./data/routes";
 import { getNeighborhoodDetail } from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
-import type { ColorMode } from "./types";
+import type { MetricMode, TrafficMode } from "./types";
 
 function App() {
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
@@ -15,7 +15,9 @@ function App() {
     const [selectedNeighborhoodRouteIds, setSelectedNeighborhoodRouteIds] =
         useState<Set<number> | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>("all");
-    const [colorMode, setColorMode] = useState<ColorMode>("peak-traffic");
+    const [trafficMode, setTrafficMode] = useState<TrafficMode>("peak-traffic");
+    const [metricMode, setMetricMode] =
+        useState<MetricMode>("travel-time-difference");
     const [focusLevel, setFocusLevel] = useState(0);
 
     const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? null;
@@ -31,7 +33,6 @@ function App() {
     const handleRouteSelect = (id: number) => {
         setSelectedNeighborhood(null);
         setSelectedNeighborhoodRouteIds(null);
-        console.log("Selecting route ID:", id);
         setSelectedRouteId(id);
     };
 
@@ -65,8 +66,10 @@ function App() {
                     viewMode={viewMode}
                     onViewModeChange={handleViewModeChange}
                     onClearSelection={handleClearSelection}
-                    colorMode={colorMode}
-                    onColorModeChange={setColorMode}
+                    trafficMode={trafficMode}
+                    onTrafficModeChange={setTrafficMode}
+                    metricMode={metricMode}
+                    onMetricModeChange={setMetricMode}
                     focusLevel={focusLevel}
                     onFocusLevelChange={setFocusLevel}
                     selectedNeighborhood={selectedNeighborhood}

@@ -1,24 +1,11 @@
-import type { ColorMode } from "../types";
+import type { MetricMode, TrafficMode } from "../types";
 import { weightScale, theme } from "../constants";
 import {
     buildLegendGradient,
     getLegendEqualPct,
     getLegendBreakevenPct,
-    DATA_PERSON_MINUTES_MAX,
+    getPersonMinutesMax,
 } from "../utils/routeColor";
-
-const COLOR_MODE_OPTIONS: { value: ColorMode; label: string }[] = [
-    { value: "no-traffic", label: "No traffic" },
-    { value: "peak-traffic", label: "Peak traffic" },
-    { value: "person-minutes", label: "Person-min" },
-];
-
-const DESCRIPTIONS: Record<ColorMode, string> = {
-    "no-traffic": "Transit vs ideal, uncongested driving",
-    "peak-traffic": "Transit vs rush-hour driving",
-    "person-minutes":
-        "Total time lost, weighted by ridership — also drives line thickness",
-};
 
 const SECTION_HEADER: React.CSSProperties = {
     fontSize: 9,
@@ -31,59 +18,116 @@ const SECTION_HEADER: React.CSSProperties = {
 const TOTAL_ROUTES = 37;
 
 interface Props {
-    colorMode: ColorMode;
-    onColorModeChange: (mode: ColorMode) => void;
+    trafficMode: TrafficMode;
+    onTrafficModeChange: (mode: TrafficMode) => void;
+    metricMode: MetricMode;
+    onMetricModeChange: (mode: MetricMode) => void;
     focusLevel: number;
     onFocusLevelChange: (level: number) => void;
 }
 
-export function Legend({ colorMode, onColorModeChange, focusLevel, onFocusLevelChange }: Props) {
-    const gradient = buildLegendGradient(colorMode);
-    const equalPct = getLegendEqualPct(colorMode);
-    const breakevenPct = getLegendBreakevenPct();
+function ToggleRow({
+    label,
+    valueLabel,
+    checked,
+    onToggle,
+}: {
+    label: string;
+    valueLabel: string;
+    checked: boolean;
+    onToggle: () => void;
+}) {
+    return (
+        <button
+            onClick={onToggle}
+            style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                border: "1px solid rgba(148,163,184,0.18)",
+                background: "rgba(148,163,184,0.06)",
+                borderRadius: 8,
+                padding: "8px 10px",
+                cursor: "pointer",
+                color: theme.textPrimary,
+                marginBottom: 8,
+            }}
+        >
+            <span style={{ fontSize: 11, color: theme.textSecondary }}>
+                {label}
+            </span>
+            <span
+                style={{
+                    fontSize: 11,
+                    color: checked ? "#a5b4fc" : theme.textSecondary,
+                    fontWeight: 600,
+                }}
+            >
+                {valueLabel}
+            </span>
+        </button>
+    );
+}
 
-    const tickPct = colorMode === "person-minutes" ? breakevenPct : equalPct;
-    const tickLabel = colorMode === "person-minutes" ? "breakeven" : "equal";
-    const labelLeft = colorMode === "person-minutes" ? "Saves time" : "Faster";
-    const labelRight =
-        colorMode === "person-minutes" ? "Loses time" : "Slower";
-    const sectionTitle =
-        colorMode === "no-traffic"
-            ? "Transit vs No Traffic"
-            : colorMode === "peak-traffic"
-              ? "Transit vs Peak Traffic"
-              : "Person-minutes lost";
+export function Legend({
+    trafficMode,
+    onTrafficModeChange,
+    metricMode,
+    onMetricModeChange,
+    focusLevel,
+    onFocusLevelChange,
+}: Props) {
+    const gradient = buildLegendGradient(trafficMode, metricMode);
+    const equalPct = getLegendEqualPct(trafficMode, metricMode);
+    const breakevenPct = getLegendBreakevenPct(trafficMode);
 
-    const pmMax = DATA_PERSON_MINUTES_MAX;
-    const thicknessItems =
-        colorMode === "person-minutes"
-            ? [
-                  { weight: weightScale.minWeight, label: "0 min lost" },
-                  {
-                      weight: weightScale.midWeight,
-                      label: `~${Math.round(pmMax / 2 / 1000)}k min/day`,
-                  },
-                  {
-                      weight: weightScale.maxWeight,
-                      label: `~${Math.round(pmMax / 1000)}k min/day`,
-                  },
-              ]
-            : [
-                  {
-                      weight: weightScale.minWeight,
-                      label: `~${weightScale.minCommuters / 1000}k/day`,
-                  },
-                  {
-                      weight: weightScale.midWeight,
-                      label: `~${weightScale.midCommuters / 1000}k/day`,
-                  },
-                  {
-                      weight: weightScale.maxWeight,
-                      label: `~${weightScale.maxCommuters / 1000}k/day`,
-                  },
-              ];
-    const thicknessTitle =
-        colorMode === "person-minutes" ? "Line thickness" : "Daily commuters";
+    const isPersonMinutes = metricMode === "person-minutes-lost";
+    const tickPct = isPersonMinutes ? breakevenPct : equalPct;
+    const tickLabel = isPersonMinutes ? "breakeven" : "equal";
+    const labelLeft = isPersonMinutes ? "Saves time" : "Faster";
+    const labelRight = isPersonMinutes ? "Loses time" : "Slower";
+    const trafficLabel =
+        trafficMode === "peak-traffic" ? "Peak Traffic" : "No Traffic";
+    const sectionTitle = isPersonMinutes
+        ? `Total Person-minutes Lost (${trafficLabel})`
+        : `Transit vs ${trafficLabel}`;
+    const sectionDescription = isPersonMinutes
+        ? "Total time lost, weighted by ridership."
+        : trafficMode === "peak-traffic"
+          ? "Travel-time difference using rush-hour driving as the baseline."
+          : "Travel-time difference using uncongested driving as the baseline.";
+
+    const pmMax = getPersonMinutesMax(trafficMode);
+    const thicknessItems = isPersonMinutes
+        ? [
+              { weight: weightScale.minWeight, label: "0 min lost" },
+              {
+                  weight: weightScale.midWeight,
+                  label: `~${Math.round(pmMax / 2 / 1000)}k min/day`,
+              },
+              {
+                  weight: weightScale.maxWeight,
+                  label: `~${Math.round(pmMax / 1000)}k min/day`,
+              },
+          ]
+        : [
+              {
+                  weight: weightScale.minWeight,
+                  label: `~${weightScale.minCommuters / 1000}k/day`,
+              },
+              {
+                  weight: weightScale.midWeight,
+                  label: `~${weightScale.midCommuters / 1000}k/day`,
+              },
+              {
+                  weight: weightScale.maxWeight,
+                  label: `~${weightScale.maxCommuters / 1000}k/day`,
+              },
+          ];
+    const thicknessTitle = isPersonMinutes
+        ? "Line thickness"
+        : "Daily commuters";
 
     return (
         <div
@@ -100,46 +144,35 @@ export function Legend({ colorMode, onColorModeChange, focusLevel, onFocusLevelC
                 width: 270,
             }}
         >
-            {/* Color-by header + selector */}
-            <div style={SECTION_HEADER}>Color by</div>
-            <div
-                style={{
-                    display: "flex",
-                    gap: 2,
-                    marginBottom: 14,
-                    background: "rgba(148,163,184,0.08)",
-                    borderRadius: 6,
-                    padding: 3,
-                }}
-            >
-                {COLOR_MODE_OPTIONS.map(({ value, label }) => (
-                    <button
-                        key={value}
-                        onClick={() => onColorModeChange(value)}
-                        style={{
-                            flex: 1,
-                            fontSize: 11,
-                            padding: "4px 0",
-                            border: "none",
-                            borderRadius: 5,
-                            cursor: "pointer",
-                            background:
-                                colorMode === value
-                                    ? "rgba(165, 180, 252, 0.2)"
-                                    : "none",
-                            color:
-                                colorMode === value
-                                    ? "#a5b4fc"
-                                    : theme.textSecondary,
-                            fontWeight: colorMode === value ? 600 : 400,
-                            transition: "all 0.15s",
-                            whiteSpace: "nowrap",
-                        }}
-                    >
-                        {label}
-                    </button>
-                ))}
-            </div>
+            <div style={SECTION_HEADER}>Color Controls</div>
+            <ToggleRow
+                label="Peak traffic"
+                valueLabel={trafficMode === "peak-traffic" ? "On" : "Off"}
+                checked={trafficMode === "peak-traffic"}
+                onToggle={() =>
+                    onTrafficModeChange(
+                        trafficMode === "peak-traffic"
+                            ? "no-traffic"
+                            : "peak-traffic",
+                    )
+                }
+            />
+            <ToggleRow
+                label="Metric"
+                valueLabel={
+                    isPersonMinutes
+                        ? "Total people mins lost"
+                        : "Travel time difference"
+                }
+                checked={isPersonMinutes}
+                onToggle={() =>
+                    onMetricModeChange(
+                        isPersonMinutes
+                            ? "travel-time-difference"
+                            : "person-minutes-lost",
+                    )
+                }
+            />
 
             {/* Gradient section */}
             <div
@@ -160,9 +193,11 @@ export function Legend({ colorMode, onColorModeChange, focusLevel, onFocusLevelC
                     lineHeight: 1.4,
                 }}
             >
-                {DESCRIPTIONS[colorMode]}
+                {sectionDescription}
             </div>
-            <div style={{ position: "relative", width: "100%", marginBottom: 4 }}>
+            <div
+                style={{ position: "relative", width: "100%", marginBottom: 4 }}
+            >
                 <div
                     style={{
                         width: "100%",
@@ -197,11 +232,11 @@ export function Legend({ colorMode, onColorModeChange, focusLevel, onFocusLevelC
             >
                 <span style={{ flex: 1, color: "#4d9221" }}>{labelLeft}</span>
                 {tickPct !== null && (
-                    <span style={{ color: theme.textSecondary }}>{tickLabel}</span>
+                    <span style={{ color: theme.textSecondary }}>
+                        {tickLabel}
+                    </span>
                 )}
-                <span
-                    style={{ flex: 1, color: "#c51b7d", textAlign: "right" }}
-                >
+                <span style={{ flex: 1, color: "#c51b7d", textAlign: "right" }}>
                     {labelRight}
                 </span>
             </div>

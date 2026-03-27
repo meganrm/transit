@@ -1,14 +1,15 @@
 import { Polyline } from "react-leaflet";
 import L from "leaflet";
-import type { Route, ColorMode } from "../types";
+import type { MetricMode, Route, TrafficMode } from "../types";
 import { weightScale } from "../constants";
-import { getRouteColor, DATA_PERSON_MINUTES_MAX } from "../utils/routeColor";
+import { getRouteColor, getPersonMinutesMax } from "../utils/routeColor";
 
 interface Props {
     route: Route;
     isActive: boolean;
     isDimmed: boolean;
-    colorMode: ColorMode;
+    trafficMode: TrafficMode;
+    metricMode: MetricMode;
     onHover: (id: number | null) => void;
     onRouteClick: (id: number) => void;
 }
@@ -28,12 +29,19 @@ function getRouteWeight(dailyCommuters: number): number {
     );
 }
 
-function getPersonMinutesWeight(route: Route): number {
+function getPersonMinutesWeight(
+    route: Route,
+    trafficMode: TrafficMode,
+): number {
+    const baselineCarMinutes =
+        trafficMode === "peak-traffic"
+            ? route.carMinutesPeak
+            : route.carMinutes;
     const pm = Math.max(
         0,
-        (route.transitMinutes - route.carMinutesPeak) * route.dailyCommuters,
+        (route.transitMinutes - baselineCarMinutes) * route.dailyCommuters,
     );
-    const t = Math.min(1, pm / DATA_PERSON_MINUTES_MAX);
+    const t = Math.min(1, pm / getPersonMinutesMax(trafficMode));
     return (
         weightScale.minWeight +
         t * (weightScale.maxWeight - weightScale.minWeight)
@@ -44,14 +52,15 @@ export function RoutePolyline({
     route,
     isActive,
     isDimmed,
-    colorMode,
+    trafficMode,
+    metricMode,
     onHover,
     onRouteClick,
 }: Props) {
-    const color = getRouteColor(route, colorMode);
+    const color = getRouteColor(route, trafficMode, metricMode);
     const baseWeight =
-        colorMode === "person-minutes"
-            ? getPersonMinutesWeight(route)
+        metricMode === "person-minutes-lost"
+            ? getPersonMinutesWeight(route, trafficMode)
             : getRouteWeight(route.dailyCommuters);
     const weight = isActive ? baseWeight + weightScale.hoverBoost : baseWeight;
     const opacity = isDimmed ? 0.3 : isActive ? 1 : 0.75;

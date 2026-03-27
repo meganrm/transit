@@ -6,7 +6,7 @@ import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { ViewToggle } from "./ViewToggle";
 import type { ViewMode } from "./ViewToggle";
-import type { ColorMode } from "../types";
+import type { MetricMode, TrafficMode } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
 import { getRouteMetrics, getNeighborhoodMetrics } from "../data/analytics";
@@ -92,8 +92,10 @@ interface MapViewProps {
     onRouteSelect: (id: number) => void;
     viewMode: ViewMode;
     onViewModeChange: (mode: ViewMode) => void;
-    colorMode: ColorMode;
-    onColorModeChange: (mode: ColorMode) => void;
+    trafficMode: TrafficMode;
+    onTrafficModeChange: (mode: TrafficMode) => void;
+    metricMode: MetricMode;
+    onMetricModeChange: (mode: MetricMode) => void;
     onClearSelection: () => void;
     focusLevel: number;
     onFocusLevelChange: (level: number) => void;
@@ -106,8 +108,10 @@ export function MapView({
     onRouteSelect,
     viewMode,
     onViewModeChange,
-    colorMode,
-    onColorModeChange,
+    trafficMode,
+    onTrafficModeChange,
+    metricMode,
+    onMetricModeChange,
     onClearSelection,
     focusLevel,
     onFocusLevelChange,
@@ -168,7 +172,8 @@ export function MapView({
                                 : activeRouteId !== null &&
                                   activeRouteId !== route.id
                         }
-                        colorMode={colorMode}
+                        trafficMode={trafficMode}
+                        metricMode={metricMode}
                         onHover={setActiveRouteId}
                         onRouteClick={onRouteSelect}
                     />
@@ -181,8 +186,10 @@ export function MapView({
                 />
             </MapContainer>
             <Legend
-                colorMode={colorMode}
-                onColorModeChange={onColorModeChange}
+                trafficMode={trafficMode}
+                onTrafficModeChange={onTrafficModeChange}
+                metricMode={metricMode}
+                onMetricModeChange={onMetricModeChange}
                 focusLevel={focusLevel}
                 onFocusLevelChange={onFocusLevelChange}
             />
