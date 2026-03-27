@@ -1,44 +1,58 @@
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import { routes } from "../data/routes";
-import { destinations } from "../data/destinations";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { HOME_CENTER, HOME_BOUNDS, HOME_PADDING } from "../homeView";
 
-const PADDING = 10; // padding in pixels when fitting bounds
+const homeBounds = L.latLngBounds(HOME_BOUNDS[0], HOME_BOUNDS[1]);
 
-function getDestinationBounds() {
-    const points = destinations.map((d) => d.position as [number, number]);
-    // Find the northernmost and southernmost destinations
-    let north = points[0];
-    let south = points[0];
-    for (const p of points) {
-        if (p[0] > north[0]) north = p;
-        if (p[0] < south[0]) south = p;
-    }
-    // Bounds span only those two points — maximizes zoom while keeping both visible
-    return L.latLngBounds([south[0], south[1]], [north[0], north[1]]);
-}
-
-function FitBounds({ bounds }: { bounds: L.LatLngBounds }) {
+/**
+ * On first mount, fit to bounds + zoom in one level.
+ * Stores the resulting zoom in the ref so HomeButton can reuse it.
+ */
+function FitBounds({
+    zoomRef,
+}: {
+    zoomRef: React.MutableRefObject<number | null>;
+}) {
     const map = useMap();
+    const fitted = useRef(false);
     useEffect(() => {
-        map.fitBounds(bounds, { padding: [PADDING, PADDING] });
-    }, [map, bounds]);
+        if (fitted.current) return;
+        fitted.current = true;
+        // fitBounds picks the right zoom for the current viewport
+        map.fitBounds(homeBounds, {
+            padding: [HOME_PADDING, HOME_PADDING],
+            animate: false,
+        });
+        // Zoom in one extra level and cache it
+        const zoom = map.getZoom() + 1;
+        zoomRef.current = zoom;
+        map.setView(HOME_CENTER, zoom, { animate: false });
+    }, [map, zoomRef]);
     return null;
 }
 
-function HomeButton({ bounds }: { bounds: L.LatLngBounds }) {
+function HomeButton({
+    zoomRef,
+}: {
+    zoomRef: React.MutableRefObject<number | null>;
+}) {
     const map = useMap();
     return (
         <button
             className="home-button"
             title="Reset view"
-            onClick={() =>
-                map.fitBounds(bounds, { padding: [PADDING, PADDING] })
-            }
+            onClick={() => {
+                // Always snap — never animate — to prevent drift
+                map.stop();
+                map.setView(HOME_CENTER, zoomRef.current ?? 13, {
+                    animate: false,
+                });
+            }}
         >
             <svg
                 width="16"
@@ -59,18 +73,18 @@ function HomeButton({ bounds }: { bounds: L.LatLngBounds }) {
 
 export function MapView() {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
-    const bounds = useMemo(getDestinationBounds, []);
+    const zoomRef = useRef<number | null>(null);
 
     return (
         <div style={{ height: "100%", width: "100%", position: "relative" }}>
             <MapContainer
-                center={[47.6062, -122.3321]}
-                zoom={11}
+                center={HOME_CENTER}
+                zoom={13}
                 style={{ height: "100%", width: "100%" }}
                 zoomControl={true}
             >
-                <FitBounds bounds={bounds} />
-                <HomeButton bounds={bounds} />
+                <FitBounds zoomRef={zoomRef} />
+                <HomeButton zoomRef={zoomRef} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
