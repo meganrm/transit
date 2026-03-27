@@ -1,5 +1,56 @@
 import type { Route } from "../types";
 
+export interface NeighborhoodDetail {
+    neighborhood: string;
+    fromRoutes: Route[];
+    toRoutes: Route[];
+    totalCommuters: number;
+    totalPersonMinutesLost: number;
+    avgRatio: number;
+}
+
+export function getNeighborhoodDetail(
+    allRoutes: Route[],
+    neighborhood: string,
+    routeIds: Set<number>,
+): NeighborhoodDetail {
+    const matching = allRoutes.filter((r) => routeIds.has(r.id));
+
+    const fromRoutes = matching.filter((r) => {
+        const origin = r.name.split(" → ")[0].trim();
+        return (
+            origin === neighborhood ||
+            neighborhood.includes(origin) ||
+            origin.includes(neighborhood)
+        );
+    });
+    const toRoutes = matching.filter((r) => !fromRoutes.includes(r));
+
+    const totalCommuters = matching.reduce((s, r) => s + r.dailyCommuters, 0);
+    const totalPersonMinutesLost = matching.reduce(
+        (s, r) => s + (r.transitMinutes - r.carMinutesPeak) * r.dailyCommuters,
+        0,
+    );
+    const avgRatio =
+        totalCommuters > 0
+            ? matching.reduce(
+                  (s, r) =>
+                      s +
+                      (r.transitMinutes / r.carMinutesPeak) * r.dailyCommuters,
+                  0,
+              ) / totalCommuters
+            : 1;
+
+    return {
+        neighborhood,
+        fromRoutes,
+        toRoutes,
+        totalCommuters,
+        totalPersonMinutesLost,
+        avgRatio,
+    };
+}
+
 export interface RouteMetric {
     routeId: number;
     personMinutesLost: number;

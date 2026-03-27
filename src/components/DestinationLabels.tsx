@@ -3,7 +3,7 @@ import L from "leaflet";
 import { destinations } from "../data/destinations";
 import { routes } from "../data/routes";
 import { theme } from "../constants";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 function createLabelIcon(name: string, highlighted: boolean) {
     const cls = highlighted
@@ -17,14 +17,13 @@ function createLabelIcon(name: string, highlighted: boolean) {
     });
 }
 
-/** Map destination names to the route IDs that touch them. */
+/** Map destination names to the route IDs that touch them (both origin and destination). */
 function buildDestRouteMap() {
     const map = new Map<string, Set<number>>();
     for (const route of routes) {
         const parts = route.name.split(" → ");
         for (const part of parts) {
             const trimmed = part.trim();
-            // Match against destination names (some have aliases like "SoDo / Industrial District")
             for (const dest of destinations) {
                 if (
                     trimmed === dest.name ||
@@ -52,10 +51,18 @@ function scoreToColor(score: number, maxScore: number): string {
 interface Props {
     activeRouteId: number | null;
     neighborhoodScores: Map<string, number> | null;
+    selectedNeighborhood: string | null;
+    onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
 }
 
-export function DestinationLabels({ activeRouteId, neighborhoodScores }: Props) {
+export function DestinationLabels({
+    activeRouteId,
+    neighborhoodScores,
+    selectedNeighborhood,
+    onNeighborhoodSelect,
+}: Props) {
     const destRouteMap = useMemo(buildDestRouteMap, []);
+    const [hoveredDest, setHoveredDest] = useState<string | null>(null);
 
     const maxScore = useMemo(() => {
         if (!neighborhoodScores) return 0;
@@ -69,24 +76,54 @@ export function DestinationLabels({ activeRouteId, neighborhoodScores }: Props) 
     return (
         <>
             {destinations.map((dest) => {
-                const routeIds = destRouteMap.get(dest.name);
+                const touchingRouteIds = destRouteMap.get(dest.name);
+                const isSelected = selectedNeighborhood === dest.name;
+                const isHovered = hoveredDest === dest.name && !isSelected;
                 const highlighted =
-                    activeRouteId !== null &&
-                    routeIds !== undefined &&
-                    routeIds.has(activeRouteId);
+                    isSelected ||
+                    isHovered ||
+                    (activeRouteId !== null &&
+                        touchingRouteIds !== undefined &&
+                        touchingRouteIds.has(activeRouteId));
 
                 const score = neighborhoodScores?.get(dest.name) ?? null;
-                const useScoreColor = neighborhoodScores !== null && score !== null;
-                const dotColor = useScoreColor
-                    ? scoreToColor(score!, maxScore)
-                    : highlighted
+                const useScoreColor =
+                    !isSelected && !isHovered && neighborhoodScores !== null && score !== null;
+
+                const dotColor = isSelected
+                    ? theme.textBright
+                    : isHovered
                       ? theme.textBright
-                      : theme.textSecondary;
-                const dotRadius = useScoreColor
-                    ? 3 + Math.min(5, (Math.max(0, score!) / maxScore) * 5)
-                    : highlighted
-                      ? 5
-                      : 3;
+                      : useScoreColor
+                        ? scoreToColor(score!, maxScore)
+                        : highlighted
+                          ? theme.textBright
+                          : theme.textSecondary;
+
+                const dotRadius = isSelected
+                    ? 8
+                    : isHovered
+                      ? 7
+                      : useScoreColor
+                        ? 4 + Math.min(4, (Math.max(0, score!) / maxScore) * 4)
+                        : highlighted
+                          ? 6
+                          : 4;
+
+                const handlers = {
+                    mouseover: () => setHoveredDest(dest.name),
+                    mouseout: () => setHoveredDest(null),
+                    click: () => {
+                        if (isSelected) {
+                            onNeighborhoodSelect(null);
+                        } else {
+                            onNeighborhoodSelect(
+                                dest.name,
+                                touchingRouteIds ?? new Set<number>(),
+                            );
+                        }
+                    },
+                };
 
                 return (
                     <span key={dest.name}>
@@ -94,17 +131,35 @@ export function DestinationLabels({ activeRouteId, neighborhoodScores }: Props) 
                             center={dest.position}
                             radius={dotRadius}
                             pathOptions={{
-                                color: useScoreColor ? dotColor : highlighted ? theme.textBright : theme.textDim,
+                                color: isSelected
+                                    ? "#ffffff"
+                                    : isHovered
+                                      ? "#ffffff"
+                                      : useScoreColor
+                                        ? dotColor
+                                        : highlighted
+                                          ? theme.textBright
+                                          : theme.textDim,
                                 fillColor: dotColor,
-                                fillOpacity: useScoreColor ? 0.9 : highlighted ? 1 : 0.6,
-                                weight: highlighted ? 2 : 1,
+                                fillOpacity: isSelected
+                                    ? 0.35
+                                    : isHovered
+                                      ? 1
+                                      : useScoreColor
+                                        ? 0.9
+                                        : highlighted
+                                          ? 1
+                                          : 0.65,
+                                weight: isSelected ? 2.5 : isHovered ? 2.5 : 1,
                             }}
-                            interactive={false}
+                            interactive={true}
+                            eventHandlers={handlers}
                         />
                         <Marker
                             position={dest.position}
-                            icon={createLabelIcon(dest.name, highlighted)}
-                            interactive={false}
+                            icon={createLabelIcon(dest.name, highlighted || isHovered)}
+                            interactive={true}
+                            eventHandlers={handlers}
                         />
                     </span>
                 );

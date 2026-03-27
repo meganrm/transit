@@ -80,10 +80,16 @@ body,
     background: var(--color-bg-dark-hover);
 }
 
+/* Guarantee pointer cursor on interactive Leaflet elements */
+.leaflet-interactive {
+    cursor: pointer;
+}
+
 /* Destination labels */
 .destination-label {
     background: none !important;
     border: none !important;
+    pointer-events: none;
 }
 .destination-label span {
     display: block;
@@ -95,7 +101,8 @@ body,
         0 0 4px rgba(0, 0, 0, 0.8),
         0 0 8px rgba(0, 0, 0, 0.6);
     padding: 2px 6px;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
     transform: translate(6px, -8px);
     transition: color 0.15s ease;
 }

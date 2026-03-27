@@ -69,13 +69,24 @@ interface MapViewProps {
     onRouteSelect: (id: number) => void;
     viewMode: ViewMode;
     onViewModeChange: (mode: ViewMode) => void;
+    selectedNeighborhood: string | null;
+    selectedNeighborhoodRouteIds: Set<number> | null;
+    onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
 }
 
-export function MapView({ onRouteSelect, viewMode, onViewModeChange }: MapViewProps) {
+export function MapView({
+    onRouteSelect,
+    viewMode,
+    onViewModeChange,
+    selectedNeighborhood,
+    selectedNeighborhoodRouteIds,
+    onNeighborhoodSelect,
+}: MapViewProps) {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
     const homeRef = useRef<HomeState | null>(null);
 
     const highlightedRouteIds = useMemo<Set<number> | null>(() => {
+        if (selectedNeighborhoodRouteIds !== null) return selectedNeighborhoodRouteIds;
         if (viewMode !== "routes") return null;
         const metrics = getRouteMetrics(routes);
         const topIds = metrics
@@ -83,7 +94,7 @@ export function MapView({ onRouteSelect, viewMode, onViewModeChange }: MapViewPr
             .slice(0, TOP_N_ROUTES)
             .map((m) => m.routeId);
         return new Set(topIds);
-    }, [viewMode]);
+    }, [selectedNeighborhoodRouteIds, viewMode]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         if (viewMode !== "neighborhoods") return null;
@@ -118,7 +129,8 @@ export function MapView({ onRouteSelect, viewMode, onViewModeChange }: MapViewPr
                         isDimmed={
                             highlightedRouteIds !== null
                                 ? !highlightedRouteIds.has(route.id)
-                                : activeRouteId !== null && activeRouteId !== route.id
+                                : activeRouteId !== null &&
+                                  activeRouteId !== route.id
                         }
                         onHover={setActiveRouteId}
                         onRouteClick={onRouteSelect}
@@ -127,6 +139,8 @@ export function MapView({ onRouteSelect, viewMode, onViewModeChange }: MapViewPr
                 <DestinationLabels
                     activeRouteId={activeRouteId}
                     neighborhoodScores={neighborhoodScores}
+                    selectedNeighborhood={selectedNeighborhood}
+                    onNeighborhoodSelect={onNeighborhoodSelect}
                 />
             </MapContainer>
             <Legend />
