@@ -24,6 +24,7 @@ export const destinations: Destination[] = [
     { name: "Columbia City", position: [47.5596, -122.2864] },
     { name: "Green Lake", position: [47.6801, -122.3284] },
     { name: "Ravenna", position: [47.6741, -122.3072] },
+    { name: "Wedgwood", position: [47.6852, -122.285] },
     { name: "Madison Park", position: [47.6341, -122.2811] },
     { name: "Phinney Ridge", position: [47.6741, -122.3546] },
     { name: "Greenwood", position: [47.6921, -122.3558] },
@@ -34,6 +35,9 @@ export const destinations: Destination[] = [
     { name: "Madrona", position: [47.6123, -122.2934] },
     { name: "Leschi", position: [47.6053, -122.2889] },
     { name: "Magnolia", position: [47.6469, -122.3997] },
+    { name: "South Magnolia", position: [47.638, -122.395] },
+    { name: "Interbay", position: [47.634, -122.378] },
     { name: "North Ballard", position: [47.6906, -122.3865] },
+    { name: "Loyal Heights", position: [47.6862, -122.3941] },
     { name: "Lake City", position: [47.7213, -122.2957] },
 ];
