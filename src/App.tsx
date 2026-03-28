@@ -96,6 +96,7 @@ function App() {
                   routeData.routes,
                   selectedNeighborhood,
                   selectedNeighborhoodRouteIds,
+                  trafficMode,
               )
             : null;
 
@@ -188,6 +189,7 @@ function App() {
             {neighborhoodDetail && (
                 <NeighborhoodPanel
                     detail={neighborhoodDetail}
+                    trafficMode={trafficMode}
                     onClose={() => handleNeighborhoodSelect(null)}
                     onRouteSelect={handleRouteSelect}
                 />

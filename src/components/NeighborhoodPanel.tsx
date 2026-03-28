@@ -1,10 +1,11 @@
 import type { NeighborhoodDetail } from "../data/analytics";
-import type { Route } from "../types";
+import type { Route, TrafficMode } from "../types";
 import { theme } from "../constants";
 import { getRouteColor, getRouteRgb } from "../utils/routeColor";
 
 interface Props {
     detail: NeighborhoodDetail;
+    trafficMode: TrafficMode;
     onClose: () => void;
     onRouteSelect: (id: number) => void;
 }
@@ -100,7 +101,7 @@ function RouteRow({
     );
 }
 
-export function NeighborhoodPanel({ detail, onClose, onRouteSelect }: Props) {
+export function NeighborhoodPanel({ detail, trafficMode, onClose, onRouteSelect }: Props) {
     const [r, g, b] = getRouteRgb({
         transitMinutes: detail.avgRatio * 100,
         carMinutesPeak: 100,
@@ -220,8 +221,13 @@ export function NeighborhoodPanel({ detail, onClose, onRouteSelect }: Props) {
                     >
                         {detail.avgRatio.toFixed(2)}×
                     </div>
-                    <div style={{ fontSize: 13, color: accentColor }}>
-                        {scoreLabel(detail.avgRatio)}
+                    <div>
+                        <div style={{ fontSize: 13, color: accentColor }}>
+                            {scoreLabel(detail.avgRatio)}
+                        </div>
+                        <div style={{ fontSize: 10, color: theme.textDim, marginTop: 2 }}>
+                            vs. {trafficMode === "peak-traffic" ? "peak hour driving" : "off-peak driving"}
+                        </div>
                     </div>
                 </div>
                 <div

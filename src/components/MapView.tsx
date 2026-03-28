@@ -150,14 +150,13 @@ export function MapView({
     }, [routes, selectedNeighborhoodRouteIds, focusLevel]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
-        if (viewMode !== "neighborhoods") return null;
         const metrics = getNeighborhoodMetrics(routes, trafficMode);
         const map = new Map<string, number>();
         for (const m of metrics) {
             map.set(m.neighborhood, m.avgRatio);
         }
         return map;
-    }, [routes, viewMode, trafficMode]);
+    }, [routes, trafficMode]);
 
     return (
         <div style={{ height: "100%", width: "100%", position: "relative" }}>

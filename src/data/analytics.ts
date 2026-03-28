@@ -13,6 +13,7 @@ export function getNeighborhoodDetail(
     allRoutes: Route[],
     neighborhood: string,
     routeIds: Set<number>,
+    trafficMode: TrafficMode,
 ): NeighborhoodDetail {
     const matching = allRoutes.filter((r) => routeIds.has(r.id));
 
@@ -34,9 +35,10 @@ export function getNeighborhoodDetail(
     const avgRatio =
         totalCommuters > 0
             ? matching.reduce(
-                  (s, r) =>
-                      s +
-                      (r.transitMinutes / r.carMinutesPeak) * r.dailyCommuters,
+                  (s, r) => {
+                      const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+                      return s + (r.transitMinutes / car) * r.dailyCommuters;
+                  },
                   0,
               ) / totalCommuters
             : 1;

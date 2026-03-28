@@ -23,5 +23,11 @@
   "Mount Baker": { "lat": 47.5817, "lng": -122.2927 },
   "Columbia City": { "lat": 47.5592, "lng": -122.2906 },
   "Rainier Valley": { "lat": 47.5318, "lng": -122.2762 },
-  "West Seattle": { "lat": 47.5603, "lng": -122.3868 }
+  "West Seattle": { "lat": 47.5603, "lng": -122.3868 },
+  "Admiral": { "lat": 47.5785, "lng": -122.3820 },
+  "Delridge": { "lat": 47.5295, "lng": -122.3630 },
+  "Uptown": { "lat": 47.6218, "lng": -122.3544 },
+  "Laurelhurst": { "lat": 47.6630, "lng": -122.2740 },
+  "Lake City": { "lat": 47.7175, "lng": -122.2880 },
+  "Greenwood": { "lat": 47.6930, "lng": -122.3555 }
 }

@@ -107,11 +107,9 @@ export function DestinationLabels({
                     ? 8
                     : isHovered
                       ? 7
-                      : useScoreColor
-                        ? 4 + Math.min(4, (Math.abs(score! - 1.0) / 3) * 4)
-                        : highlighted
-                          ? 6
-                          : 4;
+                      : highlighted
+                        ? 6
+                        : 4;
 
                 const handlers = {
                     mouseover: () => setHoveredDest(dest.name),
@@ -150,11 +148,11 @@ export function DestinationLabels({
                                     : isHovered
                                       ? 1
                                       : useScoreColor
-                                        ? 0.9
+                                        ? 0.15
                                         : highlighted
                                           ? 1
                                           : 0.65,
-                                weight: isSelected ? 2.5 : isHovered ? 2.5 : 1,
+                                weight: isSelected ? 2.5 : isHovered ? 2 : useScoreColor ? 2 : 1,
                             }}
                             interactive={true}
                             eventHandlers={handlers}

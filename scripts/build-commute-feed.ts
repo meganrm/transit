@@ -132,7 +132,7 @@ async function run(): Promise<void> {
             transitMinutes: times.transitMinutes,
             transitModes: times.transitModes,
             dailyCommuters: pair.commuters,
-            peakHours: times.peakPeriod === "AM" ? "Wed 8 AM" : "Wed 5 PM",
+            peakHours: times.peakPeriod === "AM" ? "AM" : "PM",
         });
     }
 
