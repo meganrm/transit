@@ -44,15 +44,31 @@ interface OriginGroup {
     uniqueDests: string[];
 }
 
-function nextMondayEightAmPst(): number {
+function seattleEpoch(weekday: number, hour: number): number {
+    // Find the next occurrence of `weekday` (0=Sun, 1=Mon...) at `hour:00`
+    // in America/Los_Angeles, handling DST correctly.
+    const tz = "America/Los_Angeles";
+    const DAYS: Record<string, number> = {
+        Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+    };
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + daysUntilMonday);
-    // 08:00 PST = 16:00 UTC (UTC-8)
-    monday.setUTCHours(16, 0, 0, 0);
-    return Math.floor(monday.getTime() / 1000);
+    for (let offset = 1; offset <= 7; offset++) {
+        const candidate = new Date(now.getTime() + offset * 86_400_000);
+        const wdayStr = new Intl.DateTimeFormat("en-US", { timeZone: tz, weekday: "short" }).format(candidate);
+        if (DAYS[wdayStr] !== weekday) continue;
+
+        const dateStr = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(candidate);
+        const h = String(hour).padStart(2, "0");
+
+        for (const off of ["-07:00", "-08:00"]) {
+            const t = new Date(`${dateStr}T${h}:00:00${off}`);
+            const seattleHour = parseInt(
+                new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "2-digit", hour12: false }).format(t),
+            );
+            if (seattleHour === hour) return Math.floor(t.getTime() / 1000);
+        }
+    }
+    throw new Error("seattleEpoch: could not resolve target time");
 }
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -198,12 +214,23 @@ async function run(): Promise<void> {
         `Fetching travel times for ${pairs.length} commute pairs across ${originGroups.size} unique origins...`,
     );
 
-    const peakDepartureTime = String(nextMondayEightAmPst());
+    // Off-peak baseline: Sunday 10am Seattle (light traffic)
+    const offPeakDepartureTime = String(seattleEpoch(0, 10));
+    // Peak: Monday 8am Seattle (rush hour)
+    const peakDepartureTime = String(seattleEpoch(1, 8));
+
+    const carParams: Record<string, string> = {
+        mode: "driving",
+        departure_time: offPeakDepartureTime,
+        traffic_model: "optimistic",
+    };
     const peakParams: Record<string, string> = {
+        mode: "driving",
         departure_time: peakDepartureTime,
         traffic_model: "best_guess",
     };
     const transitParams: Record<string, string> = {
+        mode: "transit",
         departure_time: peakDepartureTime,
     };
 
@@ -216,19 +243,9 @@ async function run(): Promise<void> {
 
     for (const [originStr, group] of originGroups) {
         const [car, peak, transit] = await Promise.all([
-            fetchForOriginGroup(originStr, group, { mode: "driving" }, apiKey),
-            fetchForOriginGroup(
-                originStr,
-                group,
-                { mode: "driving", ...peakParams },
-                apiKey,
-            ),
-            fetchForOriginGroup(
-                originStr,
-                group,
-                { mode: "transit", ...transitParams },
-                apiKey,
-            ),
+            fetchForOriginGroup(originStr, group, carParams, apiKey),
+            fetchForOriginGroup(originStr, group, peakParams, apiKey),
+            fetchForOriginGroup(originStr, group, transitParams, apiKey),
         ]);
 
         for (const [id, secs] of car) carById.set(id, secs);
