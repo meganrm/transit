@@ -10,10 +10,12 @@ interface Props {
 }
 
 function scoreLabel(avgRatio: number): string {
-    if (avgRatio < 0.9) return "faster than driving";
-    if (avgRatio < 1.05) return "about the same as driving";
-    if (avgRatio < 1.25) return "slower than driving";
-    return "much slower than driving";
+    if (avgRatio < 0.9)  return "faster than driving";
+    if (avgRatio < 1.1)  return "about the same as driving";
+    if (avgRatio < 1.75) return "somewhat slower than driving";
+    if (avgRatio < 2.5)  return "slower than driving";
+    if (avgRatio < 4.0)  return "much slower than driving";
+    return "significantly slower than driving";
 }
 
 function RouteRow({
