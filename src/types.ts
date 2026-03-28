@@ -1,8 +1,18 @@
 import type { LatLngExpression } from "leaflet";
 
-export type TrafficMode = "no-traffic" | "peak-traffic";
+export const TRAFFIC_MODE = {
+    NO_TRAFFIC: "no-traffic",
+    PEAK_TRAFFIC: "peak-traffic",
+} as const;
 
-export type MetricMode = "travel-time-difference" | "person-minutes-lost";
+export type TrafficMode = (typeof TRAFFIC_MODE)[keyof typeof TRAFFIC_MODE];
+
+export const METRIC_MODE = {
+    TRAVEL_TIME_DIFFERENCE: "travel-time-difference",
+    PERSON_MINUTES_LOST: "person-minutes-lost",
+} as const;
+
+export type MetricMode = (typeof METRIC_MODE)[keyof typeof METRIC_MODE];
 
 export interface Route {
     id: number;

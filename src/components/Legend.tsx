@@ -1,5 +1,6 @@
+import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
-import { weightScale, theme } from "../constants";
+import { weightScale, theme, ui } from "../constants";
 import {
     buildLegendGradient,
     getLegendEqualPct,
@@ -74,7 +75,7 @@ function ToggleRow({
             <span
                 style={{
                     fontSize: 11,
-                    color: checked ? "#a5b4fc" : theme.textSecondary,
+                    color: checked ? ui.status.warning : theme.textSecondary,
                     fontWeight: 600,
                 }}
             >
@@ -99,21 +100,23 @@ export function Legend({
     const equalPct = getLegendEqualPct(trafficMode, metricMode);
     const breakevenPct = getLegendBreakevenPct(trafficMode);
 
-    const isPersonMinutes = metricMode === "person-minutes-lost";
+    const isPersonMinutes = metricMode === METRIC_MODE.PERSON_MINUTES_LOST;
     const tickPct = isPersonMinutes ? breakevenPct : equalPct;
     const tickLabel = isPersonMinutes ? "breakeven" : "equal";
     const labelLeft = isPersonMinutes ? "Saves time" : "Faster";
     const labelRight = isPersonMinutes ? "Time tax" : "Slower";
     const trafficLabel =
-        trafficMode === "peak-traffic" ? "Peak Traffic" : "No Traffic";
+        trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+            ? "Peak Traffic"
+            : "No Traffic";
     const sectionTitle = isPersonMinutes
         ? "Transit Time Tax"
         : `Transit vs ${trafficLabel}`;
     const sectionDescription = isPersonMinutes
-        ? trafficMode === "peak-traffic"
+        ? trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
             ? "Time lost daily if all commuters switched to transit vs. peak-hour driving."
             : "Time lost daily if all commuters switched to transit vs. off-peak driving."
-        : trafficMode === "peak-traffic"
+        : trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
           ? "Travel-time difference using rush-hour driving as the baseline."
           : "Travel-time difference using uncongested driving as the baseline.";
 
@@ -124,13 +127,25 @@ export function Legend({
     const thicknessItems = isPersonMinutes
         ? [
               { weight: weightScale.minWeight, label: "0 min tax" },
-              { weight: midWeight, label: `${formatPersonMinutes(pmMax / 2)} min/day` },
-              { weight: weightScale.maxWeight, label: `${formatPersonMinutes(pmMax)} min/day` },
+              {
+                  weight: midWeight,
+                  label: `${formatPersonMinutes(pmMax / 2)} min/day`,
+              },
+              {
+                  weight: weightScale.maxWeight,
+                  label: `${formatPersonMinutes(pmMax)} min/day`,
+              },
           ]
         : [
-              { weight: weightScale.minWeight, label: `${formatCommuters(cMin)}/day` },
+              {
+                  weight: weightScale.minWeight,
+                  label: `${formatCommuters(cMin)}/day`,
+              },
               { weight: midWeight, label: `${formatCommuters(cMid)}/day` },
-              { weight: weightScale.maxWeight, label: `${formatCommuters(cMax)}/day` },
+              {
+                  weight: weightScale.maxWeight,
+                  label: `${formatCommuters(cMax)}/day`,
+              },
           ];
     const thicknessTitle = isPersonMinutes
         ? "Line thickness"
@@ -154,17 +169,26 @@ export function Legend({
             <div style={SECTION_HEADER}>Color Controls</div>
             <ToggleRow
                 label="Peak traffic"
-                valueLabel={trafficMode === "peak-traffic" ? "On" : "Off"}
-                checked={trafficMode === "peak-traffic"}
+                valueLabel={
+                    trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC ? "On" : "Off"
+                }
+                checked={trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC}
                 onToggle={() =>
                     onTrafficModeChange(
-                        trafficMode === "peak-traffic"
-                            ? "no-traffic"
-                            : "peak-traffic",
+                        trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                            ? TRAFFIC_MODE.NO_TRAFFIC
+                            : TRAFFIC_MODE.PEAK_TRAFFIC,
                     )
                 }
             />
-            <div style={{ fontSize: 10, color: theme.textDim, marginTop: -4, marginBottom: 6 }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: theme.textDim,
+                    marginTop: -4,
+                    marginBottom: 6,
+                }}
+            >
                 Also colors neighborhood dots
             </div>
             <ToggleRow
@@ -178,8 +202,8 @@ export function Legend({
                 onToggle={() =>
                     onMetricModeChange(
                         isPersonMinutes
-                            ? "travel-time-difference"
-                            : "person-minutes-lost",
+                            ? METRIC_MODE.TRAVEL_TIME_DIFFERENCE
+                            : METRIC_MODE.PERSON_MINUTES_LOST,
                     )
                 }
             />
@@ -240,13 +264,21 @@ export function Legend({
                     fontSize: 11,
                 }}
             >
-                <span style={{ flex: 1, color: "#4d9221" }}>{labelLeft}</span>
+                <span style={{ flex: 1, color: ui.accent.positiveLabel }}>
+                    {labelLeft}
+                </span>
                 {tickPct !== null && (
                     <span style={{ color: theme.textSecondary }}>
                         {tickLabel}
                     </span>
                 )}
-                <span style={{ flex: 1, color: "#c51b7d", textAlign: "right" }}>
+                <span
+                    style={{
+                        flex: 1,
+                        color: ui.accent.negativeLabel,
+                        textAlign: "right",
+                    }}
+                >
                     {labelRight}
                 </span>
             </div>
@@ -304,22 +336,29 @@ export function Legend({
                 value={worstCount}
                 onChange={(e) => onWorstCountChange(Number(e.target.value))}
                 className="focus-slider"
-                style={{
-                    "--fill-color": "#6366f1",
-                    "--left-pct": "0%",
-                    "--right-pct": `${(worstCount / Math.max(routeCount, 1)) * 100}%`,
-                } as React.CSSProperties}
+                style={
+                    {
+                        "--fill-color": ui.sliderFill.worst,
+                        "--left-pct": "0%",
+                        "--right-pct": `${(worstCount / Math.max(routeCount, 1)) * 100}%`,
+                    } as React.CSSProperties
+                }
             />
             <div
                 style={{
                     fontSize: 11,
-                    color: worstCount === 0 ? theme.textSecondary : "#a5b4fc",
+                    color:
+                        worstCount === 0
+                            ? theme.textSecondary
+                            : ui.status.warning,
                     textAlign: "center",
                     fontWeight: worstCount === 0 ? 400 : 600,
                     marginBottom: 10,
                 }}
             >
-                {worstCount === 0 ? "None highlighted" : `Worst ${worstCount} of ${routeCount}`}
+                {worstCount === 0
+                    ? "None highlighted"
+                    : `Worst ${worstCount} of ${routeCount}`}
             </div>
 
             {/* Best routes slider */}
@@ -331,21 +370,28 @@ export function Legend({
                 value={bestCount}
                 onChange={(e) => onBestCountChange(Number(e.target.value))}
                 className="focus-slider"
-                style={{
-                    "--fill-color": "#4ade80",
-                    "--left-pct": "0%",
-                    "--right-pct": `${(bestCount / Math.max(routeCount, 1)) * 100}%`,
-                } as React.CSSProperties}
+                style={
+                    {
+                        "--fill-color": ui.sliderFill.best,
+                        "--left-pct": "0%",
+                        "--right-pct": `${(bestCount / Math.max(routeCount, 1)) * 100}%`,
+                    } as React.CSSProperties
+                }
             />
             <div
                 style={{
                     fontSize: 11,
-                    color: bestCount === 0 ? theme.textSecondary : "#4ade80",
+                    color:
+                        bestCount === 0
+                            ? theme.textSecondary
+                            : ui.status.success,
                     textAlign: "center",
                     fontWeight: bestCount === 0 ? 400 : 600,
                 }}
             >
-                {bestCount === 0 ? "None highlighted" : `Best ${bestCount} of ${routeCount}`}
+                {bestCount === 0
+                    ? "None highlighted"
+                    : `Best ${bestCount} of ${routeCount}`}
             </div>
         </div>
     );

@@ -10,7 +10,7 @@ import {
 import type { ChartOptions } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import type { Route } from "../types";
-import { theme } from "../constants";
+import { theme, ui } from "../constants";
 
 ChartJS.register(
     CategoryScale,
@@ -69,7 +69,7 @@ export function RoutePopup({ route }: Props) {
                 grid: { color: "rgba(148, 163, 184, 0.15)" },
             },
             y: {
-                ticks: { color: "#cbd5e1" },
+                ticks: { color: theme.textPrimary },
                 grid: { display: false },
             },
         },
@@ -77,7 +77,13 @@ export function RoutePopup({ route }: Props) {
 
     return (
         <div style={{ minWidth: 260, color: theme.textPrimary }}>
-            <h3 style={{ margin: "0 0 4px 0", fontSize: 15, color: "#f1f5f9" }}>
+            <h3
+                style={{
+                    margin: "0 0 4px 0",
+                    fontSize: 15,
+                    color: ui.panel.titleText,
+                }}
+            >
                 {route.name}
             </h3>
             <p
@@ -99,9 +105,9 @@ export function RoutePopup({ route }: Props) {
                     fontWeight: 600,
                     color:
                         delta > 0
-                            ? "#f87171"
+                            ? ui.status.danger
                             : delta < 0
-                              ? "#4ade80"
+                              ? ui.status.success
                               : theme.textSecondary,
                 }}
             >
@@ -113,8 +119,8 @@ export function RoutePopup({ route }: Props) {
                         key={mode}
                         style={{
                             fontSize: 11,
-                            background: "rgba(99, 102, 241, 0.2)",
-                            color: "#a5b4fc",
+                            background: ui.chips.background,
+                            color: ui.chips.text,
                             padding: "2px 8px",
                             borderRadius: 12,
                         }}

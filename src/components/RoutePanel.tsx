@@ -1,5 +1,6 @@
+import { TRAFFIC_MODE } from "../types";
 import type { Route, TrafficMode, MetricMode } from "../types";
-import { theme } from "../constants";
+import { theme, ui } from "../constants";
 import { getRouteRgb } from "../utils/routeColor";
 
 interface Props {
@@ -151,10 +152,16 @@ function BarRow({ icon, label, value, maxValue, accentColor }: BarRowProps) {
 }
 
 export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
-    const carBase = trafficMode === "peak-traffic" ? route.carMinutesPeak : route.carMinutes;
+    const carBase =
+        trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+            ? route.carMinutesPeak
+            : route.carMinutes;
     const delta = route.transitMinutes - carBase;
     const trafficDelay = route.carMinutesPeak - route.carMinutes;
-    const trafficLabel = trafficMode === "peak-traffic" ? "peak traffic" : "no traffic";
+    const trafficLabel =
+        trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+            ? "peak traffic"
+            : "no traffic";
     const deltaLabel =
         delta > 0
             ? `+${delta} min vs ${trafficLabel}`
@@ -201,7 +208,7 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                             margin: "0 0 4px 0",
                             fontSize: 16,
                             fontWeight: 600,
-                            color: "#f1f5f9",
+                            color: ui.panel.titleText,
                             lineHeight: 1.3,
                         }}
                     >
@@ -240,7 +247,7 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
             <div
                 style={{
                     margin: "16px 20px 0",
-                    borderTop: "1px solid rgba(148, 163, 184, 0.1)",
+                    borderTop: ui.panel.borderSoft,
                 }}
             />
 
@@ -251,14 +258,14 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                     label="No traffic"
                     value={route.carMinutes}
                     maxValue={maxVal}
-                    accentColor="#64748b"
+                    accentColor={theme.textDim}
                 />
                 <BarRow
                     icon={<TrafficCarIcon />}
                     label="Peak traffic"
                     value={route.carMinutesPeak}
                     maxValue={maxVal}
-                    accentColor="#94a3b8"
+                    accentColor={theme.textSecondary}
                 />
                 <BarRow
                     icon={<RailIcon />}
@@ -272,7 +279,7 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
             <div
                 style={{
                     margin: "12px 20px 0",
-                    borderTop: "1px solid rgba(148, 163, 184, 0.08)",
+                    borderTop: ui.panel.borderSofter,
                 }}
             />
 
@@ -299,7 +306,11 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                             Daily commuters
                         </div>
                         <div
-                            style={{ fontSize: 14, color: theme.textPrimary, fontWeight: 600 }}
+                            style={{
+                                fontSize: 14,
+                                color: theme.textPrimary,
+                                fontWeight: 600,
+                            }}
                         >
                             {route.dailyCommuters.toLocaleString()}
                         </div>
@@ -316,9 +327,7 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                         >
                             Peak hours
                         </div>
-                        <div
-                            style={{ fontSize: 12, color: theme.textPrimary }}
-                        >
+                        <div style={{ fontSize: 12, color: theme.textPrimary }}>
                             {route.peakHours}
                         </div>
                     </div>
@@ -335,7 +344,11 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                             Traffic delay
                         </div>
                         <div
-                            style={{ fontSize: 14, color: "#f87171", fontWeight: 600 }}
+                            style={{
+                                fontSize: 14,
+                                color: ui.status.danger,
+                                fontWeight: 600,
+                            }}
                         >
                             +{trafficDelay} min
                         </div>
@@ -358,9 +371,9 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                                 fontWeight: 600,
                                 color:
                                     delta > 0
-                                        ? "#f87171"
+                                        ? ui.status.danger
                                         : delta < 0
-                                          ? "#4ade80"
+                                          ? ui.status.success
                                           : theme.textSecondary,
                             }}
                         >
@@ -369,14 +382,21 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                     </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: 6,
+                        flexWrap: "wrap",
+                        marginTop: 4,
+                    }}
+                >
                     {route.transitModes.map((mode) => (
                         <span
                             key={mode}
                             style={{
                                 fontSize: 11,
-                                background: "rgba(99, 102, 241, 0.2)",
-                                color: "#a5b4fc",
+                                background: ui.chips.background,
+                                color: ui.chips.text,
                                 padding: "2px 8px",
                                 borderRadius: 12,
                             }}

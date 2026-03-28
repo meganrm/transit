@@ -1,6 +1,7 @@
 import type { NeighborhoodDetail } from "../data/analytics";
+import { TRAFFIC_MODE } from "../types";
 import type { Route, TrafficMode } from "../types";
-import { theme } from "../constants";
+import { theme, ui } from "../constants";
 import { getRouteColor, getRouteRgb } from "../utils/routeColor";
 
 interface Props {
@@ -12,11 +13,11 @@ interface Props {
 }
 
 function scoreLabel(avgRatio: number): string {
-    if (avgRatio < 0.9)  return "faster than driving";
-    if (avgRatio < 1.1)  return "about the same as driving";
+    if (avgRatio < 0.9) return "faster than driving";
+    if (avgRatio < 1.1) return "about the same as driving";
     if (avgRatio < 1.75) return "somewhat slower than driving";
-    if (avgRatio < 2.5)  return "slower than driving";
-    if (avgRatio < 4.0)  return "much slower than driving";
+    if (avgRatio < 2.5) return "slower than driving";
+    if (avgRatio < 4.0) return "much slower than driving";
     return "significantly slower than driving";
 }
 
@@ -102,7 +103,13 @@ function RouteRow({
     );
 }
 
-export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, onRouteSelect }: Props) {
+export function NeighborhoodPanel({
+    detail,
+    trafficMode,
+    maxAvgRatio,
+    onClose,
+    onRouteSelect,
+}: Props) {
     const [r, g, b] = getRouteRgb({
         transitMinutes: detail.avgRatio * 100,
         carMinutesPeak: 100,
@@ -117,10 +124,14 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
     );
 
     const sortedFrom = [...detail.fromRoutes].sort(
-        (a, b) => a.transitMinutes / a.carMinutesPeak - b.transitMinutes / b.carMinutesPeak,
+        (a, b) =>
+            a.transitMinutes / a.carMinutesPeak -
+            b.transitMinutes / b.carMinutesPeak,
     );
     const sortedTo = [...detail.toRoutes].sort(
-        (a, b) => a.transitMinutes / a.carMinutesPeak - b.transitMinutes / b.carMinutesPeak,
+        (a, b) =>
+            a.transitMinutes / a.carMinutesPeak -
+            b.transitMinutes / b.carMinutesPeak,
     );
 
     return (
@@ -152,14 +163,18 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                             margin: "0 0 4px 0",
                             fontSize: 16,
                             fontWeight: 600,
-                            color: "#f1f5f9",
+                            color: ui.panel.titleText,
                             lineHeight: 1.3,
                         }}
                     >
                         {detail.neighborhood}
                     </h3>
                     <p
-                        style={{ margin: 0, fontSize: 12, color: theme.textSecondary }}
+                        style={{
+                            margin: 0,
+                            fontSize: 12,
+                            color: theme.textSecondary,
+                        }}
                     >
                         Seattle neighborhood
                     </p>
@@ -186,7 +201,7 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
             <div
                 style={{
                     margin: "16px 20px 0",
-                    borderTop: "1px solid rgba(148, 163, 184, 0.1)",
+                    borderTop: ui.panel.borderSoft,
                 }}
             />
 
@@ -226,8 +241,17 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                         <div style={{ fontSize: 13, color: accentColor }}>
                             {scoreLabel(detail.avgRatio)}
                         </div>
-                        <div style={{ fontSize: 10, color: theme.textDim, marginTop: 2 }}>
-                            vs. {trafficMode === "peak-traffic" ? "peak hour driving" : "off-peak driving"}
+                        <div
+                            style={{
+                                fontSize: 10,
+                                color: theme.textDim,
+                                marginTop: 2,
+                            }}
+                        >
+                            vs.{" "}
+                            {trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                                ? "peak hour driving"
+                                : "off-peak driving"}
                         </div>
                     </div>
                 </div>
@@ -265,7 +289,7 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
             <div
                 style={{
                     margin: "14px 20px 0",
-                    borderTop: "1px solid rgba(148, 163, 184, 0.08)",
+                    borderTop: ui.panel.borderSofter,
                 }}
             />
 
@@ -318,8 +342,8 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                                 fontWeight: 600,
                                 color:
                                     detail.totalPersonMinutesLost > 0
-                                        ? "#f87171"
-                                        : "#4ade80",
+                                        ? ui.status.danger
+                                        : ui.status.success,
                             }}
                         >
                             {detail.totalPersonMinutesLost > 0 ? "+" : ""}
@@ -366,8 +390,8 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                                 fontWeight: 600,
                                 color:
                                     detail.totalPersonMinutesLost > 0
-                                        ? "#f87171"
-                                        : "#4ade80",
+                                        ? ui.status.danger
+                                        : ui.status.success,
                             }}
                         >
                             {detail.totalPersonMinutesLost > 0 ? "+" : ""}
@@ -384,7 +408,7 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
             <div
                 style={{
                     margin: "14px 20px 0",
-                    borderTop: "1px solid rgba(148, 163, 184, 0.08)",
+                    borderTop: ui.panel.borderSofter,
                 }}
             />
 
@@ -404,7 +428,10 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                             From here
                         </div>
                         {sortedFrom.map((route) => {
-                            const dest = route.name.split(" → ")[1]?.trim() ?? "";
+                            const dest =
+                                route.name
+                                    .split(ui.routeNameSeparator)[1]
+                                    ?.trim() ?? "";
                             return (
                                 <RouteRow
                                     key={route.id}
@@ -432,7 +459,10 @@ export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, o
                             To here
                         </div>
                         {sortedTo.map((route) => {
-                            const origin = route.name.split(" → ")[0]?.trim() ?? "";
+                            const origin =
+                                route.name
+                                    .split(ui.routeNameSeparator)[0]
+                                    ?.trim() ?? "";
                             return (
                                 <RouteRow
                                     key={route.id}

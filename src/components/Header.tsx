@@ -1,9 +1,11 @@
+import { theme } from "../constants";
+
 export function Header() {
     return (
         <header
             style={{
-                background: "#1e293b",
-                color: "#f8fafc",
+                background: theme.bgDark,
+                color: theme.textBright,
                 padding: "12px 24px",
                 display: "flex",
                 alignItems: "center",

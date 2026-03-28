@@ -41,3 +41,37 @@ export const weightScale = {
     /** Extra weight added on hover */
     hoverBoost: 3,
 } as const;
+
+/** Shared UI literal values used across inline styles/components */
+export const ui = {
+    routeNameSeparator: " → ",
+    status: {
+        danger: "#f87171",
+        success: "#4ade80",
+        warning: "#a5b4fc",
+    },
+    panel: {
+        titleText: "#f1f5f9",
+        borderSoft: "1px solid rgba(148, 163, 184, 0.1)",
+        borderSofter: "1px solid rgba(148, 163, 184, 0.08)",
+        borderRegular: "1px solid rgba(148, 163, 184, 0.15)",
+    },
+    chips: {
+        background: "rgba(99, 102, 241, 0.2)",
+        text: "#a5b4fc",
+    },
+    sliderFill: {
+        worst: "#6366f1",
+        best: "#4ade80",
+    },
+    dataSourceBadge: {
+        infoText: "#cbd5e1",
+        errorText: "#fecaca",
+        background: "rgba(2, 6, 23, 0.8)",
+        border: "1px solid rgba(148, 163, 184, 0.25)",
+    },
+    accent: {
+        positiveLabel: "#4d9221",
+        negativeLabel: "#c51b7d",
+    },
+} as const;

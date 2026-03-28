@@ -10,8 +10,10 @@ import {
     getNeighborhoodMetrics,
 } from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
+import { METRIC_MODE, TRAFFIC_MODE } from "./types";
 import type { MetricMode, TrafficMode } from "./types";
 import type { Route } from "./types";
+import { ui } from "./constants";
 
 const DATA_URL = import.meta.env.VITE_ROUTES_DATA_URL as string | undefined;
 
@@ -36,9 +38,11 @@ function App() {
     const [selectedNeighborhoodRouteIds, setSelectedNeighborhoodRouteIds] =
         useState<Set<number> | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>("all");
-    const [trafficMode, setTrafficMode] = useState<TrafficMode>("peak-traffic");
+    const [trafficMode, setTrafficMode] = useState<TrafficMode>(
+        TRAFFIC_MODE.PEAK_TRAFFIC,
+    );
     const [metricMode, setMetricMode] = useState<MetricMode>(
-        "travel-time-difference",
+        METRIC_MODE.TRAVEL_TIME_DIFFERENCE,
     );
     const [worstCount, setWorstCount] = useState(0);
     const [bestCount, setBestCount] = useState(0);
@@ -142,9 +146,11 @@ function App() {
                             right: 12,
                             zIndex: 1200,
                             fontSize: 8,
-                            color: routeData.loadError ? "#fecaca" : "#cbd5e1",
-                            background: "rgba(2, 6, 23, 0.8)",
-                            border: "1px solid rgba(148, 163, 184, 0.25)",
+                            color: routeData.loadError
+                                ? ui.dataSourceBadge.errorText
+                                : ui.dataSourceBadge.infoText,
+                            background: ui.dataSourceBadge.background,
+                            border: ui.dataSourceBadge.border,
                             borderRadius: 6,
                             padding: "6px 8px",
                             maxWidth: 360,

@@ -5,6 +5,7 @@ import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { ViewToggle } from "./ViewToggle";
 import type { ViewMode } from "./ViewToggle";
+import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
 import type { Route } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -136,24 +137,36 @@ export function MapView({
         if (worstCount === 0 && bestCount === 0) return null;
 
         let sortedAsc: Route[];
-        if (metricMode === "person-minutes-lost") {
+        if (metricMode === METRIC_MODE.PERSON_MINUTES_LOST) {
             const metrics = getRouteMetrics(routes, trafficMode);
             sortedAsc = metrics
                 .map((m) => routes.find((r) => r.id === m.routeId)!)
                 .reverse();
         } else {
             const carFn = (r: Route) =>
-                trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+                trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                    ? r.carMinutesPeak
+                    : r.carMinutes;
             sortedAsc = [...routes].sort(
-                (a, b) => a.transitMinutes / carFn(a) - b.transitMinutes / carFn(b),
+                (a, b) =>
+                    a.transitMinutes / carFn(a) - b.transitMinutes / carFn(b),
             );
         }
 
         const ids = new Set<number>();
         sortedAsc.slice(0, bestCount).forEach((r) => ids.add(r.id));
-        sortedAsc.slice(sortedAsc.length - worstCount).forEach((r) => ids.add(r.id));
+        sortedAsc
+            .slice(sortedAsc.length - worstCount)
+            .forEach((r) => ids.add(r.id));
         return ids.size > 0 ? ids : null;
-    }, [routes, selectedNeighborhoodRouteIds, worstCount, bestCount, trafficMode, metricMode]);
+    }, [
+        routes,
+        selectedNeighborhoodRouteIds,
+        worstCount,
+        bestCount,
+        trafficMode,
+        metricMode,
+    ]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         const metrics = getNeighborhoodMetrics(routes, trafficMode);
@@ -185,7 +198,10 @@ export function MapView({
                         key={route.id}
                         route={route}
                         isActive={activeRouteId === route.id}
-                        isDimmed={highlightedRouteIds !== null && !highlightedRouteIds.has(route.id)}
+                        isDimmed={
+                            highlightedRouteIds !== null &&
+                            !highlightedRouteIds.has(route.id)
+                        }
                         focusActive={highlightedRouteIds !== null}
                         trafficMode={trafficMode}
                         metricMode={metricMode}

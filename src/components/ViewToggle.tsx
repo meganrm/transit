@@ -1,4 +1,4 @@
-import { theme } from "../constants";
+import { theme, ui } from "../constants";
 
 export type ViewMode = "all" | "neighborhoods";
 
@@ -35,12 +35,10 @@ export function ViewToggle({ viewMode, onChange }: Props) {
                         key={mode.value}
                         onClick={() => onChange(mode.value)}
                         style={{
-                            background: active
-                                ? "rgba(165, 180, 252, 0.2)"
-                                : "none",
+                            background: active ? ui.chips.background : "none",
                             border: "none",
                             borderRadius: 6,
-                            color: active ? "#a5b4fc" : theme.textSecondary,
+                            color: active ? ui.chips.text : theme.textSecondary,
                             cursor: "pointer",
                             fontSize: 12,
                             fontWeight: active ? 600 : 400,

@@ -1,4 +1,6 @@
 import type { Route, TrafficMode } from "../types";
+import { TRAFFIC_MODE } from "../types";
+import { ui } from "../constants";
 
 export interface NeighborhoodDetail {
     neighborhood: string;
@@ -18,7 +20,7 @@ export function getNeighborhoodDetail(
     const matching = allRoutes.filter((r) => routeIds.has(r.id));
 
     const fromRoutes = matching.filter((r) => {
-        const origin = r.name.split(" → ")[0].trim();
+        const origin = r.name.split(ui.routeNameSeparator)[0].trim();
         return (
             origin === neighborhood ||
             neighborhood.includes(origin) ||
@@ -28,22 +30,22 @@ export function getNeighborhoodDetail(
     const toRoutes = matching.filter((r) => !fromRoutes.includes(r));
 
     const totalCommuters = matching.reduce((s, r) => s + r.dailyCommuters, 0);
-    const totalPersonMinutesLost = matching.reduce(
-        (s, r) => {
-            const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
-            return s + (r.transitMinutes - car) * r.dailyCommuters;
-        },
-        0,
-    );
+    const totalPersonMinutesLost = matching.reduce((s, r) => {
+        const car =
+            trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                ? r.carMinutesPeak
+                : r.carMinutes;
+        return s + (r.transitMinutes - car) * r.dailyCommuters;
+    }, 0);
     const avgRatio =
         totalCommuters > 0
-            ? matching.reduce(
-                  (s, r) => {
-                      const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
-                      return s + (r.transitMinutes / car) * r.dailyCommuters;
-                  },
-                  0,
-              ) / totalCommuters
+            ? matching.reduce((s, r) => {
+                  const car =
+                      trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                          ? r.carMinutesPeak
+                          : r.carMinutes;
+                  return s + (r.transitMinutes / car) * r.dailyCommuters;
+              }, 0) / totalCommuters
             : 1;
 
     return {
@@ -67,17 +69,29 @@ export interface NeighborhoodMetric {
 }
 
 /** Per-route person-minutes lost. Positive = transit worse than driving baseline. */
-export function getRouteMetrics(routes: Route[], trafficMode: TrafficMode): RouteMetric[] {
+export function getRouteMetrics(
+    routes: Route[],
+    trafficMode: TrafficMode,
+): RouteMetric[] {
     return routes
         .map((r) => {
-            const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
-            return { routeId: r.id, personMinutesLost: (r.transitMinutes - car) * r.dailyCommuters };
+            const car =
+                trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                    ? r.carMinutesPeak
+                    : r.carMinutes;
+            return {
+                routeId: r.id,
+                personMinutesLost: (r.transitMinutes - car) * r.dailyCommuters,
+            };
         })
         .sort((a, b) => b.personMinutesLost - a.personMinutesLost);
 }
 
 /** Min and max transit/peak-car ratio across all routes. */
-export function getDataRatioRange(routes: Route[]): { min: number; max: number } {
+export function getDataRatioRange(routes: Route[]): {
+    min: number;
+    max: number;
+} {
     let min = Infinity,
         max = -Infinity;
     for (const r of routes) {
@@ -96,11 +110,20 @@ export function getNeighborhoodMetrics(
     const ratioSum = new Map<string, number>();
     const commuterSum = new Map<string, number>();
     for (const r of routes) {
-        const origin = r.name.split(" → ")[0].trim();
-        const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+        const origin = r.name.split(ui.routeNameSeparator)[0].trim();
+        const car =
+            trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                ? r.carMinutesPeak
+                : r.carMinutes;
         const ratio = r.transitMinutes / car;
-        ratioSum.set(origin, (ratioSum.get(origin) ?? 0) + ratio * r.dailyCommuters);
-        commuterSum.set(origin, (commuterSum.get(origin) ?? 0) + r.dailyCommuters);
+        ratioSum.set(
+            origin,
+            (ratioSum.get(origin) ?? 0) + ratio * r.dailyCommuters,
+        );
+        commuterSum.set(
+            origin,
+            (commuterSum.get(origin) ?? 0) + r.dailyCommuters,
+        );
     }
     return Array.from(ratioSum.entries())
         .map(([neighborhood, wSum]) => ({
