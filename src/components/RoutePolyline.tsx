@@ -8,6 +8,7 @@ interface Props {
     route: Route;
     isActive: boolean;
     isDimmed: boolean;
+    focusActive: boolean;
     trafficMode: TrafficMode;
     metricMode: MetricMode;
     onHover: (id: number | null) => void;
@@ -36,6 +37,7 @@ export function RoutePolyline({
     route,
     isActive,
     isDimmed,
+    focusActive,
     trafficMode,
     metricMode,
     onHover,
@@ -47,7 +49,7 @@ export function RoutePolyline({
             ? getPersonMinutesWeight(route, trafficMode)
             : getRouteWeight(route.dailyCommuters);
     const weight = isActive ? baseWeight + weightScale.hoverBoost : baseWeight;
-    const opacity = isDimmed ? 0.3 : isActive ? 1 : 0.75;
+    const opacity = isActive ? 1 : isDimmed ? 0.1 : focusActive ? 0.75 : route.supplemental ? 0.1 : 0.2;
 
     return (
         <Polyline

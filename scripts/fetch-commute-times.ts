@@ -242,15 +242,40 @@ async function run(): Promise<void> {
         departure_time: peakAmDepartureTime,
     };
 
+    // Load existing cache so retries skip already-fetched pairs
+    const outPath = path.join(TEMP_INPUT, "commute-travel-times.json");
+    const existingCache = new Map<number, CommuteTravelTime>();
+    try {
+        const raw = await readFile(outPath, "utf8");
+        const existing = JSON.parse(raw) as CommuteTravelTime[];
+        for (const t of existing) existingCache.set(t.id, t);
+        console.log(`  Loaded ${existingCache.size} cached travel times.`);
+    } catch {
+        // No cache yet — start fresh
+    }
+
+    const cachedIds = new Set(existingCache.keys());
+    const filteredGroups = new Map<string, OriginGroup>();
+    for (const [originStr, group] of originGroups) {
+        const uncachedRoutes = group.routes.filter((r) => !cachedIds.has(r.id));
+        if (uncachedRoutes.length === 0) continue;
+        const uncachedDests = [...new Set(uncachedRoutes.map((r) => r.destStr))];
+        filteredGroups.set(originStr, { routes: uncachedRoutes, uniqueDests: uncachedDests });
+    }
+
+    if (filteredGroups.size === 0) {
+        console.log("All travel times already cached — nothing to fetch.");
+    }
+
     const carById = new Map<number, number>();
     const peakAmById = new Map<number, number>();
     const peakPmById = new Map<number, number>();
     const transitById = new Map<number, number>();
 
     let completed = 0;
-    const total = originGroups.size;
+    const total = filteredGroups.size;
 
-    for (const [originStr, group] of originGroups) {
+    for (const [originStr, group] of filteredGroups) {
         const [car, peakAm, peakPm, transit] = await Promise.all([
             fetchForOriginGroup(originStr, group, carParams, apiKey),
             fetchForOriginGroup(originStr, group, peakAmParams, apiKey),
@@ -267,11 +292,12 @@ async function run(): Promise<void> {
         process.stdout.write(`\r  ${completed}/${total} origins done`);
     }
 
-    process.stdout.write("\n");
+    if (total > 0) process.stdout.write("\n");
 
-    const travelTimes: CommuteTravelTime[] = [];
+    const travelTimes: CommuteTravelTime[] = [...existingCache.values()];
 
     for (const pair of pairs) {
+        if (existingCache.has(pair.id)) continue;
         const carSecs = carById.get(pair.id) ?? Number.NaN;
         const peakAmSecs = peakAmById.get(pair.id) ?? Number.NaN;
         const peakPmSecs = peakPmById.get(pair.id) ?? Number.NaN;
@@ -315,7 +341,6 @@ async function run(): Promise<void> {
         });
     }
 
-    const outPath = path.join(TEMP_INPUT, "commute-travel-times.json");
     await mkdir(TEMP_INPUT, { recursive: true });
     await writeFile(
         outPath,

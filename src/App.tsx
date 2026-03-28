@@ -5,7 +5,10 @@ import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
 import { routes as fallbackRoutes } from "./data/routes";
 import { loadRouteData } from "./data/routeLoader";
 import { setRouteColorRoutes } from "./utils/routeColor";
-import { getNeighborhoodDetail, getNeighborhoodMetrics } from "./data/analytics";
+import {
+    getNeighborhoodDetail,
+    getNeighborhoodMetrics,
+} from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
 import type { MetricMode, TrafficMode } from "./types";
 import type { Route } from "./types";
@@ -37,7 +40,8 @@ function App() {
     const [metricMode, setMetricMode] = useState<MetricMode>(
         "travel-time-difference",
     );
-    const [focusLevel, setFocusLevel] = useState(0);
+    const [worstCount, setWorstCount] = useState(0);
+    const [bestCount, setBestCount] = useState(0);
 
     useEffect(() => {
         let cancelled = false;
@@ -81,12 +85,6 @@ function App() {
     useMemo(() => {
         setRouteColorRoutes(routeData.routes);
     }, [routeData.routes]);
-
-    useEffect(() => {
-        const maxFocus = Math.max(routeData.routes.length - 1, 0);
-        if (focusLevel > maxFocus) setFocusLevel(maxFocus);
-        else if (focusLevel < -maxFocus) setFocusLevel(-maxFocus);
-    }, [focusLevel, routeData.routes.length]);
 
     const selectedRoute =
         routeData.routes.find((r) => r.id === selectedRouteId) ?? null;
@@ -139,10 +137,11 @@ function App() {
                     <div
                         style={{
                             position: "absolute",
-                            top: 12,
-                            left: 12,
+                            textAlign: "right",
+                            bottom: 16,
+                            right: 12,
                             zIndex: 1200,
-                            fontSize: 11,
+                            fontSize: 8,
                             color: routeData.loadError ? "#fecaca" : "#cbd5e1",
                             background: "rgba(2, 6, 23, 0.8)",
                             border: "1px solid rgba(148, 163, 184, 0.25)",
@@ -152,10 +151,15 @@ function App() {
                             lineHeight: 1.4,
                         }}
                     >
-                        {/* <div>Data source: {routeData.sourceLabel}</div> */}
-                        {/* {routeData.generatedAt && (
-                            <div>Generated: {routeData.generatedAt}</div>
-                        )} */}
+                        <div>Data source: {routeData.sourceLabel}</div>
+                        {routeData.generatedAt && (
+                            <div>
+                                Generated:{" "}
+                                {new Date(
+                                    routeData.generatedAt,
+                                ).toLocaleString()}
+                            </div>
+                        )}
                         {routeData.loadError && (
                             <div>
                                 Using fallback data ({routeData.loadError})
@@ -174,8 +178,10 @@ function App() {
                     metricMode={metricMode}
                     onMetricModeChange={setMetricMode}
                     routeCount={routeData.routes.length}
-                    focusLevel={focusLevel}
-                    onFocusLevelChange={setFocusLevel}
+                    worstCount={worstCount}
+                    onWorstCountChange={setWorstCount}
+                    bestCount={bestCount}
+                    onBestCountChange={setBestCount}
                     selectedNeighborhood={selectedNeighborhood}
                     selectedNeighborhoodRouteIds={selectedNeighborhoodRouteIds}
                     onNeighborhoodSelect={handleNeighborhoodSelect}

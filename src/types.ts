@@ -15,4 +15,5 @@ export interface Route {
     transitModes: string[];
     dailyCommuters: number;
     peakHours: string;
+    supplemental?: boolean;
 }

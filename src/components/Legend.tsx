@@ -34,8 +34,10 @@ interface Props {
     metricMode: MetricMode;
     onMetricModeChange: (mode: MetricMode) => void;
     routeCount: number;
-    focusLevel: number;
-    onFocusLevelChange: (level: number) => void;
+    worstCount: number;
+    onWorstCountChange: (count: number) => void;
+    bestCount: number;
+    onBestCountChange: (count: number) => void;
 }
 
 function ToggleRow({
@@ -88,8 +90,10 @@ export function Legend({
     metricMode,
     onMetricModeChange,
     routeCount,
-    focusLevel,
-    onFocusLevelChange,
+    worstCount,
+    onWorstCountChange,
+    bestCount,
+    onBestCountChange,
 }: Props) {
     const gradient = buildLegendGradient(trafficMode, metricMode);
     const equalPct = getLegendEqualPct(trafficMode, metricMode);
@@ -291,52 +295,57 @@ export function Legend({
                 }}
             />
 
-            {/* Route Focus section */}
-            <div style={SECTION_HEADER}>Route focus</div>
+            {/* Worst routes slider */}
+            <div style={SECTION_HEADER}>Worst routes</div>
             <input
                 type="range"
-                min={-Math.max(routeCount - 1, 0)}
-                max={Math.max(routeCount - 1, 0)}
-                value={focusLevel}
-                onChange={(e) => onFocusLevelChange(Number(e.target.value))}
+                min={0}
+                max={routeCount}
+                value={worstCount}
+                onChange={(e) => onWorstCountChange(Number(e.target.value))}
                 className="focus-slider"
-                style={(() => {
-                    const total = routeCount > 1 ? routeCount - 1 : 1;
-                    const pct = ((focusLevel + total) / (2 * total)) * 100;
-                    return {
-                        "--left-pct": focusLevel <= 0 ? `${pct}%` : "50%",
-                        "--right-pct": focusLevel >= 0 ? `${pct}%` : "50%",
-                        "--fill-color": focusLevel < 0 ? "#4ade80" : "#6366f1",
-                    } as React.CSSProperties;
-                })()}
+                style={{
+                    "--fill-color": "#6366f1",
+                    "--left-pct": "0%",
+                    "--right-pct": `${(worstCount / Math.max(routeCount, 1)) * 100}%`,
+                } as React.CSSProperties}
             />
             <div
                 style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: 10,
-                    color: theme.textDim,
-                    marginTop: 4,
-                    marginBottom: 6,
+                    fontSize: 11,
+                    color: worstCount === 0 ? theme.textSecondary : "#a5b4fc",
+                    textAlign: "center",
+                    fontWeight: worstCount === 0 ? 400 : 600,
+                    marginBottom: 10,
                 }}
             >
-                <span>Best</span>
-                <span>All</span>
-                <span>Worst</span>
+                {worstCount === 0 ? "None highlighted" : `Worst ${worstCount} of ${routeCount}`}
             </div>
+
+            {/* Best routes slider */}
+            <div style={SECTION_HEADER}>Best routes</div>
+            <input
+                type="range"
+                min={0}
+                max={routeCount}
+                value={bestCount}
+                onChange={(e) => onBestCountChange(Number(e.target.value))}
+                className="focus-slider"
+                style={{
+                    "--fill-color": "#4ade80",
+                    "--left-pct": "0%",
+                    "--right-pct": `${(bestCount / Math.max(routeCount, 1)) * 100}%`,
+                } as React.CSSProperties}
+            />
             <div
                 style={{
                     fontSize: 11,
-                    color: focusLevel === 0 ? theme.textSecondary : focusLevel < 0 ? "#4ade80" : "#a5b4fc",
+                    color: bestCount === 0 ? theme.textSecondary : "#4ade80",
                     textAlign: "center",
-                    fontWeight: focusLevel === 0 ? 400 : 600,
+                    fontWeight: bestCount === 0 ? 400 : 600,
                 }}
             >
-                {focusLevel === 0
-                    ? "All routes"
-                    : focusLevel < 0
-                      ? `Best ${routeCount - Math.abs(focusLevel)} of ${routeCount}`
-                      : `Worst ${routeCount - focusLevel} of ${routeCount}`}
+                {bestCount === 0 ? "None highlighted" : `Best ${bestCount} of ${routeCount}`}
             </div>
         </div>
     );

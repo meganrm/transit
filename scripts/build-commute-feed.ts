@@ -33,6 +33,7 @@ interface CommuteTravelTime {
 
 interface LodesConfig {
     peakHours?: string;
+    primaryN?: number;
 }
 
 interface RouteFeed {
@@ -53,7 +54,10 @@ async function maybeReadJson<T>(filePath: string): Promise<T | null> {
     }
 }
 
-async function loadRequired<T>(filePath: string, runCommand: string): Promise<T> {
+async function loadRequired<T>(
+    filePath: string,
+    runCommand: string,
+): Promise<T> {
     const result = await maybeReadJson<T>(filePath);
     if (result === null) {
         throw new Error(
@@ -71,13 +75,21 @@ function validateRoutes(routes: Route[]): void {
         }
         ids.add(route.id);
         if (route.coordinates.length < 2) {
-            throw new Error(`Route ${route.id} must have at least 2 coordinates`);
+            throw new Error(
+                `Route ${route.id} must have at least 2 coordinates`,
+            );
         }
-        if (route.carMinutes <= 0 || route.carMinutesPeak <= 0 || route.transitMinutes <= 0) {
+        if (
+            route.carMinutes <= 0 ||
+            route.carMinutesPeak <= 0 ||
+            route.transitMinutes <= 0
+        ) {
             throw new Error(`Route ${route.id} has non-positive travel times`);
         }
         if (route.dailyCommuters <= 0) {
-            throw new Error(`Route ${route.id} has non-positive dailyCommuters`);
+            throw new Error(
+                `Route ${route.id} has non-positive dailyCommuters`,
+            );
         }
     }
 }
@@ -92,8 +104,12 @@ async function run(): Promise<void> {
             path.join(TEMP_INPUT, "commute-travel-times.json"),
             "npm run fetch:commute-times",
         ),
-        maybeReadJson<LodesConfig>(path.join(FETCH_CONFIG, "lodes-config.json")),
-        maybeReadJson<Record<string, string>>(path.join(FETCH_CONFIG, "tract-names.json")),
+        maybeReadJson<LodesConfig>(
+            path.join(FETCH_CONFIG, "lodes-config.json"),
+        ),
+        maybeReadJson<Record<string, string>>(
+            path.join(FETCH_CONFIG, "tract-names.json"),
+        ),
     ]);
 
     const tractNames = new Map<string, string>(
@@ -116,7 +132,8 @@ async function run(): Promise<void> {
             continue;
         }
 
-        const originName = tractNames.get(pair.originTractId) ?? pair.originName;
+        const originName =
+            tractNames.get(pair.originTractId) ?? pair.originName;
         const destName = tractNames.get(pair.destTractId) ?? pair.destName;
 
         routes.push({
@@ -133,6 +150,7 @@ async function run(): Promise<void> {
             transitModes: times.transitModes,
             dailyCommuters: pair.commuters,
             peakHours: times.peakPeriod === "AM" ? "AM" : "PM",
+            supplemental: routes.length >= (lodesConfig?.primaryN ?? 60),
         });
     }
 
@@ -140,7 +158,7 @@ async function run(): Promise<void> {
 
     const outPath = path.join(ROOT, "public", "data", "routes.feed.json");
     const payload: RouteFeed = {
-        sourceLabel: "LODES commute data + Google Maps",
+        sourceLabel: "LODES commute data (2021) + Google Maps",
         generatedAt: new Date().toISOString(),
         routes,
     };

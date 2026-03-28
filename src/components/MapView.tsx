@@ -99,8 +99,10 @@ interface MapViewProps {
     onMetricModeChange: (mode: MetricMode) => void;
     routeCount: number;
     onClearSelection: () => void;
-    focusLevel: number;
-    onFocusLevelChange: (level: number) => void;
+    worstCount: number;
+    onWorstCountChange: (count: number) => void;
+    bestCount: number;
+    onBestCountChange: (count: number) => void;
     selectedNeighborhood: string | null;
     selectedNeighborhoodRouteIds: Set<number> | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
@@ -117,8 +119,10 @@ export function MapView({
     onMetricModeChange,
     routeCount,
     onClearSelection,
-    focusLevel,
-    onFocusLevelChange,
+    worstCount,
+    onWorstCountChange,
+    bestCount,
+    onBestCountChange,
     selectedNeighborhood,
     selectedNeighborhoodRouteIds,
     onNeighborhoodSelect,
@@ -129,25 +133,27 @@ export function MapView({
     const highlightedRouteIds = useMemo<Set<number> | null>(() => {
         if (selectedNeighborhoodRouteIds !== null)
             return selectedNeighborhoodRouteIds;
-        if (focusLevel === 0) return null;
-        const showCount = routes.length - Math.abs(focusLevel);
-        if (focusLevel > 0) {
+        if (worstCount === 0 && bestCount === 0) return null;
+
+        let sortedAsc: Route[];
+        if (metricMode === "person-minutes-lost") {
             const metrics = getRouteMetrics(routes, trafficMode);
-            const topIds = metrics
-                .filter((m) => m.personMinutesLost > 0)
-                .slice(0, showCount)
-                .map((m) => m.routeId);
-            return topIds.length > 0 ? new Set(topIds) : null;
+            sortedAsc = metrics
+                .map((m) => routes.find((r) => r.id === m.routeId)!)
+                .reverse();
         } else {
-            const sorted = [...routes].sort(
-                (a, b) =>
-                    a.transitMinutes / a.carMinutesPeak -
-                    b.transitMinutes / b.carMinutesPeak,
+            const carFn = (r: Route) =>
+                trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+            sortedAsc = [...routes].sort(
+                (a, b) => a.transitMinutes / carFn(a) - b.transitMinutes / carFn(b),
             );
-            const topIds = sorted.slice(0, showCount).map((r) => r.id);
-            return topIds.length > 0 ? new Set(topIds) : null;
         }
-    }, [routes, selectedNeighborhoodRouteIds, focusLevel]);
+
+        const ids = new Set<number>();
+        sortedAsc.slice(0, bestCount).forEach((r) => ids.add(r.id));
+        sortedAsc.slice(sortedAsc.length - worstCount).forEach((r) => ids.add(r.id));
+        return ids.size > 0 ? ids : null;
+    }, [routes, selectedNeighborhoodRouteIds, worstCount, bestCount, trafficMode, metricMode]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         const metrics = getNeighborhoodMetrics(routes, trafficMode);
@@ -179,12 +185,8 @@ export function MapView({
                         key={route.id}
                         route={route}
                         isActive={activeRouteId === route.id}
-                        isDimmed={
-                            highlightedRouteIds !== null
-                                ? !highlightedRouteIds.has(route.id)
-                                : activeRouteId !== null &&
-                                  activeRouteId !== route.id
-                        }
+                        isDimmed={highlightedRouteIds !== null && !highlightedRouteIds.has(route.id)}
+                        focusActive={highlightedRouteIds !== null}
                         trafficMode={trafficMode}
                         metricMode={metricMode}
                         onHover={setActiveRouteId}
@@ -207,8 +209,10 @@ export function MapView({
                 metricMode={metricMode}
                 onMetricModeChange={onMetricModeChange}
                 routeCount={routeCount}
-                focusLevel={focusLevel}
-                onFocusLevelChange={onFocusLevelChange}
+                worstCount={worstCount}
+                onWorstCountChange={onWorstCountChange}
+                bestCount={bestCount}
+                onBestCountChange={onBestCountChange}
             />
             <ViewToggle viewMode={viewMode} onChange={onViewModeChange} />
         </div>

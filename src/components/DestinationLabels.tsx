@@ -112,13 +112,7 @@ export function DestinationLabels({
                           ? theme.textBright
                           : theme.textSecondary;
 
-                const dotRadius = isSelected
-                    ? 8
-                    : isHovered
-                      ? 7
-                      : highlighted
-                        ? 6
-                        : 4;
+                const dotRadius = isSelected ? 8 : isHovered ? 7 : highlighted ? 6 : 4;
 
                 const handlers = {
                     mouseover: () => setHoveredDest(dest.name),
@@ -151,13 +145,14 @@ export function DestinationLabels({
                                         : highlighted
                                           ? theme.textBright
                                           : theme.textDim,
+                                opacity: isDimmed ? 0.1 : 1,
                                 fillColor: dotColor,
                                 fillOpacity: isSelected
                                     ? 0.35
                                     : isHovered
                                       ? 1
                                       : isDimmed
-                                        ? 0.15
+                                        ? 0.1
                                         : useScoreColor
                                           ? 0.15
                                           : highlighted

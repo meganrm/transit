@@ -1,13 +1,23 @@
 import type { MetricMode, Route, TrafficMode } from "../types";
 import { routes as fallbackRoutes } from "../data/routes";
 
+type RGB = [number, number, number];
+
+// Palette endpoints — the two colors at the extremes of every gradient
+const COLOR_BEST: RGB = [77, 146, 33]; // dark green   — transit fastest / saves most time
+const COLOR_WORST: RGB = [197, 27, 125]; // dark magenta — transit slowest / wastes most time
+
+// Palette midpoints — used as interior stops
+const COLOR_MED_GREEN: RGB = [161, 215, 106]; // medium green, ~0.85 ratio
+const COLOR_NEUTRAL: RGB = [100, 100, 100]; // gray — equal / breakeven
+const COLOR_MED_PINK: RGB = [233, 163, 201]; // medium pink,  ~1.8 ratio
+
 // --- Palette shape (ratio-based modes) ---
 // Interior stops define the PiYG diverging curve; endpoints are data-anchored.
 const RATIO_INNER_STOPS: [number, number, number, number][] = [
-    [0.85, 161, 215, 106], // medium green
-    [1.0, 230, 245, 208], // pale green — equal
-    [1.1, 253, 224, 239], // pale pink
-    [1.8, 233, 163, 201], // medium pink
+    [0.85, ...COLOR_MED_GREEN],
+    [1.0, ...COLOR_NEUTRAL],
+    [1.8, ...COLOR_MED_PINK],
 ];
 
 function computeRatioRange(
@@ -29,11 +39,15 @@ function computeRatioRange(
     return { min, max };
 }
 
-function computePMRange(routeList: Route[], trafficMode: TrafficMode): { min: number; max: number } {
+function computePMRange(
+    routeList: Route[],
+    trafficMode: TrafficMode,
+): { min: number; max: number } {
     let min = Infinity,
         max = -Infinity;
     for (const r of routeList) {
-        const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+        const car =
+            trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
         const pm = (r.transitMinutes - car) * r.dailyCommuters;
         if (pm < min) min = pm;
         if (pm > max) max = pm;
@@ -49,21 +63,21 @@ function buildRatioStops(
     const stops: [number, number, number, number][] = [];
 
     if (min >= 1.0) {
-        // All routes slower than driving: pale pink at best → deep magenta at worst.
-        stops.push([min, 253, 224, 239]);
+        // All routes slower than driving: neutral at best → worst at worst.
+        stops.push([min, ...COLOR_NEUTRAL]);
         for (const [v, r, g, b] of RATIO_INNER_STOPS) {
             if (v > min && v < max) stops.push([v, r, g, b]);
         }
-        stops.push([max, 197, 27, 125]);
+        stops.push([max, ...COLOR_WORST]);
     } else {
         // Some routes faster than driving: full diverging scale with 1.0 fixed.
         if (min < RATIO_INNER_STOPS[0][0]) {
-            stops.push([min, 77, 146, 33]);
+            stops.push([min, ...COLOR_BEST]);
         }
         for (const [v, r, g, b] of RATIO_INNER_STOPS) {
             if (v >= min && v <= max) stops.push([v, r, g, b]);
         }
-        stops.push([max, 197, 27, 125]); // always: worst route = deep magenta
+        stops.push([max, ...COLOR_WORST]);
     }
 
     return stops;
@@ -74,24 +88,28 @@ function buildPMStops(
     max: number,
 ): [number, number, number, number][] {
     if (min < 0 && max > 0) {
-        // Diverging: green ← white → magenta
+        // Diverging: best ← med_green ← neutral → med_pink → worst
         return [
-            [min, 77, 146, 33],
-            [0, 255, 255, 255],
-            [max, 197, 27, 125],
+            [min, ...COLOR_BEST],
+            [min * 0.1, ...COLOR_MED_GREEN],
+            [0, ...COLOR_NEUTRAL],
+            [max * 0.1, ...COLOR_MED_PINK],
+            [max, ...COLOR_WORST],
         ];
     }
     if (max <= 0) {
-        // All routes save time: dark green → white
+        // All routes save time: best → med_green → neutral
         return [
-            [min, 77, 146, 33],
-            [max, 255, 255, 255],
+            [min, ...COLOR_BEST],
+            [(min + max) / 2, ...COLOR_MED_GREEN],
+            [max, ...COLOR_NEUTRAL],
         ];
     }
-    // All routes lose time: white → dark magenta
+    // All routes lose time: neutral → med_pink → worst
     return [
-        [min, 255, 255, 255],
-        [max, 197, 27, 125],
+        [min, ...COLOR_NEUTRAL],
+        [(min + max) / 2, ...COLOR_MED_PINK],
+        [max, ...COLOR_WORST],
     ];
 }
 
@@ -120,7 +138,8 @@ let pmStops: Record<TrafficMode, [number, number, number, number][]> = {
 function rebuildScales(routeList: Route[]): void {
     if (routeList.length === 0) return;
 
-    let cMin = Infinity, cMax = -Infinity;
+    let cMin = Infinity,
+        cMax = -Infinity;
     for (const r of routeList) {
         if (r.dailyCommuters < cMin) cMin = r.dailyCommuters;
         if (r.dailyCommuters > cMax) cMax = r.dailyCommuters;
@@ -149,8 +168,14 @@ function rebuildScales(routeList: Route[]): void {
     };
 
     pmStops = {
-        "no-traffic": buildPMStops(pmRanges["no-traffic"].min, pmRanges["no-traffic"].max),
-        "peak-traffic": buildPMStops(pmRanges["peak-traffic"].min, pmRanges["peak-traffic"].max),
+        "no-traffic": buildPMStops(
+            pmRanges["no-traffic"].min,
+            pmRanges["no-traffic"].max,
+        ),
+        "peak-traffic": buildPMStops(
+            pmRanges["peak-traffic"].min,
+            pmRanges["peak-traffic"].max,
+        ),
     };
 }
 
@@ -265,7 +290,9 @@ export function getLegendEqualPct(
 }
 
 /** Position of the 0 (breakeven) tick for person-minutes mode. Returns null if all routes lose time. */
-export function getLegendBreakevenPct(trafficMode: TrafficMode = "peak-traffic"): string | null {
+export function getLegendBreakevenPct(
+    trafficMode: TrafficMode = "peak-traffic",
+): string | null {
     const stops = pmStops[trafficMode];
     const min = stops[0][0];
     const max = stops[stops.length - 1][0];
@@ -278,6 +305,8 @@ export function getCommuterRange(): { min: number; max: number } {
     return commuterRange;
 }
 
-export function getPersonMinutesMax(trafficMode: TrafficMode = "peak-traffic"): number {
+export function getPersonMinutesMax(
+    trafficMode: TrafficMode = "peak-traffic",
+): number {
     return pmRanges[trafficMode].max;
 }
