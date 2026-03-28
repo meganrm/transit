@@ -34,8 +34,9 @@ function App() {
         useState<Set<number> | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>("all");
     const [trafficMode, setTrafficMode] = useState<TrafficMode>("peak-traffic");
-    const [metricMode, setMetricMode] =
-        useState<MetricMode>("travel-time-difference");
+    const [metricMode, setMetricMode] = useState<MetricMode>(
+        "travel-time-difference",
+    );
     const [focusLevel, setFocusLevel] = useState(0);
 
     useEffect(() => {
@@ -147,12 +148,14 @@ function App() {
                             lineHeight: 1.4,
                         }}
                     >
-                        <div>Data source: {routeData.sourceLabel}</div>
-                        {routeData.generatedAt && (
+                        {/* <div>Data source: {routeData.sourceLabel}</div> */}
+                        {/* {routeData.generatedAt && (
                             <div>Generated: {routeData.generatedAt}</div>
-                        )}
+                        )} */}
                         {routeData.loadError && (
-                            <div>Using fallback data ({routeData.loadError})</div>
+                            <div>
+                                Using fallback data ({routeData.loadError})
+                            </div>
                         )}
                     </div>
                 )}

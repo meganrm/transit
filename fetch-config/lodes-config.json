@@ -2,22 +2,15 @@
   "_notes": {
     "countyFips": "King County WA = 53033",
     "lodesYear": "Latest available LODES8 year (2021 as of 2024)",
-    "topN": "Max commute pairs to include (candidate pool is larger before dest cap)",
-    "minCommuters": "Minimum daily commuters to consider a pair",
-    "bounds": "Optional lat/lng bounding box — pairs with any centroid outside are excluded",
-    "maxPairsPerDest": "Optional cap on how many pairs can share the same destination tract"
+    "topN": "Max neighborhood-to-neighborhood pairs to include",
+    "minCommuters": "Minimum aggregated daily commuters for a neighborhood pair",
+    "maxAssignDistKm": "Max km from a tract centroid to its nearest neighborhood to be included"
   },
   "countyFips": "53033",
   "lodesYear": 2021,
-  "topN": 75,
-  "minCommuters": 100,
+  "topN": 60,
+  "minCommuters": 50,
   "excludeSelfTracts": true,
   "peakHours": "7–9 AM & 4–6 PM",
-  "bounds": {
-    "minLat": 47.496,
-    "maxLat": 47.737,
-    "minLng": -122.459,
-    "maxLng": -122.246
-  },
-  "maxPairsPerDest": 5
+  "maxAssignDistKm": 3.0
 }

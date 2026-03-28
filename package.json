@@ -12,7 +12,7 @@
     "fetch:tract-names": "tsx --require dotenv/config scripts/fetch-tract-names.ts",
     "fetch:commute-times": "tsx --require dotenv/config scripts/fetch-commute-times.ts",
     "build:commute-feed": "tsx scripts/build-commute-feed.ts",
-    "ingest": "npm run fetch:lodes && npm run fetch:tract-names && npm run fetch:commute-times && npm run build:commute-feed"
+    "ingest": "npm run fetch:lodes && npm run fetch:commute-times && npm run build:commute-feed"
   },
   "dependencies": {
     "chart.js": "^4.5.1",

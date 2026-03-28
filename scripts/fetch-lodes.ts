@@ -11,11 +11,9 @@ const ROOT = path.resolve(__dirname, "..");
 const FETCH_CONFIG = path.join(ROOT, "fetch-config");
 const TEMP_INPUT = path.join(ROOT, "temp-input-data");
 
-interface BoundsConfig {
-    minLat: number;
-    maxLat: number;
-    minLng: number;
-    maxLng: number;
+interface Neighborhood {
+    lat: number;
+    lng: number;
 }
 
 interface LodesConfig {
@@ -25,8 +23,7 @@ interface LodesConfig {
     minCommuters: number;
     excludeSelfTracts: boolean;
     peakHours: string;
-    bounds?: BoundsConfig;
-    maxPairsPerDest?: number;
+    maxAssignDistKm: number;
 }
 
 interface TractCentroid {
@@ -63,18 +60,11 @@ async function loadConfig(): Promise<LodesConfig> {
     }
 }
 
-async function loadTractNames(): Promise<Map<string, string>> {
-    const namesPath = path.join(FETCH_CONFIG, "tract-names.json");
-    try {
-        const raw = await readFile(namesPath, "utf8");
-        const obj = JSON.parse(raw) as Record<string, string>;
-        return new Map(Object.entries(obj));
-    } catch (error) {
-        if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-            return new Map();
-        }
-        throw error;
-    }
+async function loadNeighborhoods(): Promise<Map<string, Neighborhood>> {
+    const nbPath = path.join(FETCH_CONFIG, "neighborhoods.json");
+    const raw = await readFile(nbPath, "utf8");
+    const obj = JSON.parse(raw) as Record<string, Neighborhood>;
+    return new Map(Object.entries(obj));
 }
 
 function lodesUrl(year: number): string {
@@ -114,7 +104,6 @@ async function streamLodesOd(
         lineNum += 1;
 
         if (lineNum === 1) {
-            // Parse header
             const cols = line.split(",");
             for (let i = 0; i < cols.length; i++) {
                 headerIndices[cols[i].trim()] = i;
@@ -138,9 +127,7 @@ async function streamLodesOd(
         const originTract = hGeocode.slice(0, 11);
         const destTract = wGeocode.slice(0, 11);
 
-        // Both tracts must be in the target county
         if (!originTract.startsWith(countyFips) || !destTract.startsWith(countyFips)) continue;
-
         if (excludeSelfTracts && originTract === destTract) continue;
 
         const count = parseInt(s000Raw, 10);
@@ -167,7 +154,6 @@ async function fetchCentroids(): Promise<Map<string, TractCentroid>> {
     const lines = text.split("\n");
     const centroids = new Map<string, TractCentroid>();
 
-    // Header: STATEFP,COUNTYFP,TRACTCE,POPULATION,LATITUDE,LONGITUDE
     let headerIndices: Record<string, number> = {};
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
@@ -192,7 +178,6 @@ async function fetchCentroids(): Promise<Map<string, TractCentroid>> {
         const lng = parseFloat(lngRaw);
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
 
-        // Tract ID = STATEFP + COUNTYFP + TRACTCE (11 digits total)
         const tractId = `${statefp}${countyfp}${tractce}`;
         centroids.set(tractId, { lat, lng });
     }
@@ -201,25 +186,38 @@ async function fetchCentroids(): Promise<Map<string, TractCentroid>> {
     return centroids;
 }
 
-function tractShortName(tractId: string): string {
-    // Last 6 chars are TRACTCE, e.g. "009300" → "9300" (drop leading zeros but keep structure)
-    const tractce = tractId.slice(5); // STATEFP(2) + COUNTYFP(3) = 5 chars, rest is TRACTCE
-    const numeric = parseInt(tractce, 10);
-    return `Tract ${Number.isFinite(numeric) ? numeric : tractce}`;
+function distKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function inBounds(centroid: TractCentroid, bounds: BoundsConfig): boolean {
-    return (
-        centroid.lat >= bounds.minLat &&
-        centroid.lat <= bounds.maxLat &&
-        centroid.lng >= bounds.minLng &&
-        centroid.lng <= bounds.maxLng
-    );
+function assignNeighborhood(
+    centroid: TractCentroid,
+    neighborhoods: Map<string, Neighborhood>,
+    maxDistKm: number,
+): string | null {
+    let bestName: string | null = null;
+    let bestDist = Infinity;
+    for (const [name, nb] of neighborhoods) {
+        const d = distKm(centroid.lat, centroid.lng, nb.lat, nb.lng);
+        if (d < bestDist) {
+            bestDist = d;
+            bestName = name;
+        }
+    }
+    return bestDist <= maxDistKm ? bestName : null;
 }
 
 async function run(): Promise<void> {
     const config = await loadConfig();
-    const tractNames = await loadTractNames();
+    const neighborhoods = await loadNeighborhoods();
 
     const pairCounts = await streamLodesOd(
         lodesUrl(config.lodesYear),
@@ -227,110 +225,69 @@ async function run(): Promise<void> {
         config.excludeSelfTracts,
     );
 
-    // Sort pairs by commuter count descending, filter by minCommuters — do NOT slice yet
-    const candidates = [...pairCounts.entries()]
-        .filter(([, count]) => count >= config.minCommuters)
-        .sort(([, a], [, b]) => b - a);
-
-    console.log(
-        `Found ${pairCounts.size} unique pairs; ${candidates.length} with ≥ ${config.minCommuters} commuters.`,
-    );
-
     const centroids = await fetchCentroids();
 
-    // Apply bounds + maxPairsPerDest filtering, then take topN
-    const destCounts = new Map<string, number>();
-    const accepted: Array<[string, number]> = [];
+    // Assign each tract to its nearest neighborhood (cached)
+    const tractToNeighborhood = new Map<string, string | null>();
+    const getNeighborhood = (tractId: string): string | null => {
+        if (!tractToNeighborhood.has(tractId)) {
+            const centroid = centroids.get(tractId);
+            tractToNeighborhood.set(
+                tractId,
+                centroid
+                    ? assignNeighborhood(centroid, neighborhoods, config.maxAssignDistKm)
+                    : null,
+            );
+        }
+        return tractToNeighborhood.get(tractId) ?? null;
+    };
 
-    for (const [key, commuters] of candidates) {
-        if (accepted.length >= config.topN) break;
-
+    // Aggregate tract-pair counts into neighborhood-pair counts
+    const neighborhoodPairs = new Map<string, number>();
+    for (const [key, commuters] of pairCounts) {
         const [originTractId, destTractId] = key.split("|");
-
-        const originCentroid = centroids.get(originTractId);
-        const destCentroid = centroids.get(destTractId);
-
-        if (!originCentroid) {
-            console.warn(`No centroid for origin tract ${originTractId} — skipping pair.`);
-            continue;
-        }
-        if (!destCentroid) {
-            console.warn(`No centroid for dest tract ${destTractId} — skipping pair.`);
-            continue;
-        }
-
-        if (config.bounds) {
-            if (!inBounds(originCentroid, config.bounds) || !inBounds(destCentroid, config.bounds)) {
-                continue;
-            }
-        }
-
-        if (config.maxPairsPerDest !== undefined) {
-            const count = destCounts.get(destTractId) ?? 0;
-            if (count >= config.maxPairsPerDest) continue;
-            destCounts.set(destTractId, count + 1);
-        }
-
-        accepted.push([key, commuters]);
+        const originNb = getNeighborhood(originTractId);
+        const destNb = getNeighborhood(destTractId);
+        if (!originNb || !destNb || originNb === destNb) continue;
+        const nbKey = `${originNb}|${destNb}`;
+        neighborhoodPairs.set(nbKey, (neighborhoodPairs.get(nbKey) ?? 0) + commuters);
     }
 
-    console.log(`Keeping ${accepted.length} pairs after filtering.`);
+    const candidates = [...neighborhoodPairs.entries()]
+        .filter(([, count]) => count >= config.minCommuters)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, config.topN);
 
-    // Collect all unique tract IDs for the template file
-    const allTractIds = new Set<string>();
-    for (const [key] of accepted) {
-        const [origin, dest] = key.split("|");
-        allTractIds.add(origin);
-        allTractIds.add(dest);
-    }
+    console.log(
+        `Aggregated ${neighborhoodPairs.size} neighborhood pairs; keeping top ${candidates.length}.`,
+    );
 
     const pairs: CommutePair[] = [];
     let idCounter = 1;
 
-    for (const [key, commuters] of accepted) {
-        const [originTractId, destTractId] = key.split("|");
-        const originCentroid = centroids.get(originTractId)!;
-        const destCentroid = centroids.get(destTractId)!;
-
-        const originName =
-            tractNames.get(originTractId) ?? tractShortName(originTractId);
-        const destName =
-            tractNames.get(destTractId) ?? tractShortName(destTractId);
+    for (const [key, commuters] of candidates) {
+        const [originName, destName] = key.split("|");
+        const originNb = neighborhoods.get(originName)!;
+        const destNb = neighborhoods.get(destName)!;
 
         pairs.push({
             id: idCounter++,
-            originTractId,
+            originTractId: originName,
             originName,
-            originLat: originCentroid.lat,
-            originLng: originCentroid.lng,
-            destTractId,
+            originLat: originNb.lat,
+            originLng: originNb.lng,
+            destTractId: destName,
             destName,
-            destLat: destCentroid.lat,
-            destLng: destCentroid.lng,
+            destLat: destNb.lat,
+            destLng: destNb.lng,
             commuters,
         });
     }
 
-    // Write commute-od-pairs.json
     const odPath = path.join(TEMP_INPUT, "commute-od-pairs.json");
     await mkdir(TEMP_INPUT, { recursive: true });
     await writeFile(odPath, `${JSON.stringify(pairs, null, 2)}\n`, "utf8");
     console.log(`Wrote ${pairs.length} commute OD pairs to ${odPath}`);
-
-    // Write tract-names-template.json for optional human-readable names
-    const templatePath = path.join(TEMP_INPUT, "tract-names-template.json");
-    const template: Record<string, string> = {};
-    for (const tractId of [...allTractIds].sort()) {
-        template[tractId] = tractNames.get(tractId) ?? "";
-    }
-    await writeFile(
-        templatePath,
-        `${JSON.stringify(template, null, 2)}\n`,
-        "utf8",
-    );
-    console.log(
-        `Wrote tract name template to ${templatePath} — copy to tract-names.json and fill in neighborhood names.`,
-    );
 }
 
 run().catch((error) => {
