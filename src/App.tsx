@@ -84,9 +84,8 @@ function App() {
 
     useEffect(() => {
         const maxFocus = Math.max(routeData.routes.length - 1, 0);
-        if (focusLevel > maxFocus) {
-            setFocusLevel(maxFocus);
-        }
+        if (focusLevel > maxFocus) setFocusLevel(maxFocus);
+        else if (focusLevel < -maxFocus) setFocusLevel(-maxFocus);
     }, [focusLevel, routeData.routes.length]);
 
     const selectedRoute =

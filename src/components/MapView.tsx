@@ -130,13 +130,23 @@ export function MapView({
         if (selectedNeighborhoodRouteIds !== null)
             return selectedNeighborhoodRouteIds;
         if (focusLevel === 0) return null;
-        const metrics = getRouteMetrics(routes);
-        const topN = routes.length - focusLevel;
-        const topIds = metrics
-            .filter((m) => m.personMinutesLost > 0)
-            .slice(0, topN)
-            .map((m) => m.routeId);
-        return topIds.length > 0 ? new Set(topIds) : null;
+        const showCount = routes.length - Math.abs(focusLevel);
+        if (focusLevel > 0) {
+            const metrics = getRouteMetrics(routes);
+            const topIds = metrics
+                .filter((m) => m.personMinutesLost > 0)
+                .slice(0, showCount)
+                .map((m) => m.routeId);
+            return topIds.length > 0 ? new Set(topIds) : null;
+        } else {
+            const sorted = [...routes].sort(
+                (a, b) =>
+                    a.transitMinutes / a.carMinutesPeak -
+                    b.transitMinutes / b.carMinutesPeak,
+            );
+            const topIds = sorted.slice(0, showCount).map((r) => r.id);
+            return topIds.length > 0 ? new Set(topIds) : null;
+        }
     }, [routes, selectedNeighborhoodRouteIds, focusLevel]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {

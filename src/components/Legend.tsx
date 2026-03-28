@@ -290,20 +290,20 @@ export function Legend({
             <div style={SECTION_HEADER}>Route focus</div>
             <input
                 type="range"
-                min={0}
+                min={-Math.max(routeCount - 1, 0)}
                 max={Math.max(routeCount - 1, 0)}
                 value={focusLevel}
                 onChange={(e) => onFocusLevelChange(Number(e.target.value))}
                 className="focus-slider"
-                style={
-                    {
-                        "--pct": `${
-                            routeCount > 1
-                                ? (focusLevel / (routeCount - 1)) * 100
-                                : 0
-                        }%`,
-                    } as React.CSSProperties
-                }
+                style={(() => {
+                    const total = routeCount > 1 ? routeCount - 1 : 1;
+                    const pct = ((focusLevel + total) / (2 * total)) * 100;
+                    return {
+                        "--left-pct": focusLevel <= 0 ? `${pct}%` : "50%",
+                        "--right-pct": focusLevel >= 0 ? `${pct}%` : "50%",
+                        "--fill-color": focusLevel < 0 ? "#4ade80" : "#6366f1",
+                    } as React.CSSProperties;
+                })()}
             />
             <div
                 style={{
@@ -315,20 +315,23 @@ export function Legend({
                     marginBottom: 6,
                 }}
             >
+                <span>Best</span>
                 <span>All</span>
-                <span>Worst only</span>
+                <span>Worst</span>
             </div>
             <div
                 style={{
                     fontSize: 11,
-                    color: focusLevel === 0 ? theme.textSecondary : "#a5b4fc",
+                    color: focusLevel === 0 ? theme.textSecondary : focusLevel < 0 ? "#4ade80" : "#a5b4fc",
                     textAlign: "center",
                     fontWeight: focusLevel === 0 ? 400 : 600,
                 }}
             >
                 {focusLevel === 0
                     ? "All routes"
-                    : `Top ${routeCount - focusLevel} of ${routeCount}`}
+                    : focusLevel < 0
+                      ? `Best ${routeCount - Math.abs(focusLevel)} of ${routeCount}`
+                      : `Worst ${routeCount - focusLevel} of ${routeCount}`}
             </div>
         </div>
     );

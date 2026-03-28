@@ -119,8 +119,10 @@ body,
     border-radius: 2px;
     background: linear-gradient(
         to right,
-        #6366f1 var(--pct, 0%),
-        rgba(148, 163, 184, 0.2) var(--pct, 0%)
+        rgba(148, 163, 184, 0.2) var(--left-pct, 50%),
+        var(--fill-color, #6366f1) var(--left-pct, 50%),
+        var(--fill-color, #6366f1) var(--right-pct, 50%),
+        rgba(148, 163, 184, 0.2) var(--right-pct, 50%)
     );
     outline: none;
     cursor: pointer;
