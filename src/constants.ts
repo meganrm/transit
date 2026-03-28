@@ -34,14 +34,10 @@ export const ratioThresholds = {
     moderate: 1.5,
 } as const;
 
-/** Route line weight scaling based on daily commuters */
+/** Route line weight scaling */
 export const weightScale = {
     minWeight: 2,
     maxWeight: 8,
-    midWeight: 5,
-    minCommuters: 4000,
-    maxCommuters: 22000,
-    midCommuters: 12000,
     /** Extra weight added on hover */
     hoverBoost: 3,
 } as const;

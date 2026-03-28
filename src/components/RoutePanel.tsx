@@ -1,10 +1,12 @@
-import type { Route } from "../types";
+import type { Route, TrafficMode, MetricMode } from "../types";
 import { theme } from "../constants";
 import { getRouteRgb } from "../utils/routeColor";
 
 interface Props {
     route: Route;
     onClose: () => void;
+    trafficMode: TrafficMode;
+    metricMode: MetricMode;
 }
 
 function CarIcon() {
@@ -148,17 +150,19 @@ function BarRow({ icon, label, value, maxValue, accentColor }: BarRowProps) {
     );
 }
 
-export function RoutePanel({ route, onClose }: Props) {
-    const delta = route.transitMinutes - route.carMinutesPeak;
+export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
+    const carBase = trafficMode === "peak-traffic" ? route.carMinutesPeak : route.carMinutes;
+    const delta = route.transitMinutes - carBase;
     const trafficDelay = route.carMinutesPeak - route.carMinutes;
+    const trafficLabel = trafficMode === "peak-traffic" ? "peak traffic" : "no traffic";
     const deltaLabel =
         delta > 0
-            ? `+${delta} min vs peak traffic`
+            ? `+${delta} min vs ${trafficLabel}`
             : delta < 0
-              ? `${Math.abs(delta)} min faster than peak traffic`
-              : "Same as peak traffic";
+              ? `${Math.abs(delta)} min faster than ${trafficLabel}`
+              : `Same as ${trafficLabel}`;
 
-    const [r, g, b] = getRouteRgb(route);
+    const [r, g, b] = getRouteRgb(route, trafficMode, metricMode);
     const accentBg = `linear-gradient(to bottom, rgba(${r},${g},${b},0.18) 0%, rgba(${r},${g},${b},0.04) 200px, transparent 100%)`;
     const barAccent = `rgb(${r},${g},${b})`;
 
@@ -346,7 +350,7 @@ export function RoutePanel({ route, onClose }: Props) {
                                 marginBottom: 2,
                             }}
                         >
-                            vs peak driving
+                            vs {trafficLabel}
                         </div>
                         <div
                             style={{

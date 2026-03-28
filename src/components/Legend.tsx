@@ -1,12 +1,24 @@
 import type { MetricMode, TrafficMode } from "../types";
 import { weightScale, theme } from "../constants";
-import { routes } from "../data/routes";
 import {
     buildLegendGradient,
     getLegendEqualPct,
     getLegendBreakevenPct,
     getPersonMinutesMax,
+    getCommuterRange,
 } from "../utils/routeColor";
+
+function formatCommuters(n: number): string {
+    if (!Number.isFinite(n)) return "?";
+    if (n >= 1000) return `~${Math.round(n / 100) / 10}k`;
+    return `~${Math.round(n)}`;
+}
+
+function formatPersonMinutes(n: number): string {
+    if (!Number.isFinite(n) || n <= 0) return "?";
+    const k = n / 1000;
+    return k >= 10 ? `~${Math.round(k)}k` : `~${k.toFixed(1)}k`;
+}
 
 const SECTION_HEADER: React.CSSProperties = {
     fontSize: 9,
@@ -16,13 +28,12 @@ const SECTION_HEADER: React.CSSProperties = {
     marginBottom: 6,
 };
 
-const TOTAL_ROUTES = routes.length;
-
 interface Props {
     trafficMode: TrafficMode;
     onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
     onMetricModeChange: (mode: MetricMode) => void;
+    routeCount: number;
     focusLevel: number;
     onFocusLevelChange: (level: number) => void;
 }
@@ -76,6 +87,7 @@ export function Legend({
     onTrafficModeChange,
     metricMode,
     onMetricModeChange,
+    routeCount,
     focusLevel,
     onFocusLevelChange,
 }: Props) {
@@ -100,31 +112,19 @@ export function Legend({
           : "Travel-time difference using uncongested driving as the baseline.";
 
     const pmMax = getPersonMinutesMax(trafficMode);
+    const { min: cMin, max: cMax } = getCommuterRange();
+    const cMid = Math.round((cMin + cMax) / 2);
+    const midWeight = (weightScale.minWeight + weightScale.maxWeight) / 2;
     const thicknessItems = isPersonMinutes
         ? [
               { weight: weightScale.minWeight, label: "0 min lost" },
-              {
-                  weight: weightScale.midWeight,
-                  label: `~${Math.round(pmMax / 2 / 1000)}k min/day`,
-              },
-              {
-                  weight: weightScale.maxWeight,
-                  label: `~${Math.round(pmMax / 1000)}k min/day`,
-              },
+              { weight: midWeight, label: `${formatPersonMinutes(pmMax / 2)} min/day` },
+              { weight: weightScale.maxWeight, label: `${formatPersonMinutes(pmMax)} min/day` },
           ]
         : [
-              {
-                  weight: weightScale.minWeight,
-                  label: `~${weightScale.minCommuters / 1000}k/day`,
-              },
-              {
-                  weight: weightScale.midWeight,
-                  label: `~${weightScale.midCommuters / 1000}k/day`,
-              },
-              {
-                  weight: weightScale.maxWeight,
-                  label: `~${weightScale.maxCommuters / 1000}k/day`,
-              },
+              { weight: weightScale.minWeight, label: `${formatCommuters(cMin)}/day` },
+              { weight: midWeight, label: `${formatCommuters(cMid)}/day` },
+              { weight: weightScale.maxWeight, label: `${formatCommuters(cMax)}/day` },
           ];
     const thicknessTitle = isPersonMinutes
         ? "Line thickness"
@@ -291,13 +291,17 @@ export function Legend({
             <input
                 type="range"
                 min={0}
-                max={TOTAL_ROUTES - 1}
+                max={Math.max(routeCount - 1, 0)}
                 value={focusLevel}
                 onChange={(e) => onFocusLevelChange(Number(e.target.value))}
                 className="focus-slider"
                 style={
                     {
-                        "--pct": `${(focusLevel / (TOTAL_ROUTES - 1)) * 100}%`,
+                        "--pct": `${
+                            routeCount > 1
+                                ? (focusLevel / (routeCount - 1)) * 100
+                                : 0
+                        }%`,
                     } as React.CSSProperties
                 }
             />
@@ -324,7 +328,7 @@ export function Legend({
             >
                 {focusLevel === 0
                     ? "All routes"
-                    : `Top ${TOTAL_ROUTES - focusLevel} of ${TOTAL_ROUTES}`}
+                    : `Top ${routeCount - focusLevel} of ${routeCount}`}
             </div>
         </div>
     );

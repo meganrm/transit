@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapView } from "./components/MapView";
 import { RoutePanel } from "./components/RoutePanel";
 import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
-import { routes } from "./data/routes";
+import { routes as fallbackRoutes } from "./data/routes";
+import { loadRouteData } from "./data/routeLoader";
+import { setRouteColorRoutes } from "./utils/routeColor";
 import { getNeighborhoodDetail } from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
 import type { MetricMode, TrafficMode } from "./types";
+import type { Route } from "./types";
+
+const DATA_URL = import.meta.env.VITE_ROUTES_DATA_URL as string | undefined;
+
+interface RouteDataState {
+    routes: Route[];
+    sourceLabel: string;
+    generatedAt: string | null;
+    loadError: string | null;
+}
 
 function App() {
+    const [routeData, setRouteData] = useState<RouteDataState>({
+        routes: fallbackRoutes,
+        sourceLabel: "Bundled demo data",
+        generatedAt: null,
+        loadError: null,
+    });
     const [selectedRouteId, setSelectedRouteId] = useState<number | null>(null);
     const [selectedNeighborhood, setSelectedNeighborhood] = useState<
         string | null
@@ -20,11 +38,62 @@ function App() {
         useState<MetricMode>("travel-time-difference");
     const [focusLevel, setFocusLevel] = useState(0);
 
-    const selectedRoute = routes.find((r) => r.id === selectedRouteId) ?? null;
+    useEffect(() => {
+        let cancelled = false;
+
+        async function bootstrapRouteData() {
+            if (!DATA_URL) return;
+            try {
+                const result = await loadRouteData(DATA_URL);
+                if (cancelled) return;
+                setRouteData({
+                    routes: result.routes,
+                    sourceLabel: result.sourceLabel,
+                    generatedAt: result.generatedAt,
+                    loadError: null,
+                });
+            } catch (error) {
+                if (cancelled) return;
+                setRouteData((prev) => ({
+                    ...prev,
+                    loadError:
+                        error instanceof Error
+                            ? error.message
+                            : "Unable to load route data",
+                }));
+            }
+        }
+
+        bootstrapRouteData();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (selectedRouteId === null) return;
+        if (!routeData.routes.some((route) => route.id === selectedRouteId)) {
+            setSelectedRouteId(null);
+        }
+    }, [selectedRouteId, routeData.routes]);
+
+    useMemo(() => {
+        setRouteColorRoutes(routeData.routes);
+    }, [routeData.routes]);
+
+    useEffect(() => {
+        const maxFocus = Math.max(routeData.routes.length - 1, 0);
+        if (focusLevel > maxFocus) {
+            setFocusLevel(maxFocus);
+        }
+    }, [focusLevel, routeData.routes.length]);
+
+    const selectedRoute =
+        routeData.routes.find((r) => r.id === selectedRouteId) ?? null;
     const neighborhoodDetail =
         selectedNeighborhood && selectedNeighborhoodRouteIds
             ? getNeighborhoodDetail(
-                  routes,
+                  routeData.routes,
                   selectedNeighborhood,
                   selectedNeighborhoodRouteIds,
               )
@@ -61,7 +130,34 @@ function App() {
     return (
         <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
             <div style={{ flex: 1, minWidth: 0 }}>
+                {(routeData.loadError || DATA_URL) && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            top: 12,
+                            left: 12,
+                            zIndex: 1200,
+                            fontSize: 11,
+                            color: routeData.loadError ? "#fecaca" : "#cbd5e1",
+                            background: "rgba(2, 6, 23, 0.8)",
+                            border: "1px solid rgba(148, 163, 184, 0.25)",
+                            borderRadius: 6,
+                            padding: "6px 8px",
+                            maxWidth: 360,
+                            lineHeight: 1.4,
+                        }}
+                    >
+                        <div>Data source: {routeData.sourceLabel}</div>
+                        {routeData.generatedAt && (
+                            <div>Generated: {routeData.generatedAt}</div>
+                        )}
+                        {routeData.loadError && (
+                            <div>Using fallback data ({routeData.loadError})</div>
+                        )}
+                    </div>
+                )}
                 <MapView
+                    routes={routeData.routes}
                     onRouteSelect={handleRouteSelect}
                     viewMode={viewMode}
                     onViewModeChange={handleViewModeChange}
@@ -70,6 +166,7 @@ function App() {
                     onTrafficModeChange={setTrafficMode}
                     metricMode={metricMode}
                     onMetricModeChange={setMetricMode}
+                    routeCount={routeData.routes.length}
                     focusLevel={focusLevel}
                     onFocusLevelChange={setFocusLevel}
                     selectedNeighborhood={selectedNeighborhood}
@@ -82,6 +179,8 @@ function App() {
                 <RoutePanel
                     route={selectedRoute}
                     onClose={() => setSelectedRouteId(null)}
+                    trafficMode={trafficMode}
+                    metricMode={metricMode}
                 />
             )}
             {neighborhoodDetail && (

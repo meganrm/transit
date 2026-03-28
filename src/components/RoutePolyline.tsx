@@ -2,7 +2,7 @@ import { Polyline } from "react-leaflet";
 import L from "leaflet";
 import type { MetricMode, Route, TrafficMode } from "../types";
 import { weightScale } from "../constants";
-import { getRouteColor, getPersonMinutesMax } from "../utils/routeColor";
+import { getRouteColor, getPersonMinutesMax, getCommuterRange } from "../utils/routeColor";
 
 interface Props {
     route: Route;
@@ -15,18 +15,11 @@ interface Props {
 }
 
 function getRouteWeight(dailyCommuters: number): number {
-    const t = Math.min(
-        1,
-        Math.max(
-            0,
-            (dailyCommuters - weightScale.minCommuters) /
-                (weightScale.maxCommuters - weightScale.minCommuters),
-        ),
-    );
-    return (
-        weightScale.minWeight +
-        t * (weightScale.maxWeight - weightScale.minWeight)
-    );
+    const { min, max } = getCommuterRange();
+    const t = max > min
+        ? Math.min(1, Math.max(0, (dailyCommuters - min) / (max - min)))
+        : 0.5;
+    return weightScale.minWeight + t * (weightScale.maxWeight - weightScale.minWeight);
 }
 
 function getPersonMinutesWeight(
