@@ -19,6 +19,7 @@ interface CommuteTravelTime {
     id: number;
     carMinutes: number;
     carMinutesPeak: number;
+    peakPeriod: "AM" | "PM";
     transitMinutes: number;
     transitModes: string[];
 }
@@ -294,6 +295,7 @@ async function run(): Promise<void> {
         }
 
         const carMinutes = Math.max(1, Math.round(carSecs / 60));
+        const peakPeriod: "AM" | "PM" = peakPmSecs >= peakAmSecs ? "PM" : "AM";
         const carMinutesPeak = Math.max(1, Math.round(Math.max(peakAmSecs, peakPmSecs) / 60));
         const transitMinutes = Math.max(1, Math.round(transitSecs / 60));
 
@@ -307,6 +309,7 @@ async function run(): Promise<void> {
             id: pair.id,
             carMinutes,
             carMinutesPeak,
+            peakPeriod,
             transitMinutes,
             transitModes: ["Transit"],
         });

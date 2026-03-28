@@ -26,6 +26,7 @@ interface CommuteTravelTime {
     id: number;
     carMinutes: number;
     carMinutesPeak: number;
+    peakPeriod: "AM" | "PM";
     transitMinutes: number;
     transitModes: string[];
 }
@@ -95,7 +96,6 @@ async function run(): Promise<void> {
         maybeReadJson<Record<string, string>>(path.join(FETCH_CONFIG, "tract-names.json")),
     ]);
 
-    const peakHours = lodesConfig?.peakHours ?? "7–9 AM & 4–6 PM";
     const tractNames = new Map<string, string>(
         Object.entries(tractNamesRaw ?? {}).filter(([, v]) => v !== ""),
     );
@@ -132,7 +132,7 @@ async function run(): Promise<void> {
             transitMinutes: times.transitMinutes,
             transitModes: times.transitModes,
             dailyCommuters: pair.commuters,
-            peakHours,
+            peakHours: times.peakPeriod === "AM" ? "Wed 8 AM" : "Wed 5 PM",
         });
     }
 
