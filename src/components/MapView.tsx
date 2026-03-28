@@ -151,13 +151,13 @@ export function MapView({
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         if (viewMode !== "neighborhoods") return null;
-        const metrics = getNeighborhoodMetrics(routes);
+        const metrics = getNeighborhoodMetrics(routes, trafficMode);
         const map = new Map<string, number>();
         for (const m of metrics) {
-            map.set(m.neighborhood, m.personMinutesLost);
+            map.set(m.neighborhood, m.avgRatio);
         }
         return map;
-    }, [routes, viewMode]);
+    }, [routes, viewMode, trafficMode]);
 
     return (
         <div style={{ height: "100%", width: "100%", position: "relative" }}>
@@ -196,6 +196,7 @@ export function MapView({
                     routes={routes}
                     activeRouteId={activeRouteId}
                     neighborhoodScores={neighborhoodScores}
+                    trafficMode={trafficMode}
                     selectedNeighborhood={selectedNeighborhood}
                     onNeighborhoodSelect={onNeighborhoodSelect}
                 />

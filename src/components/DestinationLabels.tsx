@@ -2,8 +2,9 @@ import { Marker, CircleMarker } from "react-leaflet";
 import type { LeafletMouseEvent, LatLngExpression } from "leaflet";
 import L from "leaflet";
 import { theme } from "../constants";
-import type { Route } from "../types";
+import type { Route, TrafficMode } from "../types";
 import { useMemo, useState } from "react";
+import { getRouteRgb } from "../utils/routeColor";
 
 function createLabelIcon(name: string, highlighted: boolean) {
     const cls = highlighted
@@ -44,12 +45,13 @@ function buildDestRouteMap(routes: Route[]): Map<string, Set<number>> {
     return map;
 }
 
-function scoreToColor(score: number, maxScore: number): string {
-    if (score <= 0 || maxScore <= 0) return theme.textDim;
-    const t = Math.min(1, score / maxScore);
-    const r = Math.round(253 + t * (197 - 253));
-    const g = Math.round(224 + t * (27 - 224));
-    const b = Math.round(239 + t * (125 - 239));
+function ratioToColor(ratio: number, trafficMode: TrafficMode): string {
+    // Treat avgRatio as if it were transitMinutes/carMinutes directly
+    const [r, g, b] = getRouteRgb(
+        { transitMinutes: ratio, carMinutesPeak: 1, carMinutes: 1 },
+        trafficMode,
+        "travel-time-difference",
+    );
     return `rgb(${r},${g},${b})`;
 }
 
@@ -57,6 +59,7 @@ interface Props {
     routes: Route[];
     activeRouteId: number | null;
     neighborhoodScores: Map<string, number> | null;
+    trafficMode: TrafficMode;
     selectedNeighborhood: string | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
 }
@@ -65,21 +68,13 @@ export function DestinationLabels({
     routes,
     activeRouteId,
     neighborhoodScores,
+    trafficMode,
     selectedNeighborhood,
     onNeighborhoodSelect,
 }: Props) {
     const hubs = useMemo(() => extractHubs(routes), [routes]);
     const destRouteMap = useMemo(() => buildDestRouteMap(routes), [routes]);
     const [hoveredDest, setHoveredDest] = useState<string | null>(null);
-
-    const maxScore = useMemo(() => {
-        if (!neighborhoodScores) return 0;
-        let max = 0;
-        for (const v of neighborhoodScores.values()) {
-            if (v > max) max = v;
-        }
-        return max;
-    }, [neighborhoodScores]);
 
     return (
         <>
@@ -103,7 +98,7 @@ export function DestinationLabels({
                     : isHovered
                       ? theme.textBright
                       : useScoreColor
-                        ? scoreToColor(score!, maxScore)
+                        ? ratioToColor(score!, trafficMode)
                         : highlighted
                           ? theme.textBright
                           : theme.textSecondary;
@@ -113,7 +108,7 @@ export function DestinationLabels({
                     : isHovered
                       ? 7
                       : useScoreColor
-                        ? 4 + Math.min(4, (Math.max(0, score!) / maxScore) * 4)
+                        ? 4 + Math.min(4, (Math.abs(score! - 1.0) / 3) * 4)
                         : highlighted
                           ? 6
                           : 4;

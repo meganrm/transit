@@ -158,6 +158,9 @@ export function Legend({
                     )
                 }
             />
+            <div style={{ fontSize: 10, color: theme.textDim, marginTop: -4, marginBottom: 6 }}>
+                Also colors neighborhood dots
+            </div>
             <ToggleRow
                 label="Metric"
                 valueLabel={

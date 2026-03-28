@@ -1,4 +1,4 @@
-import type { Route } from "../types";
+import type { Route, TrafficMode } from "../types";
 
 export interface NeighborhoodDetail {
     neighborhood: string;
@@ -58,7 +58,7 @@ export interface RouteMetric {
 
 export interface NeighborhoodMetric {
     neighborhood: string;
-    personMinutesLost: number;
+    avgRatio: number;
 }
 
 /** Per-route person-minutes lost. Positive = transit worse than off-peak driving. */
@@ -84,21 +84,24 @@ export function getDataRatioRange(routes: Route[]): { min: number; max: number }
     return { min, max };
 }
 
-/** Aggregated person-minutes lost per origin neighborhood. */
-export function getNeighborhoodMetrics(routes: Route[]): NeighborhoodMetric[] {
-    const map = new Map<string, number>();
+/** Commuter-weighted average transit/car ratio per origin neighborhood. */
+export function getNeighborhoodMetrics(
+    routes: Route[],
+    trafficMode: TrafficMode,
+): NeighborhoodMetric[] {
+    const ratioSum = new Map<string, number>();
+    const commuterSum = new Map<string, number>();
     for (const r of routes) {
         const origin = r.name.split(" → ")[0].trim();
-        map.set(
-            origin,
-            (map.get(origin) ?? 0) +
-                (r.transitMinutes - r.carMinutes) * r.dailyCommuters,
-        );
+        const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+        const ratio = r.transitMinutes / car;
+        ratioSum.set(origin, (ratioSum.get(origin) ?? 0) + ratio * r.dailyCommuters);
+        commuterSum.set(origin, (commuterSum.get(origin) ?? 0) + r.dailyCommuters);
     }
-    return Array.from(map.entries())
-        .map(([neighborhood, personMinutesLost]) => ({
+    return Array.from(ratioSum.entries())
+        .map(([neighborhood, wSum]) => ({
             neighborhood,
-            personMinutesLost,
+            avgRatio: wSum / (commuterSum.get(neighborhood) ?? 1),
         }))
-        .sort((a, b) => b.personMinutesLost - a.personMinutesLost);
+        .sort((a, b) => b.avgRatio - a.avgRatio);
 }
