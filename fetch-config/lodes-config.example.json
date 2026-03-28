@@ -1,0 +1,14 @@
+{
+  "_notes": {
+    "countyFips": "King County WA = 53033",
+    "lodesYear": "Latest available LODES8 year (2021 as of 2024)",
+    "topN": "Number of commute pairs to include",
+    "minCommuters": "Minimum daily commuters to consider a pair"
+  },
+  "countyFips": "53033",
+  "lodesYear": 2021,
+  "topN": 50,
+  "minCommuters": 100,
+  "excludeSelfTracts": true,
+  "peakHours": "7–9 AM & 4–6 PM"
+}

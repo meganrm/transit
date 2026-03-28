@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fetch:lodes": "tsx scripts/fetch-lodes.ts",
+    "fetch:tract-names": "tsx --require dotenv/config scripts/fetch-tract-names.ts",
+    "fetch:commute-times": "tsx --require dotenv/config scripts/fetch-commute-times.ts",
+    "build:commute-feed": "tsx scripts/build-commute-feed.ts",
+    "ingest": "npm run fetch:lodes && npm run fetch:tract-names && npm run fetch:commute-times && npm run build:commute-feed"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
@@ -25,11 +30,13 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.3",
+    "dotenv": "^17.3.1",
     "eslint": "^9.13.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
     "jsdom": "^26.1.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.11.0",
     "vite": "^5.4.10",

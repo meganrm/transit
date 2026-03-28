@@ -1,9 +1,8 @@
 import { Marker, CircleMarker } from "react-leaflet";
-import type { LeafletMouseEvent } from "leaflet";
+import type { LeafletMouseEvent, LatLngExpression } from "leaflet";
 import L from "leaflet";
-import { destinations } from "../data/destinations";
-import { routes } from "../data/routes";
 import { theme } from "../constants";
+import type { Route } from "../types";
 import { useMemo, useState } from "react";
 
 function createLabelIcon(name: string, highlighted: boolean) {
@@ -18,23 +17,28 @@ function createLabelIcon(name: string, highlighted: boolean) {
     });
 }
 
-/** Map destination names to the route IDs that touch them (both origin and destination). */
-function buildDestRouteMap() {
+function extractHubs(routes: Route[]): { name: string; position: LatLngExpression }[] {
+    const seen = new Map<string, LatLngExpression>();
+    for (const route of routes) {
+        const parts = route.name.split(" → ").map((s) => s.trim());
+        if (parts[0] && !seen.has(parts[0])) {
+            seen.set(parts[0], route.coordinates[0]);
+        }
+        if (parts[1] && !seen.has(parts[1])) {
+            seen.set(parts[1], route.coordinates[route.coordinates.length - 1]);
+        }
+    }
+    return [...seen.entries()].map(([name, position]) => ({ name, position }));
+}
+
+/** Map hub names to the route IDs that touch them (both origin and destination). */
+function buildDestRouteMap(routes: Route[]): Map<string, Set<number>> {
     const map = new Map<string, Set<number>>();
     for (const route of routes) {
-        const parts = route.name.split(" → ");
-        for (const part of parts) {
-            const trimmed = part.trim();
-            for (const dest of destinations) {
-                if (
-                    trimmed === dest.name ||
-                    dest.name.includes(trimmed) ||
-                    trimmed.includes(dest.name)
-                ) {
-                    if (!map.has(dest.name)) map.set(dest.name, new Set());
-                    map.get(dest.name)!.add(route.id);
-                }
-            }
+        for (const name of route.name.split(" → ").map((s) => s.trim())) {
+            if (!name) continue;
+            if (!map.has(name)) map.set(name, new Set());
+            map.get(name)!.add(route.id);
         }
     }
     return map;
@@ -50,6 +54,7 @@ function scoreToColor(score: number, maxScore: number): string {
 }
 
 interface Props {
+    routes: Route[];
     activeRouteId: number | null;
     neighborhoodScores: Map<string, number> | null;
     selectedNeighborhood: string | null;
@@ -57,12 +62,14 @@ interface Props {
 }
 
 export function DestinationLabels({
+    routes,
     activeRouteId,
     neighborhoodScores,
     selectedNeighborhood,
     onNeighborhoodSelect,
 }: Props) {
-    const destRouteMap = useMemo(buildDestRouteMap, []);
+    const hubs = useMemo(() => extractHubs(routes), [routes]);
+    const destRouteMap = useMemo(() => buildDestRouteMap(routes), [routes]);
     const [hoveredDest, setHoveredDest] = useState<string | null>(null);
 
     const maxScore = useMemo(() => {
@@ -76,7 +83,7 @@ export function DestinationLabels({
 
     return (
         <>
-            {destinations.map((dest) => {
+            {hubs.map((dest) => {
                 const touchingRouteIds = destRouteMap.get(dest.name);
                 const isSelected = selectedNeighborhood === dest.name;
                 const isHovered = hoveredDest === dest.name && !isSelected;

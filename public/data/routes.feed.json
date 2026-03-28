@@ -1,0 +1,811 @@
+{
+  "sourceLabel": "LODES commute data + Google Maps",
+  "generatedAt": "2026-03-28T07:58:24.768Z",
+  "routes": [
+    {
+      "id": 1,
+      "name": "Denny Triangle → North Beacon Hill",
+      "description": "863 daily commuters",
+      "coordinates": [
+        [
+          47.616515,
+          -122.3349
+        ],
+        [
+          47.587865,
+          -122.311179
+        ]
+      ],
+      "carMinutes": 9,
+      "carMinutesPeak": 9,
+      "transitMinutes": 35,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 863,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 2,
+      "name": "Westlake → North Beacon Hill",
+      "description": "787 daily commuters",
+      "coordinates": [
+        [
+          47.631738,
+          -122.342234
+        ],
+        [
+          47.587865,
+          -122.311179
+        ]
+      ],
+      "carMinutes": 12,
+      "carMinutesPeak": 14,
+      "transitMinutes": 58,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 787,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 3,
+      "name": "South Lake Union → North Beacon Hill",
+      "description": "742 daily commuters",
+      "coordinates": [
+        [
+          47.620895,
+          -122.33529
+        ],
+        [
+          47.587865,
+          -122.311179
+        ]
+      ],
+      "carMinutes": 9,
+      "carMinutesPeak": 10,
+      "transitMinutes": 42,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 742,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 4,
+      "name": "Belltown → North Beacon Hill",
+      "description": "644 daily commuters",
+      "coordinates": [
+        [
+          47.617056,
+          -122.34572
+        ],
+        [
+          47.587865,
+          -122.311179
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 13,
+      "transitMinutes": 38,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 644,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 5,
+      "name": "Belltown → North Beacon Hill",
+      "description": "599 daily commuters",
+      "coordinates": [
+        [
+          47.615197,
+          -122.340769
+        ],
+        [
+          47.587865,
+          -122.311179
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 12,
+      "transitMinutes": 32,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 599,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 6,
+      "name": "Lawton Park → Central Business District",
+      "description": "238 daily commuters",
+      "coordinates": [
+        [
+          47.652979,
+          -122.387085
+        ],
+        [
+          47.606234,
+          -122.335074
+        ]
+      ],
+      "carMinutes": 17,
+      "carMinutesPeak": 19,
+      "transitMinutes": 66,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 238,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 7,
+      "name": "Briarcliff → Central Business District",
+      "description": "234 daily commuters",
+      "coordinates": [
+        [
+          47.643505,
+          -122.405296
+        ],
+        [
+          47.606234,
+          -122.335074
+        ]
+      ],
+      "carMinutes": 17,
+      "carMinutesPeak": 18,
+      "transitMinutes": 33,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 234,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 8,
+      "name": "Wedgwood → University of Washington",
+      "description": "231 daily commuters",
+      "coordinates": [
+        [
+          47.694869,
+          -122.281223
+        ],
+        [
+          47.658086,
+          -122.308072
+        ]
+      ],
+      "carMinutes": 15,
+      "carMinutesPeak": 16,
+      "transitMinutes": 55,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 231,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 9,
+      "name": "Whittier Heights → Central Business District",
+      "description": "225 daily commuters",
+      "coordinates": [
+        [
+          47.684901,
+          -122.374146
+        ],
+        [
+          47.606234,
+          -122.335074
+        ]
+      ],
+      "carMinutes": 21,
+      "carMinutesPeak": 26,
+      "transitMinutes": 34,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 225,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 10,
+      "name": "Loyal Heights → Central Business District",
+      "description": "225 daily commuters",
+      "coordinates": [
+        [
+          47.684785,
+          -122.391089
+        ],
+        [
+          47.606234,
+          -122.335074
+        ]
+      ],
+      "carMinutes": 23,
+      "carMinutesPeak": 25,
+      "transitMinutes": 40,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 225,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 11,
+      "name": "Eastlake → Central Business District",
+      "description": "219 daily commuters",
+      "coordinates": [
+        [
+          47.644559,
+          -122.322826
+        ],
+        [
+          47.606234,
+          -122.335074
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 16,
+      "transitMinutes": 45,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 219,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 12,
+      "name": "Windermere → University of Washington",
+      "description": "200 daily commuters",
+      "coordinates": [
+        [
+          47.669395,
+          -122.267966
+        ],
+        [
+          47.658086,
+          -122.308072
+        ]
+      ],
+      "carMinutes": 10,
+      "carMinutesPeak": 11,
+      "transitMinutes": 31,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 200,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 13,
+      "name": "Westlake → Denny Triangle",
+      "description": "198 daily commuters",
+      "coordinates": [
+        [
+          47.631738,
+          -122.342234
+        ],
+        [
+          47.616515,
+          -122.3349
+        ]
+      ],
+      "carMinutes": 8,
+      "carMinutesPeak": 10,
+      "transitMinutes": 24,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 198,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 14,
+      "name": "Hawthorne Hills → University of Washington",
+      "description": "188 daily commuters",
+      "coordinates": [
+        [
+          47.671152,
+          -122.278851
+        ],
+        [
+          47.658086,
+          -122.308072
+        ]
+      ],
+      "carMinutes": 10,
+      "carMinutesPeak": 10,
+      "transitMinutes": 23,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 188,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 15,
+      "name": "North Delridge → SODO",
+      "description": "175 daily commuters",
+      "coordinates": [
+        [
+          47.567052,
+          -122.368714
+        ],
+        [
+          47.584977,
+          -122.325559
+        ]
+      ],
+      "carMinutes": 9,
+      "carMinutesPeak": 11,
+      "transitMinutes": 151,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 175,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 16,
+      "name": "South Beacon Hill → SODO",
+      "description": "175 daily commuters",
+      "coordinates": [
+        [
+          47.522903,
+          -122.281475
+        ],
+        [
+          47.584977,
+          -122.325559
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 18,
+      "transitMinutes": 31,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 175,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 17,
+      "name": "Ravenna → University of Washington",
+      "description": "171 daily commuters",
+      "coordinates": [
+        [
+          47.669176,
+          -122.290395
+        ],
+        [
+          47.658086,
+          -122.308072
+        ]
+      ],
+      "carMinutes": 7,
+      "carMinutesPeak": 8,
+      "transitMinutes": 35,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 171,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 18,
+      "name": "Highland Park → SODO",
+      "description": "169 daily commuters",
+      "coordinates": [
+        [
+          47.526437,
+          -122.347233
+        ],
+        [
+          47.584977,
+          -122.325559
+        ]
+      ],
+      "carMinutes": 15,
+      "carMinutesPeak": 18,
+      "transitMinutes": 105,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 169,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 19,
+      "name": "Eastlake → University of Washington",
+      "description": "164 daily commuters",
+      "coordinates": [
+        [
+          47.644559,
+          -122.322826
+        ],
+        [
+          47.658086,
+          -122.308072
+        ]
+      ],
+      "carMinutes": 9,
+      "carMinutesPeak": 9,
+      "transitMinutes": 34,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 164,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 20,
+      "name": "North Beacon Hill → SODO",
+      "description": "154 daily commuters",
+      "coordinates": [
+        [
+          47.587865,
+          -122.311179
+        ],
+        [
+          47.584977,
+          -122.325559
+        ]
+      ],
+      "carMinutes": 5,
+      "carMinutesPeak": 5,
+      "transitMinutes": 34,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 154,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 21,
+      "name": "North Admiral → SODO",
+      "description": "150 daily commuters",
+      "coordinates": [
+        [
+          47.571971,
+          -122.395529
+        ],
+        [
+          47.584977,
+          -122.325559
+        ]
+      ],
+      "carMinutes": 14,
+      "carMinutesPeak": 14,
+      "transitMinutes": 145,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 150,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 22,
+      "name": "Briarcliff → First Hill",
+      "description": "145 daily commuters",
+      "coordinates": [
+        [
+          47.643505,
+          -122.405296
+        ],
+        [
+          47.610798,
+          -122.330484
+        ]
+      ],
+      "carMinutes": 19,
+      "carMinutesPeak": 20,
+      "transitMinutes": 43,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 145,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 23,
+      "name": "Uptown → Denny Triangle",
+      "description": "142 daily commuters",
+      "coordinates": [
+        [
+          47.627351,
+          -122.345271
+        ],
+        [
+          47.616515,
+          -122.3349
+        ]
+      ],
+      "carMinutes": 7,
+      "carMinutesPeak": 8,
+      "transitMinutes": 24,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 142,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 24,
+      "name": "Denny Triangle → Belltown",
+      "description": "124 daily commuters",
+      "coordinates": [
+        [
+          47.616515,
+          -122.3349
+        ],
+        [
+          47.615197,
+          -122.340769
+        ]
+      ],
+      "carMinutes": 4,
+      "carMinutesPeak": 4,
+      "transitMinutes": 9,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 124,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 25,
+      "name": "Highland Park → Yesler Terrace",
+      "description": "123 daily commuters",
+      "coordinates": [
+        [
+          47.526437,
+          -122.347233
+        ],
+        [
+          47.604675,
+          -122.324724
+        ]
+      ],
+      "carMinutes": 16,
+      "carMinutesPeak": 23,
+      "transitMinutes": 116,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 123,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 26,
+      "name": "Leschi → Yesler Terrace",
+      "description": "122 daily commuters",
+      "coordinates": [
+        [
+          47.59663,
+          -122.295439
+        ],
+        [
+          47.604675,
+          -122.324724
+        ]
+      ],
+      "carMinutes": 10,
+      "carMinutesPeak": 11,
+      "transitMinutes": 34,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 122,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 27,
+      "name": "Leschi → First Hill",
+      "description": "121 daily commuters",
+      "coordinates": [
+        [
+          47.59663,
+          -122.295439
+        ],
+        [
+          47.610798,
+          -122.330484
+        ]
+      ],
+      "carMinutes": 12,
+      "carMinutesPeak": 14,
+      "transitMinutes": 37,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 121,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 28,
+      "name": "South Beacon Hill → Yesler Terrace",
+      "description": "119 daily commuters",
+      "coordinates": [
+        [
+          47.522903,
+          -122.281475
+        ],
+        [
+          47.604675,
+          -122.324724
+        ]
+      ],
+      "carMinutes": 15,
+      "carMinutesPeak": 22,
+      "transitMinutes": 46,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 119,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 29,
+      "name": "North Admiral → Yesler Terrace",
+      "description": "117 daily commuters",
+      "coordinates": [
+        [
+          47.571971,
+          -122.395529
+        ],
+        [
+          47.604675,
+          -122.324724
+        ]
+      ],
+      "carMinutes": 15,
+      "carMinutesPeak": 20,
+      "transitMinutes": 157,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 117,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 30,
+      "name": "North Beacon Hill → Yesler Terrace",
+      "description": "115 daily commuters",
+      "coordinates": [
+        [
+          47.587865,
+          -122.311179
+        ],
+        [
+          47.604675,
+          -122.324724
+        ]
+      ],
+      "carMinutes": 9,
+      "carMinutesPeak": 10,
+      "transitMinutes": 23,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 115,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 31,
+      "name": "Eastlake → First Hill",
+      "description": "109 daily commuters",
+      "coordinates": [
+        [
+          47.644559,
+          -122.322826
+        ],
+        [
+          47.610798,
+          -122.330484
+        ]
+      ],
+      "carMinutes": 10,
+      "carMinutesPeak": 14,
+      "transitMinutes": 54,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 109,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 32,
+      "name": "Eastlake → First Hill",
+      "description": "107 daily commuters",
+      "coordinates": [
+        [
+          47.635019,
+          -122.325938
+        ],
+        [
+          47.610798,
+          -122.330484
+        ]
+      ],
+      "carMinutes": 7,
+      "carMinutesPeak": 9,
+      "transitMinutes": 44,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 107,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 33,
+      "name": "North Queen Anne → First Hill",
+      "description": "107 daily commuters",
+      "coordinates": [
+        [
+          47.643647,
+          -122.352228
+        ],
+        [
+          47.610798,
+          -122.330484
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 15,
+      "transitMinutes": 44,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 107,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 34,
+      "name": "Fremont → Denny Triangle",
+      "description": "103 daily commuters",
+      "coordinates": [
+        [
+          47.661199,
+          -122.36014
+        ],
+        [
+          47.616515,
+          -122.3349
+        ]
+      ],
+      "carMinutes": 13,
+      "carMinutesPeak": 19,
+      "transitMinutes": 79,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 103,
+      "peakHours": "7–9 AM & 4–6 PM"
+    },
+    {
+      "id": 35,
+      "name": "South Lake Union → Denny Triangle",
+      "description": "102 daily commuters",
+      "coordinates": [
+        [
+          47.621012,
+          -122.343761
+        ],
+        [
+          47.616515,
+          -122.3349
+        ]
+      ],
+      "carMinutes": 5,
+      "carMinutesPeak": 5,
+      "transitMinutes": 14,
+      "transitModes": [
+        "Transit"
+      ],
+      "dailyCommuters": 102,
+      "peakHours": "7–9 AM & 4–6 PM"
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { routes } from "../data/routes";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { ViewToggle } from "./ViewToggle";
 import type { ViewMode } from "./ViewToggle";
 import type { MetricMode, TrafficMode } from "../types";
+import type { Route } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
 import { getRouteMetrics, getNeighborhoodMetrics } from "../data/analytics";
@@ -89,6 +89,7 @@ function HomeButton({
 }
 
 interface MapViewProps {
+    routes: Route[];
     onRouteSelect: (id: number) => void;
     viewMode: ViewMode;
     onViewModeChange: (mode: ViewMode) => void;
@@ -96,6 +97,7 @@ interface MapViewProps {
     onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
     onMetricModeChange: (mode: MetricMode) => void;
+    routeCount: number;
     onClearSelection: () => void;
     focusLevel: number;
     onFocusLevelChange: (level: number) => void;
@@ -105,6 +107,7 @@ interface MapViewProps {
 }
 
 export function MapView({
+    routes,
     onRouteSelect,
     viewMode,
     onViewModeChange,
@@ -112,6 +115,7 @@ export function MapView({
     onTrafficModeChange,
     metricMode,
     onMetricModeChange,
+    routeCount,
     onClearSelection,
     focusLevel,
     onFocusLevelChange,
@@ -133,7 +137,7 @@ export function MapView({
             .slice(0, topN)
             .map((m) => m.routeId);
         return topIds.length > 0 ? new Set(topIds) : null;
-    }, [selectedNeighborhoodRouteIds, focusLevel]);
+    }, [routes, selectedNeighborhoodRouteIds, focusLevel]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         if (viewMode !== "neighborhoods") return null;
@@ -143,7 +147,7 @@ export function MapView({
             map.set(m.neighborhood, m.personMinutesLost);
         }
         return map;
-    }, [viewMode]);
+    }, [routes, viewMode]);
 
     return (
         <div style={{ height: "100%", width: "100%", position: "relative" }}>
@@ -179,6 +183,7 @@ export function MapView({
                     />
                 ))}
                 <DestinationLabels
+                    routes={routes}
                     activeRouteId={activeRouteId}
                     neighborhoodScores={neighborhoodScores}
                     selectedNeighborhood={selectedNeighborhood}
@@ -190,6 +195,7 @@ export function MapView({
                 onTrafficModeChange={onTrafficModeChange}
                 metricMode={metricMode}
                 onMetricModeChange={onMetricModeChange}
+                routeCount={routeCount}
                 focusLevel={focusLevel}
                 onFocusLevelChange={onFocusLevelChange}
             />
