@@ -29,19 +29,11 @@ function computeRatioRange(
     return { min, max };
 }
 
-function computePMRange(
-    routeList: Route[],
-    trafficMode: TrafficMode,
-): {
-    min: number;
-    max: number;
-} {
+function computePMRange(routeList: Route[]): { min: number; max: number } {
     let min = Infinity,
         max = -Infinity;
     for (const r of routeList) {
-        const baselineCarMinutes =
-            trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
-        const pm = (r.transitMinutes - baselineCarMinutes) * r.dailyCommuters;
+        const pm = (r.transitMinutes - r.carMinutes) * r.dailyCommuters;
         if (pm < min) min = pm;
         if (pm > max) max = pm;
     }
@@ -102,20 +94,14 @@ let ratioRanges: Record<TrafficMode, { min: number; max: number }> = {
     "peak-traffic": { min: 0, max: 1 },
 };
 
-let pmRanges: Record<TrafficMode, { min: number; max: number }> = {
-    "no-traffic": { min: 0, max: 1 },
-    "peak-traffic": { min: 0, max: 1 },
-};
+let pmRange: { min: number; max: number } = { min: 0, max: 1 };
 
 let ratioStops: Record<TrafficMode, [number, number, number, number][]> = {
     "no-traffic": buildRatioStops(0.8, 1.4),
     "peak-traffic": buildRatioStops(0.8, 1.4),
 };
 
-let pmStops: Record<TrafficMode, [number, number, number, number][]> = {
-    "no-traffic": buildPMStops(0, 1),
-    "peak-traffic": buildPMStops(0, 1),
-};
+let pmStopsValue: [number, number, number, number][] = buildPMStops(0, 1);
 
 function rebuildScales(routeList: Route[]): void {
     if (routeList.length === 0) return;
@@ -132,10 +118,7 @@ function rebuildScales(routeList: Route[]): void {
         "peak-traffic": computeRatioRange(routeList, "peak-traffic"),
     };
 
-    pmRanges = {
-        "no-traffic": computePMRange(routeList, "no-traffic"),
-        "peak-traffic": computePMRange(routeList, "peak-traffic"),
-    };
+    pmRange = computePMRange(routeList);
 
     ratioStops = {
         "no-traffic": buildRatioStops(
@@ -148,16 +131,7 @@ function rebuildScales(routeList: Route[]): void {
         ),
     };
 
-    pmStops = {
-        "no-traffic": buildPMStops(
-            pmRanges["no-traffic"].min,
-            pmRanges["no-traffic"].max,
-        ),
-        "peak-traffic": buildPMStops(
-            pmRanges["peak-traffic"].min,
-            pmRanges["peak-traffic"].max,
-        ),
-    };
+    pmStopsValue = buildPMStops(pmRange.min, pmRange.max);
 }
 
 rebuildScales(fallbackRoutes);
@@ -171,7 +145,7 @@ function getStops(
     metricMode: MetricMode,
 ): [number, number, number, number][] {
     if (metricMode === "person-minutes-lost") {
-        return pmStops[trafficMode];
+        return pmStopsValue;
     }
     return ratioStops[trafficMode];
 }
@@ -218,7 +192,7 @@ export function getRouteRgb(
         value = route.transitMinutes / baselineCarMinutes;
     } else {
         value =
-            (route.transitMinutes - baselineCarMinutes) *
+            (route.transitMinutes - (route.carMinutes ?? route.carMinutesPeak)) *
             (route.dailyCommuters ?? 0);
     }
     return interpolateStops(value, getStops(trafficMode, metricMode));
@@ -271,10 +245,8 @@ export function getLegendEqualPct(
 }
 
 /** Position of the 0 (breakeven) tick for person-minutes mode. Returns null if all routes lose time. */
-export function getLegendBreakevenPct(
-    trafficMode: TrafficMode = "peak-traffic",
-): string | null {
-    const stops = pmStops[trafficMode];
+export function getLegendBreakevenPct(): string | null {
+    const stops = pmStopsValue;
     const min = stops[0][0];
     const max = stops[stops.length - 1][0];
     if (max <= min) return null;
@@ -286,8 +258,6 @@ export function getCommuterRange(): { min: number; max: number } {
     return commuterRange;
 }
 
-export function getPersonMinutesMax(
-    trafficMode: TrafficMode = "peak-traffic",
-): number {
-    return pmRanges[trafficMode].max;
+export function getPersonMinutesMax(): number {
+    return pmRange.max;
 }

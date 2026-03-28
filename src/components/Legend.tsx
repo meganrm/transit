@@ -93,7 +93,7 @@ export function Legend({
 }: Props) {
     const gradient = buildLegendGradient(trafficMode, metricMode);
     const equalPct = getLegendEqualPct(trafficMode, metricMode);
-    const breakevenPct = getLegendBreakevenPct(trafficMode);
+    const breakevenPct = getLegendBreakevenPct();
 
     const isPersonMinutes = metricMode === "person-minutes-lost";
     const tickPct = isPersonMinutes ? breakevenPct : equalPct;
@@ -103,15 +103,15 @@ export function Legend({
     const trafficLabel =
         trafficMode === "peak-traffic" ? "Peak Traffic" : "No Traffic";
     const sectionTitle = isPersonMinutes
-        ? `Transit Time Tax (${trafficLabel})`
+        ? "Transit Time Tax"
         : `Transit vs ${trafficLabel}`;
     const sectionDescription = isPersonMinutes
-        ? "Collective time cost if all commuters switched to transit."
+        ? "Time lost daily if all commuters switched to transit vs. off-peak driving."
         : trafficMode === "peak-traffic"
           ? "Travel-time difference using rush-hour driving as the baseline."
           : "Travel-time difference using uncongested driving as the baseline.";
 
-    const pmMax = getPersonMinutesMax(trafficMode);
+    const pmMax = getPersonMinutesMax();
     const { min: cMin, max: cMax } = getCommuterRange();
     const cMid = Math.round((cMin + cMax) / 2);
     const midWeight = (weightScale.minWeight + weightScale.maxWeight) / 2;
