@@ -216,40 +216,50 @@ async function run(): Promise<void> {
 
     // Off-peak baseline: Sunday 10am Seattle (light traffic)
     const offPeakDepartureTime = String(seattleEpoch(0, 10));
-    // Peak: Monday 8am Seattle (rush hour)
-    const peakDepartureTime = String(seattleEpoch(1, 8));
+    // Peak AM: Wednesday 8am Seattle
+    const peakAmDepartureTime = String(seattleEpoch(3, 8));
+    // Peak PM: Wednesday 5pm Seattle
+    const peakPmDepartureTime = String(seattleEpoch(3, 17));
 
     const carParams: Record<string, string> = {
         mode: "driving",
         departure_time: offPeakDepartureTime,
         traffic_model: "optimistic",
     };
-    const peakParams: Record<string, string> = {
+    const peakAmParams: Record<string, string> = {
         mode: "driving",
-        departure_time: peakDepartureTime,
+        departure_time: peakAmDepartureTime,
+        traffic_model: "best_guess",
+    };
+    const peakPmParams: Record<string, string> = {
+        mode: "driving",
+        departure_time: peakPmDepartureTime,
         traffic_model: "best_guess",
     };
     const transitParams: Record<string, string> = {
         mode: "transit",
-        departure_time: peakDepartureTime,
+        departure_time: peakAmDepartureTime,
     };
 
     const carById = new Map<number, number>();
-    const peakById = new Map<number, number>();
+    const peakAmById = new Map<number, number>();
+    const peakPmById = new Map<number, number>();
     const transitById = new Map<number, number>();
 
     let completed = 0;
     const total = originGroups.size;
 
     for (const [originStr, group] of originGroups) {
-        const [car, peak, transit] = await Promise.all([
+        const [car, peakAm, peakPm, transit] = await Promise.all([
             fetchForOriginGroup(originStr, group, carParams, apiKey),
-            fetchForOriginGroup(originStr, group, peakParams, apiKey),
+            fetchForOriginGroup(originStr, group, peakAmParams, apiKey),
+            fetchForOriginGroup(originStr, group, peakPmParams, apiKey),
             fetchForOriginGroup(originStr, group, transitParams, apiKey),
         ]);
 
         for (const [id, secs] of car) carById.set(id, secs);
-        for (const [id, secs] of peak) peakById.set(id, secs);
+        for (const [id, secs] of peakAm) peakAmById.set(id, secs);
+        for (const [id, secs] of peakPm) peakPmById.set(id, secs);
         for (const [id, secs] of transit) transitById.set(id, secs);
 
         completed += 1;
@@ -262,15 +272,20 @@ async function run(): Promise<void> {
 
     for (const pair of pairs) {
         const carSecs = carById.get(pair.id) ?? Number.NaN;
-        const peakSecs = peakById.get(pair.id) ?? Number.NaN;
+        const peakAmSecs = peakAmById.get(pair.id) ?? Number.NaN;
+        const peakPmSecs = peakPmById.get(pair.id) ?? Number.NaN;
         const transitSecs = transitById.get(pair.id) ?? Number.NaN;
 
         if (!Number.isFinite(carSecs)) {
             console.warn(`Pair ${pair.id}: driving API returned no result — skipping.`);
             continue;
         }
-        if (!Number.isFinite(peakSecs)) {
-            console.warn(`Pair ${pair.id}: peak driving API returned no result — skipping.`);
+        if (!Number.isFinite(peakAmSecs)) {
+            console.warn(`Pair ${pair.id}: peak AM driving API returned no result — skipping.`);
+            continue;
+        }
+        if (!Number.isFinite(peakPmSecs)) {
+            console.warn(`Pair ${pair.id}: peak PM driving API returned no result — skipping.`);
             continue;
         }
         if (!Number.isFinite(transitSecs)) {
@@ -279,7 +294,7 @@ async function run(): Promise<void> {
         }
 
         const carMinutes = Math.max(1, Math.round(carSecs / 60));
-        const carMinutesPeak = Math.max(1, Math.round(peakSecs / 60));
+        const carMinutesPeak = Math.max(1, Math.round(Math.max(peakAmSecs, peakPmSecs) / 60));
         const transitMinutes = Math.max(1, Math.round(transitSecs / 60));
 
         if (carMinutesPeak < carMinutes) {
