@@ -6,6 +6,7 @@ import { getRouteColor, getRouteRgb } from "../utils/routeColor";
 interface Props {
     detail: NeighborhoodDetail;
     trafficMode: TrafficMode;
+    maxAvgRatio: number;
     onClose: () => void;
     onRouteSelect: (id: number) => void;
 }
@@ -101,7 +102,7 @@ function RouteRow({
     );
 }
 
-export function NeighborhoodPanel({ detail, trafficMode, onClose, onRouteSelect }: Props) {
+export function NeighborhoodPanel({ detail, trafficMode, maxAvgRatio, onClose, onRouteSelect }: Props) {
     const [r, g, b] = getRouteRgb({
         transitMinutes: detail.avgRatio * 100,
         carMinutesPeak: 100,
@@ -241,7 +242,7 @@ export function NeighborhoodPanel({ detail, trafficMode, onClose, onRouteSelect 
                 >
                     <div
                         style={{
-                            width: `${Math.min(100, ((detail.avgRatio - 0.4) / (1.8 - 0.4)) * 100)}%`,
+                            width: `${Math.min(100, Math.max(0, (detail.avgRatio - 1) / (maxAvgRatio - 1))) * 100}%`,
                             height: "100%",
                             borderRadius: 3,
                             background: accentColor,
@@ -256,9 +257,8 @@ export function NeighborhoodPanel({ detail, trafficMode, onClose, onRouteSelect 
                         color: theme.textDim,
                     }}
                 >
-                    <span style={{ color: "#4d9221" }}>Faster</span>
-                    <span>Equal</span>
-                    <span style={{ color: "#c51b7d" }}>Slower</span>
+                    <span>= driving</span>
+                    <span>{maxAvgRatio.toFixed(1)}× worst</span>
                 </div>
             </div>
 

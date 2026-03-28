@@ -22,12 +22,10 @@ function getRouteWeight(dailyCommuters: number): number {
     return weightScale.minWeight + t * (weightScale.maxWeight - weightScale.minWeight);
 }
 
-function getPersonMinutesWeight(route: Route): number {
-    const pm = Math.max(
-        0,
-        (route.transitMinutes - route.carMinutes) * route.dailyCommuters,
-    );
-    const t = Math.min(1, pm / getPersonMinutesMax());
+function getPersonMinutesWeight(route: Route, trafficMode: TrafficMode): number {
+    const car = trafficMode === "peak-traffic" ? route.carMinutesPeak : route.carMinutes;
+    const pm = Math.max(0, (route.transitMinutes - car) * route.dailyCommuters);
+    const t = Math.min(1, pm / getPersonMinutesMax(trafficMode));
     return (
         weightScale.minWeight +
         t * (weightScale.maxWeight - weightScale.minWeight)
@@ -46,7 +44,7 @@ export function RoutePolyline({
     const color = getRouteColor(route, trafficMode, metricMode);
     const baseWeight =
         metricMode === "person-minutes-lost"
-            ? getPersonMinutesWeight(route)
+            ? getPersonMinutesWeight(route, trafficMode)
             : getRouteWeight(route.dailyCommuters);
     const weight = isActive ? baseWeight + weightScale.hoverBoost : baseWeight;
     const opacity = isDimmed ? 0.3 : isActive ? 1 : 0.75;

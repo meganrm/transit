@@ -5,7 +5,7 @@ import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
 import { routes as fallbackRoutes } from "./data/routes";
 import { loadRouteData } from "./data/routeLoader";
 import { setRouteColorRoutes } from "./utils/routeColor";
-import { getNeighborhoodDetail } from "./data/analytics";
+import { getNeighborhoodDetail, getNeighborhoodMetrics } from "./data/analytics";
 import type { ViewMode } from "./components/ViewToggle";
 import type { MetricMode, TrafficMode } from "./types";
 import type { Route } from "./types";
@@ -90,6 +90,10 @@ function App() {
 
     const selectedRoute =
         routeData.routes.find((r) => r.id === selectedRouteId) ?? null;
+    const maxAvgRatio = useMemo(() => {
+        const metrics = getNeighborhoodMetrics(routeData.routes, trafficMode);
+        return metrics[0]?.avgRatio ?? 2;
+    }, [routeData.routes, trafficMode]);
     const neighborhoodDetail =
         selectedNeighborhood && selectedNeighborhoodRouteIds
             ? getNeighborhoodDetail(
@@ -190,6 +194,7 @@ function App() {
                 <NeighborhoodPanel
                     detail={neighborhoodDetail}
                     trafficMode={trafficMode}
+                    maxAvgRatio={maxAvgRatio}
                     onClose={() => handleNeighborhoodSelect(null)}
                     onRouteSelect={handleRouteSelect}
                 />

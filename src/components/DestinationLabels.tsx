@@ -58,6 +58,7 @@ function ratioToColor(ratio: number, trafficMode: TrafficMode): string {
 interface Props {
     routes: Route[];
     activeRouteId: number | null;
+    highlightedRouteIds: Set<number> | null;
     neighborhoodScores: Map<string, number> | null;
     trafficMode: TrafficMode;
     selectedNeighborhood: string | null;
@@ -67,6 +68,7 @@ interface Props {
 export function DestinationLabels({
     routes,
     activeRouteId,
+    highlightedRouteIds,
     neighborhoodScores,
     trafficMode,
     selectedNeighborhood,
@@ -88,6 +90,13 @@ export function DestinationLabels({
                     (activeRouteId !== null &&
                         touchingRouteIds !== undefined &&
                         touchingRouteIds.has(activeRouteId));
+
+                const isDimmed =
+                    !isSelected &&
+                    !isHovered &&
+                    highlightedRouteIds !== null &&
+                    (touchingRouteIds === undefined ||
+                        ![...touchingRouteIds].some((id) => highlightedRouteIds.has(id)));
 
                 const score = neighborhoodScores?.get(dest.name) ?? null;
                 const useScoreColor =
@@ -147,11 +156,13 @@ export function DestinationLabels({
                                     ? 0.35
                                     : isHovered
                                       ? 1
-                                      : useScoreColor
+                                      : isDimmed
                                         ? 0.15
-                                        : highlighted
-                                          ? 1
-                                          : 0.65,
+                                        : useScoreColor
+                                          ? 0.15
+                                          : highlighted
+                                            ? 1
+                                            : 0.65,
                                 weight: isSelected ? 2.5 : isHovered ? 2 : useScoreColor ? 2 : 1,
                             }}
                             interactive={true}

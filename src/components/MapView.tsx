@@ -132,7 +132,7 @@ export function MapView({
         if (focusLevel === 0) return null;
         const showCount = routes.length - Math.abs(focusLevel);
         if (focusLevel > 0) {
-            const metrics = getRouteMetrics(routes);
+            const metrics = getRouteMetrics(routes, trafficMode);
             const topIds = metrics
                 .filter((m) => m.personMinutesLost > 0)
                 .slice(0, showCount)
@@ -194,6 +194,7 @@ export function MapView({
                 <DestinationLabels
                     routes={routes}
                     activeRouteId={activeRouteId}
+                    highlightedRouteIds={highlightedRouteIds}
                     neighborhoodScores={neighborhoodScores}
                     trafficMode={trafficMode}
                     selectedNeighborhood={selectedNeighborhood}

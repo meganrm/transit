@@ -29,7 +29,10 @@ export function getNeighborhoodDetail(
 
     const totalCommuters = matching.reduce((s, r) => s + r.dailyCommuters, 0);
     const totalPersonMinutesLost = matching.reduce(
-        (s, r) => s + (r.transitMinutes - r.carMinutes) * r.dailyCommuters,
+        (s, r) => {
+            const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+            return s + (r.transitMinutes - car) * r.dailyCommuters;
+        },
         0,
     );
     const avgRatio =
@@ -63,14 +66,13 @@ export interface NeighborhoodMetric {
     avgRatio: number;
 }
 
-/** Per-route person-minutes lost. Positive = transit worse than off-peak driving. */
-export function getRouteMetrics(routes: Route[]): RouteMetric[] {
+/** Per-route person-minutes lost. Positive = transit worse than driving baseline. */
+export function getRouteMetrics(routes: Route[], trafficMode: TrafficMode): RouteMetric[] {
     return routes
-        .map((r) => ({
-            routeId: r.id,
-            personMinutesLost:
-                (r.transitMinutes - r.carMinutes) * r.dailyCommuters,
-        }))
+        .map((r) => {
+            const car = trafficMode === "peak-traffic" ? r.carMinutesPeak : r.carMinutes;
+            return { routeId: r.id, personMinutesLost: (r.transitMinutes - car) * r.dailyCommuters };
+        })
         .sort((a, b) => b.personMinutesLost - a.personMinutesLost);
 }
 

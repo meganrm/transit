@@ -22,12 +22,12 @@ transit/
 
 ## Build Commands
 
-| What    | Command           |
-|---------|-------------------|
-| Dev     | `npm run dev`     |
-| Build   | `npm run build`   |
-| Test    | `npx vitest`      |
-| Lint    | `npm run lint`    |
+| What  | Command         |
+| ----- | --------------- |
+| Dev   | `npm run dev`   |
+| Build | `npm run build` |
+| Test  | `npx vitest`    |
+| Lint  | `npm run lint`  |
 
 ---
 
@@ -38,6 +38,7 @@ transit/
 - No `console.log` left in production code
 - No commented-out code
 - No speculative abstractions — build for what's needed now
+- Don't use strings in comparisons, make constants or enums 
 
 ### Extract a function when:
 - Same logic appears 3+ times
