@@ -304,7 +304,7 @@ export function NeighborhoodPanel({ detail, onClose, onRouteSelect }: Props) {
                                 marginBottom: 2,
                             }}
                         >
-                            Person-min lost/day
+                            Transit time tax/day
                         </div>
                         <div
                             style={{
@@ -352,7 +352,7 @@ export function NeighborhoodPanel({ detail, onClose, onRouteSelect }: Props) {
                                 marginBottom: 2,
                             }}
                         >
-                            Avg min lost/commuter
+                            Avg min tax/commuter
                         </div>
                         <div
                             style={{

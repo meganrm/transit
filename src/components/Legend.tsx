@@ -99,14 +99,14 @@ export function Legend({
     const tickPct = isPersonMinutes ? breakevenPct : equalPct;
     const tickLabel = isPersonMinutes ? "breakeven" : "equal";
     const labelLeft = isPersonMinutes ? "Saves time" : "Faster";
-    const labelRight = isPersonMinutes ? "Loses time" : "Slower";
+    const labelRight = isPersonMinutes ? "Time tax" : "Slower";
     const trafficLabel =
         trafficMode === "peak-traffic" ? "Peak Traffic" : "No Traffic";
     const sectionTitle = isPersonMinutes
-        ? `Total Person-minutes Lost (${trafficLabel})`
+        ? `Transit Time Tax (${trafficLabel})`
         : `Transit vs ${trafficLabel}`;
     const sectionDescription = isPersonMinutes
-        ? "Total time lost, weighted by ridership."
+        ? "Collective time cost if all commuters switched to transit."
         : trafficMode === "peak-traffic"
           ? "Travel-time difference using rush-hour driving as the baseline."
           : "Travel-time difference using uncongested driving as the baseline.";
@@ -117,7 +117,7 @@ export function Legend({
     const midWeight = (weightScale.minWeight + weightScale.maxWeight) / 2;
     const thicknessItems = isPersonMinutes
         ? [
-              { weight: weightScale.minWeight, label: "0 min lost" },
+              { weight: weightScale.minWeight, label: "0 min tax" },
               { weight: midWeight, label: `${formatPersonMinutes(pmMax / 2)} min/day` },
               { weight: weightScale.maxWeight, label: `${formatPersonMinutes(pmMax)} min/day` },
           ]
@@ -162,7 +162,7 @@ export function Legend({
                 label="Metric"
                 valueLabel={
                     isPersonMinutes
-                        ? "Total people mins lost"
+                        ? "Transit time tax"
                         : "Travel time difference"
                 }
                 checked={isPersonMinutes}
