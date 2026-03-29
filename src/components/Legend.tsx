@@ -2,12 +2,53 @@ import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
 import { weightScale, theme, ui } from "../constants";
 import {
-    buildLegendGradient,
-    getLegendEqualPct,
-    getLegendBreakevenPct,
+    buildLegendGradientRemapped,
     getPersonMinutesMax,
     getCommuterRange,
 } from "../utils/routeColor";
+
+const LABELS = {
+    sectionHeader: "Color Controls",
+    toggle: {
+        peakTraffic: "Peak traffic",
+        metric: "Metric",
+        peakOn: "On",
+        peakOff: "Off",
+        metricPersonMinutes: "Transit time tax",
+        metricRatio: "Travel time difference",
+        neighborhoodNote: "Also colors neighborhood dots",
+    },
+    sectionTitle: {
+        personMinutes: "Transit Time Tax",
+        ratio: (trafficLabel: string) => `Transit vs ${trafficLabel}`,
+    },
+    trafficLabel: {
+        peak: "Peak Traffic",
+        noPeak: "No Traffic",
+    },
+    description: {
+        personMinutesPeak:
+            "Time lost daily if all commuters switched to transit vs. peak-hour driving.",
+        personMinutesNoPeak:
+            "Time lost daily if all commuters switched to transit vs. off-peak driving.",
+        ratioPeak:
+            "Travel-time difference using rush-hour driving as the baseline.",
+        ratioNoPeak:
+            "Travel-time difference using uncongested driving as the baseline.",
+    },
+    directionLabel: {
+        personMinutesLeft: "Saves time",
+        personMinutesRight: "Time tax",
+        ratioLeft: "Faster",
+        ratioRight: "Slower",
+        breakeven: "breakeven",
+    },
+    thickness: {
+        personMinutesTitle: "Line thickness",
+        ratioTitle: "Daily commuters",
+        zeroTax: "0 min tax",
+    },
+} as const;
 
 function formatCommuters(n: number): string {
     if (!Number.isFinite(n)) return "?";
@@ -34,11 +75,10 @@ interface Props {
     onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
     onMetricModeChange: (mode: MetricMode) => void;
-    routeCount: number;
-    worstCount: number;
-    onWorstCountChange: (count: number) => void;
-    bestCount: number;
-    onBestCountChange: (count: number) => void;
+    filterMin: number;
+    onFilterMinChange: (val: number) => void;
+    filterMax: number;
+    onFilterMaxChange: (val: number) => void;
 }
 
 function ToggleRow({
@@ -85,40 +125,92 @@ function ToggleRow({
     );
 }
 
+function RangeSlider({
+    gradient,
+    filterMin,
+    filterMax,
+    onFilterMinChange,
+    onFilterMaxChange,
+}: {
+    gradient: string;
+    filterMin: number;
+    filterMax: number;
+    onFilterMinChange: (v: number) => void;
+    onFilterMaxChange: (v: number) => void;
+}) {
+    return (
+        <div
+            className="range-slider-track"
+            style={
+                {
+                    "--left-pct": `${filterMin}%`,
+                    "--right-pct": `${filterMax}%`,
+                } as React.CSSProperties
+            }
+        >
+            <div
+                className="range-slider-fill"
+                style={{ background: gradient }}
+            />
+            <input
+                type="range"
+                min={0}
+                max={100}
+                value={filterMin}
+                className="range-slider-input"
+                onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v < filterMax) onFilterMinChange(v);
+                }}
+            />
+            <input
+                type="range"
+                min={0}
+                max={100}
+                value={filterMax}
+                className="range-slider-input"
+                onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v > filterMin) onFilterMaxChange(v);
+                }}
+            />
+        </div>
+    );
+}
+
 export function Legend({
     trafficMode,
     onTrafficModeChange,
     metricMode,
     onMetricModeChange,
-    routeCount,
-    worstCount,
-    onWorstCountChange,
-    bestCount,
-    onBestCountChange,
+    filterMin,
+    onFilterMinChange,
+    filterMax,
+    onFilterMaxChange,
 }: Props) {
-    const gradient = buildLegendGradient(trafficMode, metricMode);
-    const equalPct = getLegendEqualPct(trafficMode, metricMode);
-    const breakevenPct = getLegendBreakevenPct(trafficMode);
+    const gradient = buildLegendGradientRemapped(trafficMode, metricMode);
 
     const isPersonMinutes = metricMode === METRIC_MODE.PERSON_MINUTES_LOST;
-    const tickPct = isPersonMinutes ? breakevenPct : equalPct;
-    const tickLabel = isPersonMinutes ? "breakeven" : "equal";
-    const labelLeft = isPersonMinutes ? "Saves time" : "Faster";
-    const labelRight = isPersonMinutes ? "Time tax" : "Slower";
+    const labelLeft = isPersonMinutes
+        ? LABELS.directionLabel.personMinutesLeft
+        : LABELS.directionLabel.ratioLeft;
+    const labelRight = isPersonMinutes
+        ? LABELS.directionLabel.personMinutesRight
+        : LABELS.directionLabel.ratioRight;
     const trafficLabel =
         trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
-            ? "Peak Traffic"
-            : "No Traffic";
+            ? LABELS.trafficLabel.peak
+            : LABELS.trafficLabel.noPeak;
     const sectionTitle = isPersonMinutes
-        ? "Transit Time Tax"
-        : `Transit vs ${trafficLabel}`;
+        ? LABELS.sectionTitle.personMinutes
+        : LABELS.sectionTitle.ratio(trafficLabel);
     const sectionDescription = isPersonMinutes
         ? trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
-            ? "Time lost daily if all commuters switched to transit vs. peak-hour driving."
-            : "Time lost daily if all commuters switched to transit vs. off-peak driving."
+            ? LABELS.description.personMinutesPeak
+            : LABELS.description.personMinutesNoPeak
         : trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
-          ? "Travel-time difference using rush-hour driving as the baseline."
-          : "Travel-time difference using uncongested driving as the baseline.";
+          ? LABELS.description.ratioPeak
+          : LABELS.description.ratioNoPeak;
 
     const pmMax = getPersonMinutesMax(trafficMode);
     const { min: cMin, max: cMax } = getCommuterRange();
@@ -126,7 +218,7 @@ export function Legend({
     const midWeight = (weightScale.minWeight + weightScale.maxWeight) / 2;
     const thicknessItems = isPersonMinutes
         ? [
-              { weight: weightScale.minWeight, label: "0 min tax" },
+              { weight: weightScale.minWeight, label: LABELS.thickness.zeroTax },
               {
                   weight: midWeight,
                   label: `${formatPersonMinutes(pmMax / 2)} min/day`,
@@ -148,8 +240,8 @@ export function Legend({
               },
           ];
     const thicknessTitle = isPersonMinutes
-        ? "Line thickness"
-        : "Daily commuters";
+        ? LABELS.thickness.personMinutesTitle
+        : LABELS.thickness.ratioTitle;
 
     return (
         <div
@@ -166,11 +258,13 @@ export function Legend({
                 width: 270,
             }}
         >
-            <div style={SECTION_HEADER}>Color Controls</div>
+            <div style={SECTION_HEADER}>{LABELS.sectionHeader}</div>
             <ToggleRow
-                label="Peak traffic"
+                label={LABELS.toggle.peakTraffic}
                 valueLabel={
-                    trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC ? "On" : "Off"
+                    trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+                        ? LABELS.toggle.peakOn
+                        : LABELS.toggle.peakOff
                 }
                 checked={trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC}
                 onToggle={() =>
@@ -189,14 +283,14 @@ export function Legend({
                     marginBottom: 6,
                 }}
             >
-                Also colors neighborhood dots
+                {LABELS.toggle.neighborhoodNote}
             </div>
             <ToggleRow
-                label="Metric"
+                label={LABELS.toggle.metric}
                 valueLabel={
                     isPersonMinutes
-                        ? "Transit time tax"
-                        : "Travel time difference"
+                        ? LABELS.toggle.metricPersonMinutes
+                        : LABELS.toggle.metricRatio
                 }
                 checked={isPersonMinutes}
                 onToggle={() =>
@@ -208,7 +302,7 @@ export function Legend({
                 }
             />
 
-            {/* Gradient section */}
+            {/* Route filter slider */}
             <div
                 style={{
                     fontSize: 12,
@@ -229,56 +323,26 @@ export function Legend({
             >
                 {sectionDescription}
             </div>
-            <div
-                style={{ position: "relative", width: "100%", marginBottom: 4 }}
-            >
-                <div
-                    style={{
-                        width: "100%",
-                        height: 6,
-                        borderRadius: 3,
-                        background: gradient,
-                    }}
-                />
-                {tickPct !== null && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            left: tickPct,
-                            top: 0,
-                            width: 1,
-                            height: 10,
-                            background: theme.textSecondary,
-                            transform: "translateX(-50%)",
-                        }}
-                    />
-                )}
-            </div>
-            {/* 3-column label row — no absolute positioning, no overlap */}
+            <RangeSlider
+                gradient={gradient}
+                filterMin={filterMin}
+                filterMax={filterMax}
+                onFilterMinChange={onFilterMinChange}
+                onFilterMaxChange={onFilterMaxChange}
+            />
             <div
                 style={{
                     display: "flex",
-                    alignItems: "center",
-                    marginTop: 6,
-                    marginBottom: 14,
+                    justifyContent: "space-between",
                     fontSize: 11,
+                    marginBottom: 14,
                 }}
             >
-                <span style={{ flex: 1, color: ui.accent.positiveLabel }}>
+                <span style={{ color: ui.accent.positiveLabel }}>
                     {labelLeft}
                 </span>
-                {tickPct !== null && (
-                    <span style={{ color: theme.textSecondary }}>
-                        {tickLabel}
-                    </span>
-                )}
-                <span
-                    style={{
-                        flex: 1,
-                        color: ui.accent.negativeLabel,
-                        textAlign: "right",
-                    }}
-                >
+                <span style={{ color: theme.textDim }}>{LABELS.directionLabel.breakeven}</span>
+                <span style={{ color: ui.accent.negativeLabel }}>
                     {labelRight}
                 </span>
             </div>
@@ -318,81 +382,6 @@ export function Legend({
                     </span>
                 </div>
             ))}
-
-            {/* Divider */}
-            <div
-                style={{
-                    borderTop: "1px solid rgba(148,163,184,0.1)",
-                    margin: "12px 0",
-                }}
-            />
-
-            {/* Worst routes slider */}
-            <div style={SECTION_HEADER}>Worst routes</div>
-            <input
-                type="range"
-                min={0}
-                max={routeCount}
-                value={worstCount}
-                onChange={(e) => onWorstCountChange(Number(e.target.value))}
-                className="focus-slider"
-                style={
-                    {
-                        "--fill-color": ui.sliderFill.worst,
-                        "--left-pct": "0%",
-                        "--right-pct": `${(worstCount / Math.max(routeCount, 1)) * 100}%`,
-                    } as React.CSSProperties
-                }
-            />
-            <div
-                style={{
-                    fontSize: 11,
-                    color:
-                        worstCount === 0
-                            ? theme.textSecondary
-                            : ui.status.warning,
-                    textAlign: "center",
-                    fontWeight: worstCount === 0 ? 400 : 600,
-                    marginBottom: 10,
-                }}
-            >
-                {worstCount === 0
-                    ? "None highlighted"
-                    : `Worst ${worstCount} of ${routeCount}`}
-            </div>
-
-            {/* Best routes slider */}
-            <div style={SECTION_HEADER}>Best routes</div>
-            <input
-                type="range"
-                min={0}
-                max={routeCount}
-                value={bestCount}
-                onChange={(e) => onBestCountChange(Number(e.target.value))}
-                className="focus-slider"
-                style={
-                    {
-                        "--fill-color": ui.sliderFill.best,
-                        "--left-pct": "0%",
-                        "--right-pct": `${(bestCount / Math.max(routeCount, 1)) * 100}%`,
-                    } as React.CSSProperties
-                }
-            />
-            <div
-                style={{
-                    fontSize: 11,
-                    color:
-                        bestCount === 0
-                            ? theme.textSecondary
-                            : ui.status.success,
-                    textAlign: "center",
-                    fontWeight: bestCount === 0 ? 400 : 600,
-                }}
-            >
-                {bestCount === 0
-                    ? "None highlighted"
-                    : `Best ${bestCount} of ${routeCount}`}
-            </div>
         </div>
     );
 }

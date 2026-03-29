@@ -44,8 +44,8 @@ function App() {
     const [metricMode, setMetricMode] = useState<MetricMode>(
         METRIC_MODE.TRAVEL_TIME_DIFFERENCE,
     );
-    const [worstCount, setWorstCount] = useState(0);
-    const [bestCount, setBestCount] = useState(0);
+    const [filterMin, setFilterMin] = useState(0);
+    const [filterMax, setFilterMax] = useState(100);
 
     useEffect(() => {
         let cancelled = false;
@@ -85,6 +85,11 @@ function App() {
             setSelectedRouteId(null);
         }
     }, [selectedRouteId, routeData.routes]);
+
+    useEffect(() => {
+        setFilterMin(0);
+        setFilterMax(100);
+    }, [trafficMode, metricMode]);
 
     useMemo(() => {
         setRouteColorRoutes(routeData.routes);
@@ -183,11 +188,10 @@ function App() {
                     onTrafficModeChange={setTrafficMode}
                     metricMode={metricMode}
                     onMetricModeChange={setMetricMode}
-                    routeCount={routeData.routes.length}
-                    worstCount={worstCount}
-                    onWorstCountChange={setWorstCount}
-                    bestCount={bestCount}
-                    onBestCountChange={setBestCount}
+                    filterMin={filterMin}
+                    onFilterMinChange={setFilterMin}
+                    filterMax={filterMax}
+                    onFilterMaxChange={setFilterMax}
                     selectedNeighborhood={selectedNeighborhood}
                     selectedNeighborhoodRouteIds={selectedNeighborhoodRouteIds}
                     onNeighborhoodSelect={handleNeighborhoodSelect}

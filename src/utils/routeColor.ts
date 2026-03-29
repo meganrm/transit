@@ -5,12 +5,12 @@ import { routes as fallbackRoutes } from "../data/routes";
 type RGB = [number, number, number];
 
 // Palette endpoints — the two colors at the extremes of every gradient
-const COLOR_BEST: RGB = [77, 146, 33]; // dark green   — transit fastest / saves most time
+const COLOR_BEST: RGB = [34, 197, 94]; // bright green — transit fastest / saves most time
 const COLOR_WORST: RGB = [197, 27, 125]; // dark magenta — transit slowest / wastes most time
 
 // Palette midpoints — used as interior stops
 const COLOR_MED_GREEN: RGB = [161, 215, 106]; // medium green, ~0.85 ratio
-const COLOR_NEUTRAL: RGB = [100, 100, 100]; // gray — equal / breakeven
+const COLOR_NEUTRAL: RGB = [255, 255, 255]; // white — equal / breakeven
 const COLOR_MED_PINK: RGB = [233, 163, 201]; // medium pink,  ~1.8 ratio
 
 // --- Palette shape (ratio-based modes) ---
@@ -326,4 +326,70 @@ export function getPersonMinutesMax(
     trafficMode: TrafficMode = TRAFFIC_MODE.PEAK_TRAFFIC,
 ): number {
     return pmRanges[trafficMode].max;
+}
+
+/** Maps a metric value to the 0–100 slider position scale (breakeven = 50). */
+function metricToPosition(
+    value: number,
+    metricMin: number,
+    metricMax: number,
+    breakeven: number,
+): number {
+    if (value <= breakeven) {
+        if (breakeven === metricMin) return 50;
+        return ((value - metricMin) / (breakeven - metricMin)) * 50;
+    }
+    if (breakeven === metricMax) return 50;
+    return 50 + ((value - breakeven) / (metricMax - breakeven)) * 50;
+}
+
+/** Gradient with breakeven visually at 50% regardless of data asymmetry. */
+export function buildLegendGradientRemapped(
+    trafficMode: TrafficMode = TRAFFIC_MODE.PEAK_TRAFFIC,
+    metricMode: MetricMode = METRIC_MODE.TRAVEL_TIME_DIFFERENCE,
+): string {
+    const stops = getStops(trafficMode, metricMode);
+    const metricMin = stops[0][0];
+    const metricMax = stops[stops.length - 1][0];
+    const breakeven = metricMode === METRIC_MODE.PERSON_MINUTES_LOST ? 0 : 1.0;
+    return `linear-gradient(to right, ${stops
+        .map(([v, r, g, b]) => {
+            const pos = metricToPosition(v, metricMin, metricMax, breakeven);
+            return `rgb(${r},${g},${b}) ${pos.toFixed(1)}%`;
+        })
+        .join(", ")})`;
+}
+
+/** Maps a 0–100 slider position to the actual metric value (breakeven at 50). */
+export function positionToMetric(
+    pos: number,
+    trafficMode: TrafficMode,
+    metricMode: MetricMode,
+): number {
+    const isRatio = metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE;
+    const range = isRatio ? ratioRanges[trafficMode] : pmRanges[trafficMode];
+    const breakeven = isRatio ? 1.0 : 0;
+    const clamped = Math.max(0, Math.min(100, pos));
+    if (clamped <= 50) {
+        const t = clamped / 50;
+        return range.min + t * (breakeven - range.min);
+    }
+    const t = (clamped - 50) / 50;
+    return breakeven + t * (range.max - breakeven);
+}
+
+/** Route's scalar metric value for the current traffic and metric modes. */
+export function getRouteMetricValue(
+    route: Route,
+    trafficMode: TrafficMode,
+    metricMode: MetricMode,
+): number {
+    const car =
+        trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
+            ? route.carMinutesPeak
+            : route.carMinutes;
+    if (metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE) {
+        return route.transitMinutes / car;
+    }
+    return (route.transitMinutes - car) * route.dailyCommuters;
 }

@@ -61,7 +61,7 @@ export const ui = {
         text: "#a5b4fc",
     },
     sliderFill: {
-        worst: "#6366f1",
+        worst: "#c51b7d",
         best: "#4ade80",
     },
     dataSourceBadge: {
@@ -71,7 +71,7 @@ export const ui = {
         border: "1px solid rgba(148, 163, 184, 0.25)",
     },
     accent: {
-        positiveLabel: "#4d9221",
+        positiveLabel: "#22c55e",
         negativeLabel: "#c51b7d",
     },
 } as const;

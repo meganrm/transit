@@ -191,7 +191,10 @@ export function DestinationLabels({
                             position={dest.position}
                             icon={createLabelIcon(
                                 dest.name,
-                                highlighted || isHovered,
+                                isSelected ||
+                                    (activeRouteId !== null &&
+                                        touchingRouteIds !== undefined &&
+                                        touchingRouteIds.has(activeRouteId)),
                             )}
                             interactive={true}
                             eventHandlers={handlers}

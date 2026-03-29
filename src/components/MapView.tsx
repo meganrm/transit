@@ -5,12 +5,15 @@ import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
 import { ViewToggle } from "./ViewToggle";
 import type { ViewMode } from "./ViewToggle";
-import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
 import type { Route } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
-import { getRouteMetrics, getNeighborhoodMetrics } from "../data/analytics";
+import { getNeighborhoodMetrics } from "../data/analytics";
+import {
+    positionToMetric,
+    getRouteMetricValue,
+} from "../utils/routeColor";
 
 const homeBounds = L.latLngBounds(HOME_BOUNDS[0], HOME_BOUNDS[1]);
 
@@ -98,12 +101,11 @@ interface MapViewProps {
     onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
     onMetricModeChange: (mode: MetricMode) => void;
-    routeCount: number;
     onClearSelection: () => void;
-    worstCount: number;
-    onWorstCountChange: (count: number) => void;
-    bestCount: number;
-    onBestCountChange: (count: number) => void;
+    filterMin: number;
+    onFilterMinChange: (val: number) => void;
+    filterMax: number;
+    onFilterMaxChange: (val: number) => void;
     selectedNeighborhood: string | null;
     selectedNeighborhoodRouteIds: Set<number> | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
@@ -118,12 +120,11 @@ export function MapView({
     onTrafficModeChange,
     metricMode,
     onMetricModeChange,
-    routeCount,
     onClearSelection,
-    worstCount,
-    onWorstCountChange,
-    bestCount,
-    onBestCountChange,
+    filterMin,
+    onFilterMinChange,
+    filterMax,
+    onFilterMaxChange,
     selectedNeighborhood,
     selectedNeighborhoodRouteIds,
     onNeighborhoodSelect,
@@ -134,36 +135,22 @@ export function MapView({
     const highlightedRouteIds = useMemo<Set<number> | null>(() => {
         if (selectedNeighborhoodRouteIds !== null)
             return selectedNeighborhoodRouteIds;
-        if (worstCount === 0 && bestCount === 0) return null;
+        if (filterMin === 0 && filterMax === 100) return null;
 
-        let sortedAsc: Route[];
-        if (metricMode === METRIC_MODE.PERSON_MINUTES_LOST) {
-            const metrics = getRouteMetrics(routes, trafficMode);
-            sortedAsc = metrics
-                .map((m) => routes.find((r) => r.id === m.routeId)!)
-                .reverse();
-        } else {
-            const carFn = (r: Route) =>
-                trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
-                    ? r.carMinutesPeak
-                    : r.carMinutes;
-            sortedAsc = [...routes].sort(
-                (a, b) =>
-                    a.transitMinutes / carFn(a) - b.transitMinutes / carFn(b),
-            );
-        }
+        const minMetric = positionToMetric(filterMin, trafficMode, metricMode);
+        const maxMetric = positionToMetric(filterMax, trafficMode, metricMode);
 
         const ids = new Set<number>();
-        sortedAsc.slice(0, bestCount).forEach((r) => ids.add(r.id));
-        sortedAsc
-            .slice(sortedAsc.length - worstCount)
-            .forEach((r) => ids.add(r.id));
+        for (const route of routes) {
+            const value = getRouteMetricValue(route, trafficMode, metricMode);
+            if (value >= minMetric && value <= maxMetric) ids.add(route.id);
+        }
         return ids.size > 0 ? ids : null;
     }, [
         routes,
         selectedNeighborhoodRouteIds,
-        worstCount,
-        bestCount,
+        filterMin,
+        filterMax,
         trafficMode,
         metricMode,
     ]);
@@ -224,11 +211,10 @@ export function MapView({
                 onTrafficModeChange={onTrafficModeChange}
                 metricMode={metricMode}
                 onMetricModeChange={onMetricModeChange}
-                routeCount={routeCount}
-                worstCount={worstCount}
-                onWorstCountChange={onWorstCountChange}
-                bestCount={bestCount}
-                onBestCountChange={onBestCountChange}
+                filterMin={filterMin}
+                onFilterMinChange={onFilterMinChange}
+                filterMax={filterMax}
+                onFilterMaxChange={onFilterMaxChange}
             />
             <ViewToggle viewMode={viewMode} onChange={onViewModeChange} />
         </div>
