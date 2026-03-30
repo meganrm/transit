@@ -1,7 +1,94 @@
 import { TRAFFIC_MODE } from "../types";
 import type { Route, TrafficMode, MetricMode } from "../types";
-import { theme, ui } from "../constants";
+import { theme, ui, transitReasonThresholds } from "../constants";
 import { getRouteRgb } from "../utils/routeColor";
+
+const LABELS = {
+    delayReasons: {
+        sectionHeader: "Why it's slow",
+        transfer: (n: number) => (n === 1 ? "1 transfer" : `${n} transfers`),
+        longWait: (n: number) => `${n} min wait`,
+        walking: (n: number) => `${n} min walk`,
+    },
+} as const;
+
+const REASON_COLORS = {
+    transfer: "#f59e0b",
+    longWait: "#f97316",
+    walking: "#38bdf8",
+} as const;
+
+function ReasonTag({
+    label,
+    color,
+}: {
+    label: string;
+    color: string;
+}) {
+    return (
+        <span
+            style={{
+                fontSize: 11,
+                background: `${color}22`,
+                color,
+                border: `1px solid ${color}55`,
+                padding: "2px 8px",
+                borderRadius: 12,
+                whiteSpace: "nowrap",
+            }}
+        >
+            {label}
+        </span>
+    );
+}
+
+function DelayReasonTags({ route }: { route: Route }) {
+    const { longWaitMinutes, longWalkMinutes } = transitReasonThresholds;
+
+    const tags: { label: string; color: string }[] = [];
+
+    if (route.transitTransfers >= 1) {
+        tags.push({
+            label: LABELS.delayReasons.transfer(route.transitTransfers),
+            color: REASON_COLORS.transfer,
+        });
+    }
+    if (route.transitMaxWaitMinutes >= longWaitMinutes) {
+        tags.push({
+            label: LABELS.delayReasons.longWait(route.transitMaxWaitMinutes),
+            color: REASON_COLORS.longWait,
+        });
+    }
+    if (route.transitWalkMinutes >= longWalkMinutes) {
+        tags.push({
+            label: LABELS.delayReasons.walking(route.transitWalkMinutes),
+            color: REASON_COLORS.walking,
+        });
+    }
+
+    if (tags.length === 0) return null;
+
+    return (
+        <div style={{ padding: "10px 20px 0" }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: theme.textDim,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    marginBottom: 6,
+                }}
+            >
+                {LABELS.delayReasons.sectionHeader}
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {tags.map((t) => (
+                    <ReasonTag key={t.label} label={t.label} color={t.color} />
+                ))}
+            </div>
+        </div>
+    );
+}
 
 interface Props {
     route: Route;
@@ -406,6 +493,8 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
                     ))}
                 </div>
             </div>
+
+            <DelayReasonTags route={route} />
         </div>
     );
 }

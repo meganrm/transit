@@ -23,6 +23,9 @@ export interface Route {
     carMinutesPeak: number;
     transitMinutes: number;
     transitModes: string[];
+    transitWalkMinutes: number;
+    transitTransfers: number;
+    transitMaxWaitMinutes: number;
     dailyCommuters: number;
     peakHours: string;
     supplemental?: boolean;

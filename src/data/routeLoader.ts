@@ -62,6 +62,18 @@ function parseRoute(value: unknown): Route | null {
         carMinutesPeak: candidate.carMinutesPeak,
         transitMinutes: candidate.transitMinutes,
         transitModes: candidate.transitModes as string[],
+        transitWalkMinutes:
+            typeof candidate.transitWalkMinutes === "number"
+                ? candidate.transitWalkMinutes
+                : 0,
+        transitTransfers:
+            typeof candidate.transitTransfers === "number"
+                ? candidate.transitTransfers
+                : 0,
+        transitMaxWaitMinutes:
+            typeof candidate.transitMaxWaitMinutes === "number"
+                ? candidate.transitMaxWaitMinutes
+                : 0,
         dailyCommuters: candidate.dailyCommuters,
         peakHours: candidate.peakHours,
     };

@@ -1,6 +1,6 @@
 import { METRIC_MODE, TRAFFIC_MODE } from "../types";
-import type { MetricMode, TrafficMode } from "../types";
-import { weightScale, theme, ui } from "../constants";
+import type { MetricMode, TrafficMode, Route } from "../types";
+import { weightScale, theme, ui, transitReasonThresholds } from "../constants";
 import {
     buildLegendGradientRemapped,
     getPersonMinutesMax,
@@ -48,7 +48,26 @@ const LABELS = {
         ratioTitle: "Daily commuters",
         zeroTax: "0 min tax",
     },
+    filters: {
+        distance: "Distance (miles)",
+        delayReasons: "Delay reasons",
+        reasonTransfer: "Transfer",
+        reasonLongWait: "Long wait",
+        reasonWalking: "Walking",
+    },
 } as const;
+
+const REASON_COLORS: Record<string, string> = {
+    transfer: "#f59e0b",
+    longWait: "#f97316",
+    walking: "#38bdf8",
+};
+
+const REASON_KEYS: { key: string; label: string }[] = [
+    { key: "transfer", label: LABELS.filters.reasonTransfer },
+    { key: "longWait", label: LABELS.filters.reasonLongWait },
+    { key: "walking", label: LABELS.filters.reasonWalking },
+];
 
 function formatCommuters(n: number): string {
     if (!Number.isFinite(n)) return "?";
@@ -60,6 +79,23 @@ function formatPersonMinutes(n: number): string {
     if (!Number.isFinite(n) || n <= 0) return "?";
     const k = n / 1000;
     return k >= 10 ? `~${Math.round(k)}k` : `~${k.toFixed(1)}k`;
+}
+
+function routeMatchesReasonLocal(
+    route: Route,
+    reason: string,
+): boolean {
+    const { longWaitMinutes, longWalkMinutes } = transitReasonThresholds;
+    switch (reason) {
+        case "transfer":
+            return route.transitTransfers >= 1;
+        case "longWait":
+            return route.transitMaxWaitMinutes >= longWaitMinutes;
+        case "walking":
+            return route.transitWalkMinutes >= longWalkMinutes;
+        default:
+            return false;
+    }
 }
 
 const SECTION_HEADER: React.CSSProperties = {
@@ -79,6 +115,16 @@ interface Props {
     onFilterMinChange: (val: number) => void;
     filterMax: number;
     onFilterMaxChange: (val: number) => void;
+    selectedTiers: Set<number>;
+    onTiersChange: (tiers: Set<number>) => void;
+    distanceMin: number;
+    onDistanceMinChange: (val: number) => void;
+    distanceMax: number;
+    onDistanceMaxChange: (val: number) => void;
+    distanceRangeMiles: { min: number; max: number };
+    selectedReasons: Set<string>;
+    onReasonsChange: (reasons: Set<string>) => void;
+    routes: Route[];
 }
 
 function ToggleRow({
@@ -187,6 +233,16 @@ export function Legend({
     onFilterMinChange,
     filterMax,
     onFilterMaxChange,
+    selectedTiers,
+    onTiersChange,
+    distanceMin,
+    onDistanceMinChange,
+    distanceMax,
+    onDistanceMaxChange,
+    distanceRangeMiles,
+    selectedReasons,
+    onReasonsChange,
+    routes,
 }: Props) {
     const gradient = buildLegendGradientRemapped(trafficMode, metricMode);
 
@@ -242,6 +298,47 @@ export function Legend({
     const thicknessTitle = isPersonMinutes
         ? LABELS.thickness.personMinutesTitle
         : LABELS.thickness.ratioTitle;
+
+    const dMin = distanceRangeMiles.min;
+    const dMax = distanceRangeMiles.max;
+
+    // Convert distance state (0–100) to miles within [dMin, dMax]
+    const distanceMinMiles = Math.round(dMin + (distanceMin / 100) * (dMax - dMin));
+    const distanceMaxMiles = Math.round(dMin + (distanceMax / 100) * (dMax - dMin));
+
+    const handleDistanceMinChange = (v: number) => {
+        if (v < distanceMax) onDistanceMinChange(v);
+    };
+    const handleDistanceMaxChange = (v: number) => {
+        if (v > distanceMin) onDistanceMaxChange(v);
+    };
+
+    const distanceGradient = `linear-gradient(to right, ${theme.textSecondary}, ${theme.textSecondary})`;
+
+    // Which delay reasons have at least 1 matching route
+    const availableReasons = REASON_KEYS.filter(({ key }) =>
+        routes.some((r) => routeMatchesReasonLocal(r, key)),
+    );
+
+    const handleTierClick = (tier: number) => {
+        const next = new Set(selectedTiers);
+        if (next.has(tier)) {
+            next.delete(tier);
+        } else {
+            next.add(tier);
+        }
+        onTiersChange(next);
+    };
+
+    const handleReasonClick = (reason: string) => {
+        const next = new Set(selectedReasons);
+        if (next.has(reason)) {
+            next.delete(reason);
+        } else {
+            next.add(reason);
+        }
+        onReasonsChange(next);
+    };
 
     return (
         <div
@@ -355,33 +452,129 @@ export function Legend({
                 }}
             />
 
-            {/* Thickness section */}
+            {/* Thickness / ridership tier section */}
             <div style={SECTION_HEADER}>{thicknessTitle}</div>
-            {thicknessItems.map((item) => (
-                <div
-                    key={item.label}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        marginBottom: 5,
-                    }}
-                >
-                    <span
+            {thicknessItems.map((item, i) => {
+                const isSelected = selectedTiers.has(i);
+                return (
+                    <button
+                        key={item.label}
+                        onClick={() => handleTierClick(i)}
                         style={{
-                            width: 28,
-                            height: item.weight,
-                            borderRadius: item.weight / 2,
-                            background: theme.textSecondary,
-                            display: "inline-block",
-                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            marginBottom: 5,
+                            width: "100%",
+                            background: isSelected
+                                ? "rgba(148,163,184,0.12)"
+                                : "none",
+                            border: isSelected
+                                ? "1px solid rgba(148,163,184,0.35)"
+                                : "1px solid transparent",
+                            borderRadius: 6,
+                            padding: "3px 6px",
+                            cursor: "pointer",
+                            color: theme.textPrimary,
+                            textAlign: "left",
+                        }}
+                    >
+                        <span
+                            style={{
+                                width: 28,
+                                height: item.weight,
+                                borderRadius: item.weight / 2,
+                                background: isSelected
+                                    ? theme.textPrimary
+                                    : theme.textSecondary,
+                                display: "inline-block",
+                                flexShrink: 0,
+                            }}
+                        />
+                        <span
+                            style={{
+                                fontSize: 11,
+                                color: isSelected
+                                    ? theme.textPrimary
+                                    : theme.textSecondary,
+                            }}
+                        >
+                            {item.label}
+                        </span>
+                    </button>
+                );
+            })}
+
+            {/* Divider */}
+            <div
+                style={{
+                    borderTop: "1px solid rgba(148,163,184,0.1)",
+                    margin: "10px 0",
+                }}
+            />
+
+            {/* Distance filter */}
+            <div style={SECTION_HEADER}>{LABELS.filters.distance}</div>
+            <RangeSlider
+                gradient={distanceGradient}
+                filterMin={distanceMin}
+                filterMax={distanceMax}
+                onFilterMinChange={handleDistanceMinChange}
+                onFilterMaxChange={handleDistanceMaxChange}
+            />
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 11,
+                    color: theme.textSecondary,
+                    marginBottom: 12,
+                }}
+            >
+                <span>{distanceMinMiles} mi</span>
+                <span>{distanceMaxMiles} mi</span>
+            </div>
+
+            {/* Delay reason filter */}
+            {availableReasons.length > 0 && (
+                <>
+                    <div
+                        style={{
+                            borderTop: "1px solid rgba(148,163,184,0.1)",
+                            marginBottom: 10,
                         }}
                     />
-                    <span style={{ fontSize: 11, color: theme.textSecondary }}>
-                        {item.label}
-                    </span>
-                </div>
-            ))}
+                    <div style={SECTION_HEADER}>{LABELS.filters.delayReasons}</div>
+                    <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                        {availableReasons.map(({ key, label }) => {
+                            const color = REASON_COLORS[key];
+                            const isSelected = selectedReasons.has(key);
+                            return (
+                                <button
+                                    key={key}
+                                    onClick={() => handleReasonClick(key)}
+                                    style={{
+                                        fontSize: 11,
+                                        background: isSelected
+                                            ? `${color}33`
+                                            : `${color}11`,
+                                        color,
+                                        border: isSelected
+                                            ? `1px solid ${color}`
+                                            : `1px solid ${color}55`,
+                                        padding: "2px 8px",
+                                        borderRadius: 12,
+                                        cursor: "pointer",
+                                        whiteSpace: "nowrap",
+                                    }}
+                                >
+                                    {label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

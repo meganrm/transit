@@ -329,7 +329,7 @@ export function getPersonMinutesMax(
 }
 
 /** Maps a metric value to the 0–100 slider position scale (breakeven = 50). */
-function metricToPosition(
+export function metricToPosition(
     value: number,
     metricMin: number,
     metricMax: number,
@@ -376,6 +376,19 @@ export function positionToMetric(
     }
     const t = (clamped - 50) / 50;
     return breakeven + t * (range.max - breakeven);
+}
+
+/** Maps a route's metric value to a 0–100 slider position (breakeven = 50). */
+export function getRouteSliderPosition(
+    route: Route,
+    trafficMode: TrafficMode,
+    metricMode: MetricMode,
+): number {
+    const value = getRouteMetricValue(route, trafficMode, metricMode);
+    const isRatio = metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE;
+    const range = isRatio ? ratioRanges[trafficMode] : pmRanges[trafficMode];
+    const breakeven = isRatio ? 1.0 : 0;
+    return metricToPosition(value, range.min, range.max, breakeven);
 }
 
 /** Route's scalar metric value for the current traffic and metric modes. */

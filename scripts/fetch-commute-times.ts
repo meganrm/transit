@@ -22,6 +22,9 @@ interface CommuteTravelTime {
     peakPeriod: "AM" | "PM";
     transitMinutes: number;
     transitModes: string[];
+    transitWalkMinutes: number;
+    transitTransfers: number;
+    transitMaxWaitMinutes: number;
 }
 
 interface DistanceMatrixElement {
@@ -42,11 +45,14 @@ interface DistanceMatrixResponse {
 
 interface DirectionsStep {
     travel_mode: string;
+    duration: { value: number };
     transit_details?: {
         line: {
             short_name?: string;
             name?: string;
         };
+        departure_time?: { value: number };
+        arrival_time?: { value: number };
     };
 }
 
@@ -108,29 +114,40 @@ function seattleEpoch(weekday: number, hour: number): number {
     throw new Error("seattleEpoch: could not resolve target time");
 }
 
-function seattleEpochTomorrow(hour: number): number {
-    // Use tomorrow at `hour:00` Seattle time. Google transit GTFS data is
-    // only reliable for dates within the current loaded feed (~1-2 days out).
-    // Tomorrow is always fresh regardless of day-of-week.
+function seattleEpochRecentWeekday(hour: number): number {
+    // Use the most recent past weekday (Mon–Fri) at `hour:00` Seattle time.
+    // Future departure times break the Google GTFS feed (returns garbage routes);
+    // past weekday times use the current valid feed and reflect real peak-hour service.
     const tz = "America/Los_Angeles";
-    const tomorrow = new Date(Date.now() + 86_400_000);
-    const dateStr = new Intl.DateTimeFormat("en-CA", {
-        timeZone: tz,
-    }).format(tomorrow);
-    const h = String(hour).padStart(2, "0");
+    for (let daysAgo = 0; daysAgo <= 7; daysAgo++) {
+        const candidate = new Date(Date.now() - daysAgo * 86_400_000);
+        const dayOfWeek = new Intl.DateTimeFormat("en-US", {
+            timeZone: tz,
+            weekday: "short",
+        }).format(candidate);
+        if (dayOfWeek === "Sat" || dayOfWeek === "Sun") continue;
 
-    for (const off of ["-07:00", "-08:00"]) {
-        const t = new Date(`${dateStr}T${h}:00:00${off}`);
-        const seattleHour = parseInt(
-            new Intl.DateTimeFormat("en-US", {
-                timeZone: tz,
-                hour: "2-digit",
-                hour12: false,
-            }).format(t),
-        );
-        if (seattleHour === hour) return Math.floor(t.getTime() / 1000);
+        const dateStr = new Intl.DateTimeFormat("en-CA", {
+            timeZone: tz,
+        }).format(candidate);
+        const h = String(hour).padStart(2, "0");
+
+        for (const off of ["-07:00", "-08:00"]) {
+            const t = new Date(`${dateStr}T${h}:00:00${off}`);
+            const seattleHour = parseInt(
+                new Intl.DateTimeFormat("en-US", {
+                    timeZone: tz,
+                    hour: "2-digit",
+                    hour12: false,
+                }).format(t),
+            );
+            // Must be in the past so GTFS data is valid
+            if (seattleHour === hour && t.getTime() < Date.now()) {
+                return Math.floor(t.getTime() / 1000);
+            }
+        }
     }
-    throw new Error("seattleEpochTomorrow: could not resolve target time");
+    throw new Error("seattleEpochRecentWeekday: could not resolve target time");
 }
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
@@ -217,7 +234,13 @@ async function fetchTransitDirections(
     destStr: string,
     departureTime: string,
     apiKey: string,
-): Promise<{ seconds: number; lines: string[] } | null> {
+): Promise<{
+    seconds: number;
+    lines: string[];
+    walkMinutes: number;
+    transfers: number;
+    maxWaitMinutes: number;
+} | null> {
     const params = new URLSearchParams({
         origin: originStr,
         destination: destStr,
@@ -236,20 +259,42 @@ async function fetchTransitDirections(
     const leg = parsed.routes[0].legs[0];
     const seen = new Set<string>();
     const lines: string[] = [];
+    let walkSeconds = 0;
+    let transitCount = 0;
+    let prevArrivalTime: number | null = null;
+    let maxWaitSeconds = 0;
 
     for (const step of leg.steps) {
-        if (step.travel_mode !== "TRANSIT" || !step.transit_details) continue;
-        const label =
-            step.transit_details.line.short_name ??
-            step.transit_details.line.name ??
-            "Transit";
-        if (!seen.has(label)) {
-            seen.add(label);
-            lines.push(label);
+        if (step.travel_mode === "WALKING") {
+            walkSeconds += step.duration.value;
+        } else if (step.travel_mode === "TRANSIT" && step.transit_details) {
+            transitCount++;
+            const dep = step.transit_details.departure_time?.value;
+            if (prevArrivalTime !== null && dep !== undefined) {
+                const wait = dep - prevArrivalTime;
+                if (wait > maxWaitSeconds) maxWaitSeconds = wait;
+            }
+            prevArrivalTime =
+                step.transit_details.arrival_time?.value ?? null;
+
+            const label =
+                step.transit_details.line.short_name ??
+                step.transit_details.line.name ??
+                "Transit";
+            if (!seen.has(label)) {
+                seen.add(label);
+                lines.push(label);
+            }
         }
     }
 
-    return { seconds: leg.duration.value, lines };
+    return {
+        seconds: leg.duration.value,
+        lines,
+        walkMinutes: Math.round(walkSeconds / 60),
+        transfers: Math.max(0, transitCount - 1),
+        maxWaitMinutes: Math.round(maxWaitSeconds / 60),
+    };
 }
 
 async function fetchForOriginGroup(
@@ -321,8 +366,8 @@ async function run(): Promise<void> {
     const peakAmDepartureTime = String(seattleEpoch(3, 8));
     // Peak PM: Wednesday 5pm Seattle (driving only)
     const peakPmDepartureTime = String(seattleEpoch(3, 17));
-    // Transit AM: tomorrow 8am — Google GTFS data only reliable within current feed (~1-2 days)
-    const transitDepartureTime = String(seattleEpochTomorrow(8));
+    // Transit: most recent past weekday 8am — future dates break GTFS; past weekday gives valid peak-hour routing
+    const transitDepartureTime = String(seattleEpochRecentWeekday(8));
 
     const carParams: Record<string, string> = {
         mode: "driving",
@@ -425,6 +470,9 @@ async function run(): Promise<void> {
                 peakPeriod,
                 transitMinutes,
                 transitModes: transitResult.lines.length > 0 ? transitResult.lines : ["Transit"],
+                transitWalkMinutes: transitResult.walkMinutes,
+                transitTransfers: transitResult.transfers,
+                transitMaxWaitMinutes: transitResult.maxWaitMinutes,
             });
         }
 

@@ -29,6 +29,9 @@ interface CommuteTravelTime {
     peakPeriod: "AM" | "PM";
     transitMinutes: number;
     transitModes: string[];
+    transitWalkMinutes: number;
+    transitTransfers: number;
+    transitMaxWaitMinutes: number;
 }
 
 interface LodesConfig {
@@ -148,6 +151,9 @@ async function run(): Promise<void> {
             carMinutesPeak: times.carMinutesPeak,
             transitMinutes: times.transitMinutes,
             transitModes: times.transitModes,
+            transitWalkMinutes: times.transitWalkMinutes,
+            transitTransfers: times.transitTransfers,
+            transitMaxWaitMinutes: times.transitMaxWaitMinutes,
             dailyCommuters: pair.commuters,
             peakHours: times.peakPeriod === "AM" ? "AM" : "PM",
             supplemental: routes.length >= (lodesConfig?.primaryN ?? 60),

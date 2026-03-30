@@ -42,6 +42,14 @@ export const weightScale = {
     hoverBoost: 3,
 } as const;
 
+/** Thresholds for showing transit delay reason tags in RoutePanel */
+export const transitReasonThresholds = {
+    /** Single wait time ≥ this → show "long wait" tag */
+    longWaitMinutes: 8,
+    /** Total walking time ≥ this → show "walking" tag */
+    longWalkMinutes: 8,
+} as const;
+
 /** Shared UI literal values used across inline styles/components */
 export const ui = {
     routeNameSeparator: " → ",

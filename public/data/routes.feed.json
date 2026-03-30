@@ -1,6 +1,6 @@
 {
   "sourceLabel": "LODES commute data (2021) + Google Maps",
-  "generatedAt": "2026-03-29T06:29:28.055Z",
+  "generatedAt": "2026-03-30T05:20:17.618Z",
   "routes": [
     {
       "id": 1,
@@ -20,9 +20,12 @@
       "carMinutesPeak": 16,
       "transitMinutes": 44,
       "transitModes": [
-        "70",
+        "C Line",
         "14"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 4,
       "dailyCommuters": 3890,
       "peakHours": "PM",
       "supplemental": false
@@ -43,10 +46,13 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 28,
-      "transitMinutes": 27,
+      "transitMinutes": 35,
       "transitModes": [
         "H Line"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 2475,
       "peakHours": "AM",
       "supplemental": false
@@ -67,10 +73,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 20,
-      "transitMinutes": 36,
+      "transitMinutes": 40,
       "transitModes": [
         "14"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 2330,
       "peakHours": "PM",
       "supplemental": false
@@ -93,8 +102,11 @@
       "carMinutesPeak": 14,
       "transitMinutes": 22,
       "transitModes": [
-        "1 Line"
+        "2 Line"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 2036,
       "peakHours": "PM",
       "supplemental": false
@@ -115,10 +127,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 22,
-      "transitMinutes": 22,
+      "transitMinutes": 26,
       "transitModes": [
         "C Line"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1916,
       "peakHours": "AM",
       "supplemental": false
@@ -137,12 +152,15 @@
           -122.335
         ]
       ],
-      "carMinutes": 5,
+      "carMinutes": 6,
       "carMinutesPeak": 10,
-      "transitMinutes": 15,
+      "transitMinutes": 18,
       "transitModes": [
         "4"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1899,
       "peakHours": "PM",
       "supplemental": false
@@ -163,10 +181,13 @@
       ],
       "carMinutes": 14,
       "carMinutesPeak": 22,
-      "transitMinutes": 33,
+      "transitMinutes": 38,
       "transitModes": [
         "40"
       ],
+      "transitWalkMinutes": 3,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1874,
       "peakHours": "PM",
       "supplemental": false
@@ -187,11 +208,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 29,
-      "transitMinutes": 45,
+      "transitMinutes": 51,
       "transitModes": [
         "H Line",
-        "4"
+        "3"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 8,
       "dailyCommuters": 1758,
       "peakHours": "AM",
       "supplemental": false
@@ -216,6 +240,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1720,
       "peakHours": "AM",
       "supplemental": false
@@ -236,10 +263,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 28,
-      "transitMinutes": 34,
+      "transitMinutes": 43,
       "transitModes": [
         "5"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1691,
       "peakHours": "AM",
       "supplemental": false
@@ -260,10 +290,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 27,
-      "transitMinutes": 47,
+      "transitMinutes": 45,
       "transitModes": [
-        "106"
+        "9"
       ],
+      "transitWalkMinutes": 14,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1430,
       "peakHours": "AM",
       "supplemental": false
@@ -284,10 +317,13 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 9,
-      "transitMinutes": 23,
+      "transitMinutes": 25,
       "transitModes": [
         "60"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1308,
       "peakHours": "PM",
       "supplemental": false
@@ -308,11 +344,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 30,
-      "transitMinutes": 52,
+      "transitMinutes": 51,
       "transitModes": [
         "75",
-        "1 Line"
+        "2 Line"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 1308,
       "peakHours": "AM",
       "supplemental": false
@@ -337,6 +376,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1277,
       "peakHours": "PM",
       "supplemental": false
@@ -357,10 +399,13 @@
       ],
       "carMinutes": 5,
       "carMinutesPeak": 8,
-      "transitMinutes": 16,
+      "transitMinutes": 18,
       "transitModes": [
-        "E Line"
+        "17"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1273,
       "peakHours": "PM",
       "supplemental": false
@@ -381,11 +426,14 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 25,
-      "transitMinutes": 51,
+      "transitMinutes": 54,
       "transitModes": [
         "H Line",
         "40"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 1267,
       "peakHours": "AM",
       "supplemental": false
@@ -406,11 +454,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 20,
-      "transitMinutes": 46,
+      "transitMinutes": 37,
       "transitModes": [
-        "31",
-        "33"
+        "24"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1245,
       "peakHours": "PM",
       "supplemental": false
@@ -431,11 +481,14 @@
       ],
       "carMinutes": 21,
       "carMinutesPeak": 32,
-      "transitMinutes": 62,
+      "transitMinutes": 70,
       "transitModes": [
         "40",
-        "7"
+        "14"
       ],
+      "transitWalkMinutes": 3,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 1241,
       "peakHours": "PM",
       "supplemental": false
@@ -456,11 +509,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 18,
-      "transitMinutes": 38,
+      "transitMinutes": 28,
       "transitModes": [
-        "128",
-        "C Line"
+        "56"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1227,
       "peakHours": "AM",
       "supplemental": false
@@ -481,10 +536,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 27,
-      "transitMinutes": 49,
+      "transitMinutes": 42,
       "transitModes": [
-        "7"
+        "1 Line"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1218,
       "peakHours": "PM",
       "supplemental": false
@@ -505,11 +563,13 @@
       ],
       "carMinutes": 14,
       "carMinutesPeak": 32,
-      "transitMinutes": 42,
+      "transitMinutes": 40,
       "transitModes": [
-        "1 Line",
-        "3"
+        "303"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1177,
       "peakHours": "AM",
       "supplemental": false
@@ -534,6 +594,9 @@
       "transitModes": [
         "C Line"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1168,
       "peakHours": "PM",
       "supplemental": false
@@ -554,11 +617,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 19,
-      "transitMinutes": 40,
+      "transitMinutes": 50,
       "transitModes": [
         "H Line",
         "131"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 8,
       "dailyCommuters": 1138,
       "peakHours": "AM",
       "supplemental": false
@@ -579,10 +645,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 12,
-      "transitMinutes": 33,
+      "transitMinutes": 27,
       "transitModes": [
-        "106"
+        "14"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1126,
       "peakHours": "PM",
       "supplemental": false
@@ -603,11 +672,14 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 19,
-      "transitMinutes": 34,
+      "transitMinutes": 35,
       "transitModes": [
         "1 Line",
-        "3"
+        "4"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 1123,
       "peakHours": "AM",
       "supplemental": false
@@ -630,8 +702,11 @@
       "carMinutesPeak": 25,
       "transitMinutes": 34,
       "transitModes": [
-        "2 Line"
+        "1 Line"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1122,
       "peakHours": "PM",
       "supplemental": false
@@ -652,10 +727,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 18,
-      "transitMinutes": 25,
+      "transitMinutes": 26,
       "transitModes": [
         "13"
       ],
+      "transitWalkMinutes": 3,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1105,
       "peakHours": "PM",
       "supplemental": false
@@ -676,10 +754,13 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 29,
-      "transitMinutes": 47,
+      "transitMinutes": 54,
       "transitModes": [
         "40"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1092,
       "peakHours": "AM",
       "supplemental": false
@@ -700,11 +781,14 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 27,
-      "transitMinutes": 44,
+      "transitMinutes": 49,
       "transitModes": [
         "62",
-        "2 Line"
+        "1 Line"
       ],
+      "transitWalkMinutes": 20,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 8,
       "dailyCommuters": 1071,
       "peakHours": "PM",
       "supplemental": false
@@ -725,10 +809,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 26,
-      "transitMinutes": 33,
+      "transitMinutes": 43,
       "transitModes": [
         "5"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1059,
       "peakHours": "AM",
       "supplemental": false
@@ -749,11 +836,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 28,
-      "transitMinutes": 43,
+      "transitMinutes": 24,
       "transitModes": [
-        "1 Line",
-        "40"
+        "303"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1056,
       "peakHours": "AM",
       "supplemental": false
@@ -774,10 +863,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 22,
-      "transitMinutes": 22,
+      "transitMinutes": 26,
       "transitModes": [
         "40"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 1049,
       "peakHours": "AM",
       "supplemental": false
@@ -798,10 +890,14 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 18,
-      "transitMinutes": 40,
+      "transitMinutes": 44,
       "transitModes": [
-        "8"
+        "8",
+        "14"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 8,
       "dailyCommuters": 1024,
       "peakHours": "PM",
       "supplemental": false
@@ -822,11 +918,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 24,
-      "transitMinutes": 44,
+      "transitMinutes": 43,
       "transitModes": [
         "C Line",
-        "3"
+        "4"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 996,
       "peakHours": "AM",
       "supplemental": false
@@ -851,6 +950,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 992,
       "peakHours": "AM",
       "supplemental": false
@@ -871,10 +973,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 11,
-      "transitMinutes": 24,
+      "transitMinutes": 25,
       "transitModes": [
         "8"
       ],
+      "transitWalkMinutes": 18,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 989,
       "peakHours": "PM",
       "supplemental": false
@@ -895,10 +1000,13 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 13,
-      "transitMinutes": 19,
+      "transitMinutes": 20,
       "transitModes": [
-        "D Line"
+        "1"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 963,
       "peakHours": "PM",
       "supplemental": false
@@ -919,10 +1027,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 20,
-      "transitMinutes": 35,
+      "transitMinutes": 43,
       "transitModes": [
         "62"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 958,
       "peakHours": "PM",
       "supplemental": false
@@ -943,10 +1054,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 18,
-      "transitMinutes": 26,
+      "transitMinutes": 30,
       "transitModes": [
-        "2"
+        "G Line"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 946,
       "peakHours": "PM",
       "supplemental": false
@@ -967,10 +1081,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 20,
-      "transitMinutes": 34,
+      "transitMinutes": 41,
       "transitModes": [
         "372"
       ],
+      "transitWalkMinutes": 13,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 933,
       "peakHours": "AM",
       "supplemental": false
@@ -991,10 +1108,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 13,
-      "transitMinutes": 30,
+      "transitMinutes": 37,
       "transitModes": [
         "65"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 930,
       "peakHours": "PM",
       "supplemental": false
@@ -1015,11 +1135,14 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 15,
-      "transitMinutes": 33,
+      "transitMinutes": 35,
       "transitModes": [
         "4",
-        "C Line"
+        "70"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 921,
       "peakHours": "PM",
       "supplemental": false
@@ -1040,10 +1163,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 14,
-      "transitMinutes": 21,
+      "transitMinutes": 27,
       "transitModes": [
         "70"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 919,
       "peakHours": "PM",
       "supplemental": false
@@ -1064,10 +1190,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 20,
-      "transitMinutes": 29,
+      "transitMinutes": 36,
       "transitModes": [
         "5"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 915,
       "peakHours": "AM",
       "supplemental": false
@@ -1088,12 +1217,13 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 32,
-      "transitMinutes": 69,
+      "transitMinutes": 63,
       "transitModes": [
-        "65",
-        "2 Line",
-        "3"
+        "322"
       ],
+      "transitWalkMinutes": 14,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 898,
       "peakHours": "AM",
       "supplemental": false
@@ -1114,10 +1244,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 21,
-      "transitMinutes": 34,
+      "transitMinutes": 40,
       "transitModes": [
         "C Line"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 874,
       "peakHours": "AM",
       "supplemental": false
@@ -1140,8 +1273,11 @@
       "carMinutesPeak": 15,
       "transitMinutes": 27,
       "transitModes": [
-        "3"
+        "14"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 865,
       "peakHours": "PM",
       "supplemental": false
@@ -1162,11 +1298,14 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 30,
-      "transitMinutes": 55,
+      "transitMinutes": 61,
       "transitModes": [
         "5",
         "4"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 11,
       "dailyCommuters": 849,
       "peakHours": "AM",
       "supplemental": false
@@ -1187,10 +1326,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 19,
-      "transitMinutes": 24,
+      "transitMinutes": 29,
       "transitModes": [
-        "62"
+        "40"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 847,
       "peakHours": "PM",
       "supplemental": false
@@ -1211,10 +1353,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 20,
-      "transitMinutes": 37,
+      "transitMinutes": 42,
       "transitModes": [
         "1"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 831,
       "peakHours": "PM",
       "supplemental": false
@@ -1235,10 +1380,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 15,
-      "transitMinutes": 18,
+      "transitMinutes": 25,
       "transitModes": [
-        "49"
+        "1 Line"
       ],
+      "transitWalkMinutes": 19,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 824,
       "peakHours": "PM",
       "supplemental": false
@@ -1259,10 +1407,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 24,
-      "transitMinutes": 41,
+      "transitMinutes": 36,
       "transitModes": [
-        "62"
+        "45",
+        "1 Line"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 806,
       "peakHours": "PM",
       "supplemental": false
@@ -1283,10 +1435,13 @@
       ],
       "carMinutes": 5,
       "carMinutesPeak": 7,
-      "transitMinutes": 18,
+      "transitMinutes": 20,
       "transitModes": [
         "372"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 795,
       "peakHours": "AM",
       "supplemental": false
@@ -1307,11 +1462,13 @@
       ],
       "carMinutes": 14,
       "carMinutesPeak": 28,
-      "transitMinutes": 61,
+      "transitMinutes": 46,
       "transitModes": [
-        "65",
-        "70"
+        "322"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 794,
       "peakHours": "AM",
       "supplemental": false
@@ -1332,11 +1489,13 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 34,
-      "transitMinutes": 51,
+      "transitMinutes": 52,
       "transitModes": [
-        "1 Line",
-        "14"
+        "1 Line"
       ],
+      "transitWalkMinutes": 22,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 788,
       "peakHours": "AM",
       "supplemental": false
@@ -1357,11 +1516,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 23,
-      "transitMinutes": 56,
+      "transitMinutes": 61,
       "transitModes": [
         "13",
-        "7"
+        "14"
       ],
+      "transitWalkMinutes": 3,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 12,
       "dailyCommuters": 775,
       "peakHours": "PM",
       "supplemental": false
@@ -1382,10 +1544,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 13,
-      "transitMinutes": 24,
+      "transitMinutes": 27,
       "transitModes": [
         "14"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 769,
       "peakHours": "PM",
       "supplemental": false
@@ -1406,11 +1571,14 @@
       ],
       "carMinutes": 18,
       "carMinutesPeak": 30,
-      "transitMinutes": 50,
+      "transitMinutes": 52,
       "transitModes": [
         "40",
-        "4"
+        "3"
       ],
+      "transitWalkMinutes": 2,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 765,
       "peakHours": "PM",
       "supplemental": false
@@ -1431,10 +1599,13 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 30,
-      "transitMinutes": 36,
+      "transitMinutes": 42,
       "transitModes": [
         "40"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 761,
       "peakHours": "AM",
       "supplemental": false
@@ -1455,11 +1626,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 14,
-      "transitMinutes": 35,
+      "transitMinutes": 26,
       "transitModes": [
-        "C Line",
-        "132"
+        "50"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 761,
       "peakHours": "AM",
       "supplemental": false
@@ -1480,11 +1653,14 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 27,
-      "transitMinutes": 57,
+      "transitMinutes": 69,
       "transitModes": [
         "H Line",
         "14"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 12,
       "dailyCommuters": 754,
       "peakHours": "AM",
       "supplemental": true
@@ -1505,10 +1681,13 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 28,
-      "transitMinutes": 41,
+      "transitMinutes": 48,
       "transitModes": [
         "H Line"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 753,
       "peakHours": "AM",
       "supplemental": true
@@ -1533,6 +1712,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 20,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 748,
       "peakHours": "AM",
       "supplemental": true
@@ -1553,10 +1735,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 8,
-      "transitMinutes": 18,
+      "transitMinutes": 22,
       "transitModes": [
-        "3"
+        "4"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 730,
       "peakHours": "AM",
       "supplemental": true
@@ -1577,10 +1762,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 21,
-      "transitMinutes": 31,
+      "transitMinutes": 33,
       "transitModes": [
         "45"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 728,
       "peakHours": "AM",
       "supplemental": true
@@ -1601,10 +1789,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 17,
-      "transitMinutes": 24,
+      "transitMinutes": 28,
       "transitModes": [
         "14"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 707,
       "peakHours": "PM",
       "supplemental": true
@@ -1630,6 +1821,9 @@
         "C Line",
         "14"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 11,
       "dailyCommuters": 706,
       "peakHours": "AM",
       "supplemental": true
@@ -1650,11 +1844,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 31,
-      "transitMinutes": 65,
+      "transitMinutes": 58,
       "transitModes": [
-        "7",
-        "C Line"
+        "1 Line",
+        "40"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 704,
       "peakHours": "PM",
       "supplemental": true
@@ -1675,11 +1872,14 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 25,
-      "transitMinutes": 45,
+      "transitMinutes": 48,
       "transitModes": [
         "1 Line",
         "40"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 698,
       "peakHours": "PM",
       "supplemental": true
@@ -1700,11 +1900,14 @@
       ],
       "carMinutes": 20,
       "carMinutesPeak": 32,
-      "transitMinutes": 56,
+      "transitMinutes": 73,
       "transitModes": [
         "24",
         "14"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 12,
       "dailyCommuters": 695,
       "peakHours": "PM",
       "supplemental": true
@@ -1725,11 +1928,14 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 12,
-      "transitMinutes": 33,
+      "transitMinutes": 35,
       "transitModes": [
-        "H Line",
+        "22",
         "C Line"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 694,
       "peakHours": "PM",
       "supplemental": true
@@ -1750,10 +1956,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 19,
-      "transitMinutes": 36,
+      "transitMinutes": 41,
       "transitModes": [
         "40"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 692,
       "peakHours": "AM",
       "supplemental": true
@@ -1778,6 +1987,9 @@
       "transitModes": [
         "C Line"
       ],
+      "transitWalkMinutes": 14,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 685,
       "peakHours": "PM",
       "supplemental": true
@@ -1798,11 +2010,15 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 32,
-      "transitMinutes": 67,
+      "transitMinutes": 75,
       "transitModes": [
-        "5",
-        "7"
+        "45",
+        "1 Line",
+        "14"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 2,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 651,
       "peakHours": "AM",
       "supplemental": true
@@ -1823,10 +2039,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 11,
-      "transitMinutes": 21,
+      "transitMinutes": 24,
       "transitModes": [
-        "E Line"
+        "C Line"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 642,
       "peakHours": "PM",
       "supplemental": true
@@ -1847,10 +2066,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 17,
-      "transitMinutes": 32,
+      "transitMinutes": 31,
       "transitModes": [
-        "49"
+        "8"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 630,
       "peakHours": "PM",
       "supplemental": true
@@ -1876,6 +2098,9 @@
         "32",
         "2 Line"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 628,
       "peakHours": "PM",
       "supplemental": true
@@ -1896,11 +2121,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 24,
-      "transitMinutes": 56,
+      "transitMinutes": 57,
       "transitModes": [
         "65",
         "70"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 617,
       "peakHours": "PM",
       "supplemental": true
@@ -1921,11 +2149,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 19,
-      "transitMinutes": 56,
+      "transitMinutes": 46,
       "transitModes": [
-        "31",
-        "40"
+        "24",
+        "C Line"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 616,
       "peakHours": "PM",
       "supplemental": true
@@ -1946,10 +2177,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 17,
-      "transitMinutes": 40,
+      "transitMinutes": 44,
       "transitModes": [
         "60"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 609,
       "peakHours": "AM",
       "supplemental": true
@@ -1973,8 +2207,11 @@
       "transitMinutes": 34,
       "transitModes": [
         "13",
-        "40"
+        "8"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 601,
       "peakHours": "PM",
       "supplemental": true
@@ -1995,10 +2232,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 17,
-      "transitMinutes": 28,
+      "transitMinutes": 36,
       "transitModes": [
         "5"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 593,
       "peakHours": "AM",
       "supplemental": true
@@ -2019,12 +2259,14 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 21,
-      "transitMinutes": 57,
+      "transitMinutes": 46,
       "transitModes": [
-        "128",
-        "C Line",
-        "4"
+        "56",
+        "3"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 10,
       "dailyCommuters": 593,
       "peakHours": "AM",
       "supplemental": true
@@ -2045,11 +2287,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 22,
-      "transitMinutes": 45,
+      "transitMinutes": 54,
       "transitModes": [
-        "372",
-        "70"
+        "62"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 591,
       "peakHours": "PM",
       "supplemental": true
@@ -2074,6 +2318,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 18,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 582,
       "peakHours": "PM",
       "supplemental": true
@@ -2094,10 +2341,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 9,
-      "transitMinutes": 14,
+      "transitMinutes": 17,
       "transitModes": [
         "44"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 573,
       "peakHours": "AM",
       "supplemental": true
@@ -2118,10 +2368,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 16,
-      "transitMinutes": 29,
+      "transitMinutes": 36,
       "transitModes": [
         "62"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 569,
       "peakHours": "PM",
       "supplemental": true
@@ -2142,10 +2395,13 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 21,
-      "transitMinutes": 23,
+      "transitMinutes": 31,
       "transitModes": [
         "44"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 568,
       "peakHours": "PM",
       "supplemental": true
@@ -2166,10 +2422,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 16,
-      "transitMinutes": 25,
+      "transitMinutes": 30,
       "transitModes": [
         "4"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 560,
       "peakHours": "PM",
       "supplemental": true
@@ -2195,6 +2454,9 @@
         "2 Line",
         "4"
       ],
+      "transitWalkMinutes": 20,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 559,
       "peakHours": "PM",
       "supplemental": true
@@ -2215,10 +2477,14 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 11,
-      "transitMinutes": 28,
+      "transitMinutes": 31,
       "transitModes": [
+        "14",
         "4"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 551,
       "peakHours": "PM",
       "supplemental": true
@@ -2243,6 +2509,9 @@
       "transitModes": [
         "75"
       ],
+      "transitWalkMinutes": 13,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 546,
       "peakHours": "AM",
       "supplemental": true
@@ -2263,10 +2532,13 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 11,
-      "transitMinutes": 21,
+      "transitMinutes": 23,
       "transitModes": [
         "32"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 540,
       "peakHours": "PM",
       "supplemental": true
@@ -2287,11 +2559,14 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 13,
-      "transitMinutes": 34,
+      "transitMinutes": 30,
       "transitModes": [
-        "4",
+        "3",
         "132"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 540,
       "peakHours": "PM",
       "supplemental": true
@@ -2312,11 +2587,14 @@
       ],
       "carMinutes": 20,
       "carMinutesPeak": 37,
-      "transitMinutes": 68,
+      "transitMinutes": 58,
       "transitModes": [
-        "40",
-        "3"
+        "17",
+        "4"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 6,
       "dailyCommuters": 538,
       "peakHours": "AM",
       "supplemental": true
@@ -2337,10 +2615,13 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 30,
-      "transitMinutes": 33,
+      "transitMinutes": 42,
       "transitModes": [
         "5"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 537,
       "peakHours": "AM",
       "supplemental": true
@@ -2361,10 +2642,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 17,
-      "transitMinutes": 26,
+      "transitMinutes": 29,
       "transitModes": [
-        "124"
+        "132"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 537,
       "peakHours": "PM",
       "supplemental": true
@@ -2385,11 +2669,14 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 10,
-      "transitMinutes": 38,
+      "transitMinutes": 31,
       "transitModes": [
-        "2",
-        "60"
+        "8",
+        "4"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 535,
       "peakHours": "PM",
       "supplemental": true
@@ -2414,6 +2701,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 535,
       "peakHours": "AM",
       "supplemental": true
@@ -2434,11 +2724,14 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 18,
-      "transitMinutes": 51,
+      "transitMinutes": 48,
       "transitModes": [
-        "128",
-        "C Line"
+        "56",
+        "40"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 533,
       "peakHours": "AM",
       "supplemental": true
@@ -2463,6 +2756,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 520,
       "peakHours": "AM",
       "supplemental": true
@@ -2485,8 +2781,11 @@
       "carMinutesPeak": 13,
       "transitMinutes": 18,
       "transitModes": [
-        "62"
+        "40"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 516,
       "peakHours": "AM",
       "supplemental": true
@@ -2507,12 +2806,14 @@
       ],
       "carMinutes": 14,
       "carMinutesPeak": 28,
-      "transitMinutes": 62,
+      "transitMinutes": 69,
       "transitModes": [
-        "62",
-        "2 Line",
-        "3"
+        "65",
+        "43"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 514,
       "peakHours": "PM",
       "supplemental": true
@@ -2533,10 +2834,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 19,
-      "transitMinutes": 35,
+      "transitMinutes": 37,
       "transitModes": [
         "D Line"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 499,
       "peakHours": "PM",
       "supplemental": true
@@ -2557,11 +2861,14 @@
       ],
       "carMinutes": 19,
       "carMinutesPeak": 34,
-      "transitMinutes": 76,
+      "transitMinutes": 79,
       "transitModes": [
         "75",
         "1 Line"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 497,
       "peakHours": "PM",
       "supplemental": true
@@ -2582,10 +2889,13 @@
       ],
       "carMinutes": 4,
       "carMinutesPeak": 9,
-      "transitMinutes": 19,
+      "transitMinutes": 21,
       "transitModes": [
         "8"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 496,
       "peakHours": "PM",
       "supplemental": true
@@ -2610,6 +2920,9 @@
       "transitModes": [
         "1 Line"
       ],
+      "transitWalkMinutes": 22,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 494,
       "peakHours": "AM",
       "supplemental": true
@@ -2630,11 +2943,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 25,
-      "transitMinutes": 60,
+      "transitMinutes": 71,
       "transitModes": [
         "5",
-        "1 Line"
+        "14"
       ],
+      "transitWalkMinutes": 7,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 12,
       "dailyCommuters": 491,
       "peakHours": "AM",
       "supplemental": true
@@ -2655,10 +2971,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 14,
-      "transitMinutes": 30,
+      "transitMinutes": 35,
       "transitModes": [
         "36"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 487,
       "peakHours": "PM",
       "supplemental": true
@@ -2679,10 +2998,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 21,
-      "transitMinutes": 31,
+      "transitMinutes": 35,
       "transitModes": [
         "8"
       ],
+      "transitWalkMinutes": 16,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 485,
       "peakHours": "PM",
       "supplemental": true
@@ -2703,10 +3025,13 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 23,
-      "transitMinutes": 34,
+      "transitMinutes": 39,
       "transitModes": [
         "C Line"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 482,
       "peakHours": "AM",
       "supplemental": true
@@ -2727,11 +3052,14 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 27,
-      "transitMinutes": 60,
+      "transitMinutes": 55,
       "transitModes": [
-        "31",
-        "33"
+        "24",
+        "4"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 10,
       "dailyCommuters": 482,
       "peakHours": "PM",
       "supplemental": true
@@ -2752,10 +3080,13 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 11,
-      "transitMinutes": 31,
+      "transitMinutes": 37,
       "transitModes": [
         "50"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 460,
       "peakHours": "AM",
       "supplemental": true
@@ -2776,11 +3107,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 22,
-      "transitMinutes": 50,
+      "transitMinutes": 48,
       "transitModes": [
-        "62",
-        "4"
+        "44"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 458,
       "peakHours": "PM",
       "supplemental": true
@@ -2801,10 +3134,13 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 14,
-      "transitMinutes": 21,
+      "transitMinutes": 25,
       "transitModes": [
         "44"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 452,
       "peakHours": "PM",
       "supplemental": true
@@ -2825,11 +3161,14 @@
       ],
       "carMinutes": 23,
       "carMinutesPeak": 39,
-      "transitMinutes": 75,
+      "transitMinutes": 76,
       "transitModes": [
-        "40",
+        "17",
         "14"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 10,
       "dailyCommuters": 447,
       "peakHours": "AM",
       "supplemental": true
@@ -2850,11 +3189,14 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 9,
-      "transitMinutes": 19,
+      "transitMinutes": 18,
       "transitModes": [
         "1 Line",
         "14"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 442,
       "peakHours": "AM",
       "supplemental": true
@@ -2875,10 +3217,14 @@
       ],
       "carMinutes": 16,
       "carMinutesPeak": 27,
-      "transitMinutes": 47,
+      "transitMinutes": 50,
       "transitModes": [
-        "45"
+        "40",
+        "44"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 6,
       "dailyCommuters": 441,
       "peakHours": "AM",
       "supplemental": true
@@ -2901,8 +3247,11 @@
       "carMinutesPeak": 8,
       "transitMinutes": 18,
       "transitModes": [
-        "D Line"
+        "1"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 437,
       "peakHours": "PM",
       "supplemental": true
@@ -2923,11 +3272,15 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 25,
-      "transitMinutes": 59,
+      "transitMinutes": 63,
       "transitModes": [
         "44",
-        "48"
+        "1 Line",
+        "14"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 2,
+      "transitMaxWaitMinutes": 10,
       "dailyCommuters": 434,
       "peakHours": "PM",
       "supplemental": true
@@ -2948,11 +3301,14 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 23,
-      "transitMinutes": 50,
+      "transitMinutes": 53,
       "transitModes": [
         "5",
-        "4"
+        "3"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 10,
       "dailyCommuters": 433,
       "peakHours": "PM",
       "supplemental": true
@@ -2973,10 +3329,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 10,
-      "transitMinutes": 12,
+      "transitMinutes": 14,
       "transitModes": [
         "70"
       ],
+      "transitWalkMinutes": 6,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 429,
       "peakHours": "PM",
       "supplemental": true
@@ -2997,11 +3356,14 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 19,
-      "transitMinutes": 48,
+      "transitMinutes": 55,
       "transitModes": [
         "70",
         "14"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 6,
       "dailyCommuters": 425,
       "peakHours": "PM",
       "supplemental": true
@@ -3022,11 +3384,14 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 26,
-      "transitMinutes": 45,
+      "transitMinutes": 50,
       "transitModes": [
         "40",
         "131"
       ],
+      "transitWalkMinutes": 1,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 422,
       "peakHours": "AM",
       "supplemental": true
@@ -3047,11 +3412,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 18,
-      "transitMinutes": 34,
+      "transitMinutes": 37,
       "transitModes": [
-        "4",
-        "2 Line"
+        "43"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 421,
       "peakHours": "PM",
       "supplemental": true
@@ -3076,6 +3443,9 @@
       "transitModes": [
         "106"
       ],
+      "transitWalkMinutes": 19,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 420,
       "peakHours": "AM",
       "supplemental": true
@@ -3096,11 +3466,14 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 16,
-      "transitMinutes": 39,
+      "transitMinutes": 36,
       "transitModes": [
         "70",
-        "3"
+        "322"
       ],
+      "transitWalkMinutes": 4,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 419,
       "peakHours": "PM",
       "supplemental": true
@@ -3121,10 +3494,13 @@
       ],
       "carMinutes": 7,
       "carMinutesPeak": 8,
-      "transitMinutes": 36,
+      "transitMinutes": 25,
       "transitModes": [
-        "65"
+        "79"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 418,
       "peakHours": "AM",
       "supplemental": true
@@ -3145,10 +3521,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 21,
-      "transitMinutes": 35,
+      "transitMinutes": 44,
       "transitModes": [
         "62"
       ],
+      "transitWalkMinutes": 13,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 418,
       "peakHours": "PM",
       "supplemental": true
@@ -3169,10 +3548,13 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 21,
-      "transitMinutes": 32,
+      "transitMinutes": 37,
       "transitModes": [
         "8"
       ],
+      "transitWalkMinutes": 13,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 417,
       "peakHours": "PM",
       "supplemental": true
@@ -3193,11 +3575,14 @@
       ],
       "carMinutes": 18,
       "carMinutesPeak": 33,
-      "transitMinutes": 61,
+      "transitMinutes": 60,
       "transitModes": [
         "75",
-        "1 Line"
+        "2 Line"
       ],
+      "transitWalkMinutes": 22,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 413,
       "peakHours": "PM",
       "supplemental": true
@@ -3218,10 +3603,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 17,
-      "transitMinutes": 41,
+      "transitMinutes": 49,
       "transitModes": [
         "60"
       ],
+      "transitWalkMinutes": 17,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 411,
       "peakHours": "AM",
       "supplemental": true
@@ -3242,10 +3630,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 9,
-      "transitMinutes": 10,
+      "transitMinutes": 13,
       "transitModes": [
         "70"
       ],
+      "transitWalkMinutes": 2,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 406,
       "peakHours": "PM",
       "supplemental": true
@@ -3268,10 +3659,13 @@
       "carMinutesPeak": 32,
       "transitMinutes": 72,
       "transitModes": [
-        "65",
-        "48",
+        "62",
+        "1 Line",
         "14"
       ],
+      "transitWalkMinutes": 18,
+      "transitTransfers": 2,
+      "transitMaxWaitMinutes": 8,
       "dailyCommuters": 405,
       "peakHours": "PM",
       "supplemental": true
@@ -3292,10 +3686,13 @@
       ],
       "carMinutes": 10,
       "carMinutesPeak": 13,
-      "transitMinutes": 25,
+      "transitMinutes": 21,
       "transitModes": [
-        "2 Line"
+        "45"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 398,
       "peakHours": "AM",
       "supplemental": true
@@ -3316,10 +3713,14 @@
       ],
       "carMinutes": 17,
       "carMinutesPeak": 32,
-      "transitMinutes": 63,
+      "transitMinutes": 62,
       "transitModes": [
-        "7"
+        "106",
+        "1"
       ],
+      "transitWalkMinutes": 13,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 397,
       "peakHours": "PM",
       "supplemental": true
@@ -3340,11 +3741,14 @@
       ],
       "carMinutes": 15,
       "carMinutesPeak": 22,
-      "transitMinutes": 51,
+      "transitMinutes": 57,
       "transitModes": [
-        "62",
+        "40",
         "14"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 397,
       "peakHours": "PM",
       "supplemental": true
@@ -3365,10 +3769,13 @@
       ],
       "carMinutes": 9,
       "carMinutesPeak": 16,
-      "transitMinutes": 25,
+      "transitMinutes": 27,
       "transitModes": [
         "4"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 392,
       "peakHours": "PM",
       "supplemental": true
@@ -3389,10 +3796,13 @@
       ],
       "carMinutes": 5,
       "carMinutesPeak": 8,
-      "transitMinutes": 12,
+      "transitMinutes": 13,
       "transitModes": [
-        "3"
+        "4"
       ],
+      "transitWalkMinutes": 5,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 391,
       "peakHours": "PM",
       "supplemental": true
@@ -3413,10 +3823,13 @@
       ],
       "carMinutes": 6,
       "carMinutesPeak": 14,
-      "transitMinutes": 29,
+      "transitMinutes": 34,
       "transitModes": [
         "60"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 390,
       "peakHours": "AM",
       "supplemental": true
@@ -3439,9 +3852,13 @@
       "carMinutesPeak": 29,
       "transitMinutes": 60,
       "transitModes": [
-        "2 Line",
-        "8"
+        "45",
+        "1 Line",
+        "14"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 2,
+      "transitMaxWaitMinutes": 9,
       "dailyCommuters": 386,
       "peakHours": "PM",
       "supplemental": true
@@ -3462,10 +3879,13 @@
       ],
       "carMinutes": 11,
       "carMinutesPeak": 16,
-      "transitMinutes": 31,
+      "transitMinutes": 36,
       "transitModes": [
         "24"
       ],
+      "transitWalkMinutes": 9,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 385,
       "peakHours": "PM",
       "supplemental": true
@@ -3486,10 +3906,14 @@
       ],
       "carMinutes": 8,
       "carMinutesPeak": 10,
-      "transitMinutes": 30,
+      "transitMinutes": 29,
       "transitModes": [
-        "8"
+        "8",
+        "14"
       ],
+      "transitWalkMinutes": 10,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 4,
       "dailyCommuters": 380,
       "peakHours": "PM",
       "supplemental": true
@@ -3510,11 +3934,14 @@
       ],
       "carMinutes": 20,
       "carMinutesPeak": 35,
-      "transitMinutes": 51,
+      "transitMinutes": 58,
       "transitModes": [
         "H Line",
         "1 Line"
       ],
+      "transitWalkMinutes": 15,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 6,
       "dailyCommuters": 379,
       "peakHours": "PM",
       "supplemental": true
@@ -3539,6 +3966,9 @@
       "transitModes": [
         "61"
       ],
+      "transitWalkMinutes": 11,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 373,
       "peakHours": "PM",
       "supplemental": true
@@ -3563,6 +3993,9 @@
       "transitModes": [
         "14"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 372,
       "peakHours": "AM",
       "supplemental": true
@@ -3585,8 +4018,12 @@
       "carMinutesPeak": 30,
       "transitMinutes": 58,
       "transitModes": [
-        "1 Line"
+        "1 Line",
+        "14"
       ],
+      "transitWalkMinutes": 18,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 5,
       "dailyCommuters": 371,
       "peakHours": "PM",
       "supplemental": true
@@ -3607,11 +4044,13 @@
       ],
       "carMinutes": 18,
       "carMinutesPeak": 38,
-      "transitMinutes": 52,
+      "transitMinutes": 55,
       "transitModes": [
-        "106",
-        "48"
+        "1 Line"
       ],
+      "transitWalkMinutes": 21,
+      "transitTransfers": 0,
+      "transitMaxWaitMinutes": 0,
       "dailyCommuters": 368,
       "peakHours": "PM",
       "supplemental": true
@@ -3632,11 +4071,14 @@
       ],
       "carMinutes": 12,
       "carMinutesPeak": 19,
-      "transitMinutes": 66,
+      "transitMinutes": 64,
       "transitModes": [
-        "50",
-        "1 Line"
+        "56",
+        "14"
       ],
+      "transitWalkMinutes": 8,
+      "transitTransfers": 1,
+      "transitMaxWaitMinutes": 14,
       "dailyCommuters": 368,
       "peakHours": "AM",
       "supplemental": true
@@ -3657,11 +4099,15 @@
       ],
       "carMinutes": 13,
       "carMinutesPeak": 26,
-      "transitMinutes": 56,
+      "transitMinutes": 45,
       "transitModes": [
         "62",
+        "2 Line",
         "4"
       ],
+      "transitWalkMinutes": 12,
+      "transitTransfers": 2,
+      "transitMaxWaitMinutes": 7,
       "dailyCommuters": 367,
       "peakHours": "PM",
       "supplemental": true

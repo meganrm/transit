@@ -3,17 +3,11 @@ import L from "leaflet";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
-import { ViewToggle } from "./ViewToggle";
-import type { ViewMode } from "./ViewToggle";
 import type { MetricMode, TrafficMode } from "../types";
 import type { Route } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
 import { getNeighborhoodMetrics } from "../data/analytics";
-import {
-    positionToMetric,
-    getRouteMetricValue,
-} from "../utils/routeColor";
 
 const homeBounds = L.latLngBounds(HOME_BOUNDS[0], HOME_BOUNDS[1]);
 
@@ -95,8 +89,6 @@ function HomeButton({
 interface MapViewProps {
     routes: Route[];
     onRouteSelect: (id: number) => void;
-    viewMode: ViewMode;
-    onViewModeChange: (mode: ViewMode) => void;
     trafficMode: TrafficMode;
     onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
@@ -106,16 +98,23 @@ interface MapViewProps {
     onFilterMinChange: (val: number) => void;
     filterMax: number;
     onFilterMaxChange: (val: number) => void;
+    selectedTiers: Set<number>;
+    onTiersChange: (tiers: Set<number>) => void;
+    distanceMin: number;
+    onDistanceMinChange: (val: number) => void;
+    distanceMax: number;
+    onDistanceMaxChange: (val: number) => void;
+    distanceRangeMiles: { min: number; max: number };
+    selectedReasons: Set<string>;
+    onReasonsChange: (reasons: Set<string>) => void;
+    highlightedRouteIds: Set<number> | null;
     selectedNeighborhood: string | null;
-    selectedNeighborhoodRouteIds: Set<number> | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
 }
 
 export function MapView({
     routes,
     onRouteSelect,
-    viewMode,
-    onViewModeChange,
     trafficMode,
     onTrafficModeChange,
     metricMode,
@@ -125,35 +124,21 @@ export function MapView({
     onFilterMinChange,
     filterMax,
     onFilterMaxChange,
+    selectedTiers,
+    onTiersChange,
+    distanceMin,
+    onDistanceMinChange,
+    distanceMax,
+    onDistanceMaxChange,
+    distanceRangeMiles,
+    selectedReasons,
+    onReasonsChange,
+    highlightedRouteIds,
     selectedNeighborhood,
-    selectedNeighborhoodRouteIds,
     onNeighborhoodSelect,
 }: MapViewProps) {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
     const homeRef = useRef<HomeState | null>(null);
-
-    const highlightedRouteIds = useMemo<Set<number> | null>(() => {
-        if (selectedNeighborhoodRouteIds !== null)
-            return selectedNeighborhoodRouteIds;
-        if (filterMin === 0 && filterMax === 100) return null;
-
-        const minMetric = positionToMetric(filterMin, trafficMode, metricMode);
-        const maxMetric = positionToMetric(filterMax, trafficMode, metricMode);
-
-        const ids = new Set<number>();
-        for (const route of routes) {
-            const value = getRouteMetricValue(route, trafficMode, metricMode);
-            if (value >= minMetric && value <= maxMetric) ids.add(route.id);
-        }
-        return ids.size > 0 ? ids : null;
-    }, [
-        routes,
-        selectedNeighborhoodRouteIds,
-        filterMin,
-        filterMax,
-        trafficMode,
-        metricMode,
-    ]);
 
     const neighborhoodScores = useMemo<Map<string, number> | null>(() => {
         const metrics = getNeighborhoodMetrics(routes, trafficMode);
@@ -189,7 +174,6 @@ export function MapView({
                             highlightedRouteIds !== null &&
                             !highlightedRouteIds.has(route.id)
                         }
-                        focusActive={highlightedRouteIds !== null}
                         trafficMode={trafficMode}
                         metricMode={metricMode}
                         onHover={setActiveRouteId}
@@ -215,8 +199,17 @@ export function MapView({
                 onFilterMinChange={onFilterMinChange}
                 filterMax={filterMax}
                 onFilterMaxChange={onFilterMaxChange}
+                selectedTiers={selectedTiers}
+                onTiersChange={onTiersChange}
+                distanceMin={distanceMin}
+                onDistanceMinChange={onDistanceMinChange}
+                distanceMax={distanceMax}
+                onDistanceMaxChange={onDistanceMaxChange}
+                distanceRangeMiles={distanceRangeMiles}
+                selectedReasons={selectedReasons}
+                onReasonsChange={onReasonsChange}
+                routes={routes}
             />
-            <ViewToggle viewMode={viewMode} onChange={onViewModeChange} />
         </div>
     );
 }
