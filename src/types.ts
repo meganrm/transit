@@ -10,6 +10,7 @@ export type TrafficMode = (typeof TRAFFIC_MODE)[keyof typeof TRAFFIC_MODE];
 export const METRIC_MODE = {
     TRAVEL_TIME_DIFFERENCE: "travel-time-difference",
     PERSON_MINUTES_LOST: "person-minutes-lost",
+    DELAY_REASON: "delay-reason",
 } as const;
 
 export type MetricMode = (typeof METRIC_MODE)[keyof typeof METRIC_MODE];

@@ -43,7 +43,7 @@ function ReasonTag({
 }
 
 function DelayReasonTags({ route }: { route: Route }) {
-    const { longWaitMinutes, longWalkMinutes } = transitReasonThresholds;
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
 
     const tags: { label: string; color: string }[] = [];
 
@@ -59,7 +59,10 @@ function DelayReasonTags({ route }: { route: Route }) {
             color: REASON_COLORS.longWait,
         });
     }
-    if (route.transitWalkMinutes >= longWalkMinutes) {
+    if (
+        route.transitWalkMinutes >= longWalkMinutes &&
+        route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+    ) {
         tags.push({
             label: LABELS.delayReasons.walking(route.transitWalkMinutes),
             color: REASON_COLORS.walking,

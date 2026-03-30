@@ -48,6 +48,8 @@ export const transitReasonThresholds = {
     longWaitMinutes: 8,
     /** Total walking time ≥ this → show "walking" tag */
     longWalkMinutes: 8,
+    /** Walking is only a delay reason if transit exceeds peak driving by more than this */
+    walkingSlowThresholdMinutes: 10,
 } as const;
 
 /** Shared UI literal values used across inline styles/components */

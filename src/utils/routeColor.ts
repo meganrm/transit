@@ -1,24 +1,58 @@
 import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, Route, TrafficMode } from "../types";
 import { routes as fallbackRoutes } from "../data/routes";
+import { transitReasonThresholds } from "../constants";
 
 type RGB = [number, number, number];
 
 // Palette endpoints — the two colors at the extremes of every gradient
-const COLOR_BEST: RGB = [34, 197, 94]; // bright green — transit fastest / saves most time
-const COLOR_WORST: RGB = [197, 27, 125]; // dark magenta — transit slowest / wastes most time
+// Old palette (revert by restoring these values):
+// const COLOR_BEST: RGB = [34, 197, 94];      // bright green
+// const COLOR_WORST: RGB = [197, 27, 125];    // dark magenta
+// const COLOR_MED_GREEN: RGB = [161, 215, 106]; // light green
+// const COLOR_NEUTRAL: RGB = [255, 255, 255];   // white
+// const COLOR_MED_PINK: RGB = [233, 163, 201];  // light pink
+const COLOR_BEST: RGB = [57, 255, 20]; // neon green — transit fastest / saves most time
+const COLOR_WORST: RGB = [255, 100, 220]; // bright hot pink — transit slowest / wastes most time
 
 // Palette midpoints — used as interior stops
-const COLOR_MED_GREEN: RGB = [161, 215, 106]; // medium green, ~0.85 ratio
-const COLOR_NEUTRAL: RGB = [255, 255, 255]; // white — equal / breakeven
-const COLOR_MED_PINK: RGB = [233, 163, 201]; // medium pink,  ~1.8 ratio
+const COLOR_MED_GREEN: RGB = [21, 128, 61]; // dark forest green, ~0.85 ratio
+const COLOR_NEUTRAL: RGB = [76, 73, 88]; // medium gray — equal / breakeven
+const COLOR_BAD_LOW: RGB = [165, 28, 75]; // deep rose — lower bad range (data-relative)
+const COLOR_MED_PINK: RGB = [200, 40, 120]; // vivid pink — upper bad range (data-relative)
+
+// Delay reason categorical colors (matches REASON_COLORS in RoutePanel/Legend)
+const COLOR_DELAY_TRANSFER: RGB = [245, 158, 11]; // amber
+const COLOR_DELAY_LONG_WAIT: RGB = [249, 115, 22]; // orange
+const COLOR_DELAY_WALKING: RGB = [56, 189, 248]; // sky
+const COLOR_DELAY_NONE: RGB = [100, 116, 139]; // slate-500, neutral gray
+
+function getDelayReasonRgb(route: {
+    transitMinutes: number;
+    carMinutesPeak: number;
+    transitTransfers: number;
+    transitMaxWaitMinutes: number;
+    transitWalkMinutes: number;
+}): RGB {
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } =
+        transitReasonThresholds;
+    if (route.transitMaxWaitMinutes >= longWaitMinutes)
+        return COLOR_DELAY_LONG_WAIT;
+    if (route.transitTransfers >= 1) return COLOR_DELAY_TRANSFER;
+    if (
+        route.transitWalkMinutes >= longWalkMinutes &&
+        route.transitMinutes - route.carMinutesPeak >
+            walkingSlowThresholdMinutes
+    )
+        return COLOR_DELAY_WALKING;
+    return COLOR_DELAY_NONE;
+}
 
 // --- Palette shape (ratio-based modes) ---
-// Interior stops define the PiYG diverging curve; endpoints are data-anchored.
+// Good-side interior stops are fixed relative landmarks; bad side is data-relative (see buildRatioStops).
 const RATIO_INNER_STOPS: [number, number, number, number][] = [
     [0.85, ...COLOR_MED_GREEN],
     [1.0, ...COLOR_NEUTRAL],
-    [1.8, ...COLOR_MED_PINK],
 ];
 
 function computeRatioRange(
@@ -67,12 +101,16 @@ function buildRatioStops(
 ): [number, number, number, number][] {
     const stops: [number, number, number, number][] = [];
 
+    // Bad-side interior stops computed as fractions of (max - 1.0)
+    // so visual range is always evenly distributed regardless of data spread.
+    const bad33 = 1.0 + (max - 1.0) * 0.33;
+    const bad66 = 1.0 + (max - 1.0) * 0.66;
+
     if (min >= 1.0) {
         // All routes slower than driving: neutral at best → worst at worst.
         stops.push([min, ...COLOR_NEUTRAL]);
-        for (const [v, r, g, b] of RATIO_INNER_STOPS) {
-            if (v > min && v < max) stops.push([v, r, g, b]);
-        }
+        if (bad33 > min && bad33 < max) stops.push([bad33, ...COLOR_BAD_LOW]);
+        if (bad66 > min && bad66 < max) stops.push([bad66, ...COLOR_MED_PINK]);
         stops.push([max, ...COLOR_WORST]);
     } else {
         // Some routes faster than driving: full diverging scale with 1.0 fixed.
@@ -82,6 +120,8 @@ function buildRatioStops(
         for (const [v, r, g, b] of RATIO_INNER_STOPS) {
             if (v >= min && v <= max) stops.push([v, r, g, b]);
         }
+        if (bad33 < max) stops.push([bad33, ...COLOR_BAD_LOW]);
+        if (bad66 < max) stops.push([bad66, ...COLOR_MED_PINK]);
         stops.push([max, ...COLOR_WORST]);
     }
 
@@ -93,12 +133,13 @@ function buildPMStops(
     max: number,
 ): [number, number, number, number][] {
     if (min < 0 && max > 0) {
-        // Diverging: best ← med_green ← neutral → med_pink → worst
+        // Diverging: best ← med_green ← neutral → bad_low → med_pink → worst
         return [
             [min, ...COLOR_BEST],
-            [min * 0.1, ...COLOR_MED_GREEN],
+            [min * 0.33, ...COLOR_MED_GREEN],
             [0, ...COLOR_NEUTRAL],
-            [max * 0.1, ...COLOR_MED_PINK],
+            [max * 0.33, ...COLOR_BAD_LOW],
+            [max * 0.66, ...COLOR_MED_PINK],
             [max, ...COLOR_WORST],
         ];
     }
@@ -110,10 +151,11 @@ function buildPMStops(
             [max, ...COLOR_NEUTRAL],
         ];
     }
-    // All routes lose time: neutral → med_pink → worst
+    // All routes lose time: neutral → bad_low → med_pink → worst
     return [
         [min, ...COLOR_NEUTRAL],
-        [(min + max) / 2, ...COLOR_MED_PINK],
+        [min + (max - min) * 0.33, ...COLOR_BAD_LOW],
+        [min + (max - min) * 0.66, ...COLOR_MED_PINK],
         [max, ...COLOR_WORST],
     ];
 }
@@ -241,10 +283,22 @@ export function getRouteRgb(
         carMinutesPeak: number;
         carMinutes?: number;
         dailyCommuters?: number;
+        transitTransfers?: number;
+        transitMaxWaitMinutes?: number;
+        transitWalkMinutes?: number;
     },
     trafficMode: TrafficMode = TRAFFIC_MODE.PEAK_TRAFFIC,
     metricMode: MetricMode = METRIC_MODE.TRAVEL_TIME_DIFFERENCE,
 ): [number, number, number] {
+    if (metricMode === METRIC_MODE.DELAY_REASON) {
+        return getDelayReasonRgb({
+            transitMinutes: route.transitMinutes,
+            carMinutesPeak: route.carMinutesPeak,
+            transitTransfers: route.transitTransfers ?? 0,
+            transitMaxWaitMinutes: route.transitMaxWaitMinutes ?? 0,
+            transitWalkMinutes: route.transitWalkMinutes ?? 0,
+        });
+    }
     const baselineCarMinutes =
         trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
             ? route.carMinutesPeak
@@ -273,6 +327,17 @@ export function getRouteColor(
     const [r, g, b] = getRouteRgb(route, trafficMode, metricMode);
     return `rgb(${r},${g},${b})`;
 }
+
+/** Fixed green→neutral→magenta gradient for the filter slider, independent of metric mode. */
+export const FILTER_SLIDER_GRADIENT = [
+    `rgb(${COLOR_BEST.join(",")}) 0%`,
+    `rgb(${COLOR_MED_GREEN.join(",")}) 25%`,
+    `rgb(${COLOR_NEUTRAL.join(",")}) 50%`,
+    `rgb(${COLOR_BAD_LOW.join(",")}) 62%`,
+    `rgb(${COLOR_MED_PINK.join(",")}) 75%`,
+    `rgb(${COLOR_WORST.join(",")}) 100%`,
+].join(", ");
+export const FILTER_SLIDER_GRADIENT_CSS = `linear-gradient(to right, ${FILTER_SLIDER_GRADIENT})`;
 
 export function buildLegendGradient(
     trafficMode: TrafficMode = TRAFFIC_MODE.PEAK_TRAFFIC,
@@ -384,6 +449,7 @@ export function getRouteSliderPosition(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
+    if (metricMode === METRIC_MODE.DELAY_REASON) return 50;
     const value = getRouteMetricValue(route, trafficMode, metricMode);
     const isRatio = metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE;
     const range = isRatio ? ratioRanges[trafficMode] : pmRanges[trafficMode];
@@ -397,6 +463,7 @@ export function getRouteMetricValue(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
+    if (metricMode === METRIC_MODE.DELAY_REASON) return 1.0;
     const car =
         trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
             ? route.carMinutesPeak

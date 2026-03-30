@@ -3,7 +3,7 @@ import type { LeafletMouseEvent, LatLngExpression } from "leaflet";
 import L from "leaflet";
 import { theme, ui } from "../constants";
 import { METRIC_MODE } from "../types";
-import type { Route, TrafficMode } from "../types";
+import type { Route, TrafficMode, MetricMode } from "../types";
 import { useMemo, useState } from "react";
 import { getRouteRgb } from "../utils/routeColor";
 
@@ -68,6 +68,7 @@ interface Props {
     highlightedRouteIds: Set<number> | null;
     neighborhoodScores: Map<string, number> | null;
     trafficMode: TrafficMode;
+    metricMode: MetricMode;
     selectedNeighborhood: string | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
 }
@@ -78,6 +79,7 @@ export function DestinationLabels({
     highlightedRouteIds,
     neighborhoodScores,
     trafficMode,
+    metricMode,
     selectedNeighborhood,
     onNeighborhoodSelect,
 }: Props) {
@@ -111,6 +113,7 @@ export function DestinationLabels({
                 const useScoreColor =
                     !isSelected &&
                     !isHovered &&
+                    metricMode !== METRIC_MODE.DELAY_REASON &&
                     neighborhoodScores !== null &&
                     score !== null;
 
@@ -124,13 +127,7 @@ export function DestinationLabels({
                           ? theme.textBright
                           : theme.textSecondary;
 
-                const dotRadius = isSelected
-                    ? 8
-                    : isHovered
-                      ? 7
-                      : highlighted
-                        ? 6
-                        : 4;
+                const dotRadius = isSelected ? 8 : 4;
 
                 const handlers = {
                     mouseover: () => setHoveredDest(dest.name),
@@ -167,22 +164,18 @@ export function DestinationLabels({
                                 fillColor: dotColor,
                                 fillOpacity: isSelected
                                     ? 0.35
-                                    : isHovered
-                                      ? 1
-                                      : isDimmed
-                                        ? 0.1
+                                    : isDimmed
+                                      ? 0.1
+                                      : isHovered || highlighted
+                                        ? 1
                                         : useScoreColor
                                           ? 0.15
-                                          : highlighted
-                                            ? 1
-                                            : 0.65,
-                                weight: isSelected
+                                          : 0.65,
+                                weight: isSelected || isHovered
                                     ? 2.5
-                                    : isHovered
+                                    : useScoreColor
                                       ? 2
-                                      : useScoreColor
-                                        ? 2
-                                        : 1,
+                                      : 1,
                             }}
                             interactive={true}
                             eventHandlers={handlers}

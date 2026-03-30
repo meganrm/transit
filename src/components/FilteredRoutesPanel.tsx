@@ -1,6 +1,6 @@
 import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { Route, TrafficMode, MetricMode } from "../types";
-import { theme } from "../constants";
+import { theme, transitReasonThresholds } from "../constants";
 import { getRouteRgb, getRouteMetricValue } from "../utils/routeColor";
 
 const LABELS = {
@@ -18,7 +18,45 @@ const LABELS = {
             return k >= 10 ? `~${Math.round(k)}k min/day` : `~${k.toFixed(1)}k min/day`;
         },
     },
+    delayReason: {
+        longWait: (n: number) => `${n} min wait`,
+        transfer: (n: number) => (n === 1 ? "1 transfer" : `${n} transfers`),
+        walking: (n: number) => `${n} min walk`,
+        none: "No delay",
+    },
 } as const;
+
+const REASON_COLORS = {
+    transfer: "#f59e0b",
+    longWait: "#f97316",
+    walking: "#38bdf8",
+} as const;
+
+function DelayReasonLabel({ route }: { route: Route }) {
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
+    const reasons: { label: string; color: string }[] = [];
+
+    if (route.transitMaxWaitMinutes >= longWaitMinutes)
+        reasons.push({ label: LABELS.delayReason.longWait(route.transitMaxWaitMinutes), color: REASON_COLORS.longWait });
+    if (route.transitTransfers >= 1)
+        reasons.push({ label: LABELS.delayReason.transfer(route.transitTransfers), color: REASON_COLORS.transfer });
+    if (
+        route.transitWalkMinutes >= longWalkMinutes &&
+        route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+    )
+        reasons.push({ label: LABELS.delayReason.walking(route.transitWalkMinutes), color: REASON_COLORS.walking });
+
+    if (reasons.length === 0)
+        return <span style={{ fontSize: 11, color: theme.textDim }}>{LABELS.delayReason.none}</span>;
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+            {reasons.map(({ label, color }) => (
+                <span key={label} style={{ fontSize: 11, fontWeight: 600, color }}>{label}</span>
+            ))}
+        </div>
+    );
+}
 
 interface Props {
     routes: Route[];
@@ -118,9 +156,13 @@ function RouteRow({
                     gap: 2,
                 }}
             >
-                <span style={{ fontSize: 12, fontWeight: 600, color: accentColor }}>
-                    {metricLabel}
-                </span>
+                {metricMode === METRIC_MODE.DELAY_REASON ? (
+                    <DelayReasonLabel route={route} />
+                ) : (
+                    <span style={{ fontSize: 12, fontWeight: 600, color: accentColor }}>
+                        {metricLabel}
+                    </span>
+                )}
                 <span style={{ fontSize: 11, color: theme.textDim }}>
                     {timeDeltaLabel}
                 </span>

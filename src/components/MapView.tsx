@@ -1,13 +1,15 @@
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
+import { METRIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
 import type { Route } from "../types";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { HOME_BOUNDS, HOME_PADDING } from "../homeView";
 import { getNeighborhoodMetrics } from "../data/analytics";
+import { getRouteMetricValue } from "../utils/routeColor";
 
 const homeBounds = L.latLngBounds(HOME_BOUNDS[0], HOME_BOUNDS[1]);
 
@@ -98,8 +100,9 @@ interface MapViewProps {
     onFilterMinChange: (val: number) => void;
     filterMax: number;
     onFilterMaxChange: (val: number) => void;
-    selectedTiers: Set<number>;
-    onTiersChange: (tiers: Set<number>) => void;
+    hiddenTiers: Set<number>;
+    onHiddenTiersChange: (tiers: Set<number>) => void;
+    commuterThresholds: { p33: number; p67: number };
     distanceMin: number;
     onDistanceMinChange: (val: number) => void;
     distanceMax: number;
@@ -107,9 +110,13 @@ interface MapViewProps {
     distanceRangeMiles: { min: number; max: number };
     selectedReasons: Set<string>;
     onReasonsChange: (reasons: Set<string>) => void;
+    hiddenDelayReasons: Set<string>;
+    onHiddenDelayReasonsChange: (reasons: Set<string>) => void;
+    selectedRouteName: string | null;
     highlightedRouteIds: Set<number> | null;
     selectedNeighborhood: string | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
+    dataSource: { label: string; generatedAt: string | null; error: string | null } | null;
 }
 
 export function MapView({
@@ -124,8 +131,9 @@ export function MapView({
     onFilterMinChange,
     filterMax,
     onFilterMaxChange,
-    selectedTiers,
-    onTiersChange,
+    hiddenTiers,
+    onHiddenTiersChange,
+    commuterThresholds,
     distanceMin,
     onDistanceMinChange,
     distanceMax,
@@ -133,9 +141,13 @@ export function MapView({
     distanceRangeMiles,
     selectedReasons,
     onReasonsChange,
+    hiddenDelayReasons,
+    onHiddenDelayReasonsChange,
+    selectedRouteName,
     highlightedRouteIds,
     selectedNeighborhood,
     onNeighborhoodSelect,
+    dataSource,
 }: MapViewProps) {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
     const homeRef = useRef<HomeState | null>(null);
@@ -156,36 +168,49 @@ export function MapView({
                 zoom={11}
                 zoomSnap={0}
                 style={{ height: "100%", width: "100%" }}
-                zoomControl={true}
+                zoomControl={false}
             >
                 <FitBounds homeRef={homeRef} />
                 <HomeButton homeRef={homeRef} />
+                <ZoomControl position="bottomright" />
                 <MapClickClear onClear={onClearSelection} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 />
-                {routes.map((route) => (
-                    <RoutePolyline
-                        key={route.id}
-                        route={route}
-                        isActive={activeRouteId === route.id}
-                        isDimmed={
-                            highlightedRouteIds !== null &&
-                            !highlightedRouteIds.has(route.id)
-                        }
-                        trafficMode={trafficMode}
-                        metricMode={metricMode}
-                        onHover={setActiveRouteId}
-                        onRouteClick={onRouteSelect}
-                    />
-                ))}
+                {[...routes]
+                    .sort((a, b) => {
+                        const aDimmed = highlightedRouteIds !== null && !highlightedRouteIds.has(a.id);
+                        const bDimmed = highlightedRouteIds !== null && !highlightedRouteIds.has(b.id);
+                        if (aDimmed !== bDimmed) return Number(aDimmed) - Number(bDimmed);
+                        // Among visible routes, draw extremes last so they render on top
+                        const breakeven = metricMode === METRIC_MODE.PERSON_MINUTES_LOST ? 0 : 1.0;
+                        const aVal = getRouteMetricValue(a, trafficMode, metricMode);
+                        const bVal = getRouteMetricValue(b, trafficMode, metricMode);
+                        return Math.abs(aVal - breakeven) - Math.abs(bVal - breakeven);
+                    })
+                    .map((route) => (
+                        <RoutePolyline
+                            key={route.id}
+                            route={route}
+                            isActive={activeRouteId === route.id}
+                            isDimmed={
+                                highlightedRouteIds !== null &&
+                                !highlightedRouteIds.has(route.id)
+                            }
+                            trafficMode={trafficMode}
+                            metricMode={metricMode}
+                            onHover={setActiveRouteId}
+                            onRouteClick={onRouteSelect}
+                        />
+                    ))}
                 <DestinationLabels
                     routes={routes}
                     activeRouteId={activeRouteId}
                     highlightedRouteIds={highlightedRouteIds}
                     neighborhoodScores={neighborhoodScores}
                     trafficMode={trafficMode}
+                    metricMode={metricMode}
                     selectedNeighborhood={selectedNeighborhood}
                     onNeighborhoodSelect={onNeighborhoodSelect}
                 />
@@ -199,8 +224,9 @@ export function MapView({
                 onFilterMinChange={onFilterMinChange}
                 filterMax={filterMax}
                 onFilterMaxChange={onFilterMaxChange}
-                selectedTiers={selectedTiers}
-                onTiersChange={onTiersChange}
+                hiddenTiers={hiddenTiers}
+                onHiddenTiersChange={onHiddenTiersChange}
+                commuterThresholds={commuterThresholds}
                 distanceMin={distanceMin}
                 onDistanceMinChange={onDistanceMinChange}
                 distanceMax={distanceMax}
@@ -208,7 +234,12 @@ export function MapView({
                 distanceRangeMiles={distanceRangeMiles}
                 selectedReasons={selectedReasons}
                 onReasonsChange={onReasonsChange}
+                hiddenDelayReasons={hiddenDelayReasons}
+                onHiddenDelayReasonsChange={onHiddenDelayReasonsChange}
+                selectedRouteName={selectedRouteName}
+                onClearSelection={onClearSelection}
                 routes={routes}
+                dataSource={dataSource}
             />
         </div>
     );

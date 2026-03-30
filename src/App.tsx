@@ -18,14 +18,14 @@ import {
 import { METRIC_MODE, TRAFFIC_MODE } from "./types";
 import type { MetricMode, TrafficMode } from "./types";
 import type { Route } from "./types";
-import { ui, transitReasonThresholds } from "./constants";
-import { getCommuterRange } from "./utils/routeColor";
+import { transitReasonThresholds } from "./constants";
 
 function computeWorst20FilterMin(
     routes: Route[],
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
+    if (metricMode === METRIC_MODE.DELAY_REASON) return 0;
     const nonSupplemental = routes.filter((r) => !r.supplemental);
     if (nonSupplemental.length <= 20) return 0;
     const sorted = [...nonSupplemental].sort(
@@ -38,14 +38,9 @@ function computeWorst20FilterMin(
     );
 }
 
-function getCommuterTier(
-    commuters: number,
-    cMin: number,
-    cMax: number,
-): number {
-    const third = (cMax - cMin) / 3;
-    if (commuters < cMin + third) return 0;
-    if (commuters < cMin + 2 * third) return 1;
+function getCommuterTier(commuters: number, p33: number, p67: number): number {
+    if (commuters < p33) return 0;
+    if (commuters < p67) return 1;
     return 2;
 }
 
@@ -69,17 +64,33 @@ function kmToMiles(km: number): number {
 }
 
 function routeMatchesReason(route: Route, reason: string): boolean {
-    const { longWaitMinutes, longWalkMinutes } = transitReasonThresholds;
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
     switch (reason) {
         case "transfer":
             return route.transitTransfers >= 1;
         case "longWait":
             return route.transitMaxWaitMinutes >= longWaitMinutes;
         case "walking":
-            return route.transitWalkMinutes >= longWalkMinutes;
+            return (
+                route.transitWalkMinutes >= longWalkMinutes &&
+                route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+            );
         default:
             return false;
     }
+}
+
+/** Returns the primary delay reason key for a route, matching color priority (longWait > transfer > walking > none). */
+function getRouteDelayReasonKey(route: Route): string {
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
+    if (route.transitMaxWaitMinutes >= longWaitMinutes) return "longWait";
+    if (route.transitTransfers >= 1) return "transfer";
+    if (
+        route.transitWalkMinutes >= longWalkMinutes &&
+        route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+    )
+        return "walking";
+    return "none";
 }
 
 const DATA_URL = import.meta.env.VITE_ROUTES_DATA_URL as string | undefined;
@@ -118,10 +129,13 @@ function App() {
         ),
     );
     const [filterMax, setFilterMax] = useState(100);
-    const [selectedTiers, setSelectedTiers] = useState<Set<number>>(new Set());
+    const [hiddenTiers, setHiddenTiers] = useState<Set<number>>(new Set());
     const [distanceMin, setDistanceMin] = useState(0);
     const [distanceMax, setDistanceMax] = useState(100);
     const [selectedReasons, setSelectedReasons] = useState<Set<string>>(
+        new Set(),
+    );
+    const [hiddenDelayReasons, setHiddenDelayReasons] = useState<Set<string>>(
         new Set(),
     );
 
@@ -180,14 +194,27 @@ function App() {
             computeWorst20FilterMin(routeData.routes, trafficMode, metricMode),
         );
         setFilterMax(100);
-        setSelectedTiers(new Set());
+        setHiddenTiers(new Set());
         setDistanceMin(0);
         setDistanceMax(100);
         setSelectedReasons(new Set());
+        setHiddenDelayReasons(new Set());
     }, [trafficMode, metricMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useMemo(() => {
         setRouteColorRoutes(routeData.routes);
+    }, [routeData.routes]);
+
+    const commuterThresholds = useMemo(() => {
+        const sorted = routeData.routes
+            .filter((r) => !r.supplemental)
+            .map((r) => r.dailyCommuters)
+            .sort((a, b) => a - b);
+        if (sorted.length === 0) return { p33: 0, p67: 0 };
+        return {
+            p33: sorted[Math.floor(sorted.length / 3)],
+            p67: sorted[Math.floor((2 * sorted.length) / 3)],
+        };
     }, [routeData.routes]);
 
     const distanceRangeMiles = useMemo(() => {
@@ -204,14 +231,15 @@ function App() {
             return selectedNeighborhoodRouteIds;
 
         const colorActive = filterMin !== 0 || filterMax !== 100;
-        const tierActive = selectedTiers.size > 0;
+        const tierActive = hiddenTiers.size > 0;
         const distanceActive = distanceMin > 0 || distanceMax < 100;
         const reasonActive = selectedReasons.size > 0;
+        const delayHideActive = hiddenDelayReasons.size > 0;
 
-        if (!colorActive && !tierActive && !distanceActive && !reasonActive)
+        if (!colorActive && !tierActive && !distanceActive && !reasonActive && !delayHideActive)
             return null;
 
-        const { min: cMin, max: cMax } = getCommuterRange();
+        const { p33, p67 } = commuterThresholds;
         const minMetric = positionToMetric(filterMin, trafficMode, metricMode);
         const maxMetric = positionToMetric(filterMax, trafficMode, metricMode);
 
@@ -223,9 +251,7 @@ function App() {
             }
             if (
                 tierActive &&
-                !selectedTiers.has(
-                    getCommuterTier(route.dailyCommuters, cMin, cMax),
-                )
+                hiddenTiers.has(getCommuterTier(route.dailyCommuters, p33, p67))
             )
                 continue;
             if (distanceActive) {
@@ -247,6 +273,8 @@ function App() {
                 )
             )
                 continue;
+            if (delayHideActive && hiddenDelayReasons.has(getRouteDelayReasonKey(route)))
+                continue;
             ids.add(route.id);
         }
         return ids.size > 0 ? ids : null;
@@ -255,11 +283,13 @@ function App() {
         selectedNeighborhoodRouteIds,
         filterMin,
         filterMax,
-        selectedTiers,
+        hiddenTiers,
+        commuterThresholds,
         distanceMin,
         distanceMax,
         distanceRangeMiles,
         selectedReasons,
+        hiddenDelayReasons,
         trafficMode,
         metricMode,
         routeData.routes,
@@ -319,42 +349,6 @@ function App() {
     return (
         <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-                {(routeData.loadError || DATA_URL) && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            textAlign: "right",
-                            bottom: 16,
-                            right: 12,
-                            zIndex: 1200,
-                            fontSize: 8,
-                            color: routeData.loadError
-                                ? ui.dataSourceBadge.errorText
-                                : ui.dataSourceBadge.infoText,
-                            background: ui.dataSourceBadge.background,
-                            border: ui.dataSourceBadge.border,
-                            borderRadius: 6,
-                            padding: "6px 8px",
-                            maxWidth: 360,
-                            lineHeight: 1.4,
-                        }}
-                    >
-                        <div>Data source: {routeData.sourceLabel}</div>
-                        {routeData.generatedAt && (
-                            <div>
-                                Generated:{" "}
-                                {new Date(
-                                    routeData.generatedAt,
-                                ).toLocaleString()}
-                            </div>
-                        )}
-                        {routeData.loadError && (
-                            <div>
-                                Using fallback data ({routeData.loadError})
-                            </div>
-                        )}
-                    </div>
-                )}
                 <MapView
                     routes={routeData.routes}
                     onRouteSelect={handleRouteSelect}
@@ -367,8 +361,9 @@ function App() {
                     onFilterMinChange={setFilterMin}
                     filterMax={filterMax}
                     onFilterMaxChange={setFilterMax}
-                    selectedTiers={selectedTiers}
-                    onTiersChange={setSelectedTiers}
+                    hiddenTiers={hiddenTiers}
+                    onHiddenTiersChange={setHiddenTiers}
+                    commuterThresholds={commuterThresholds}
                     distanceMin={distanceMin}
                     onDistanceMinChange={setDistanceMin}
                     distanceMax={distanceMax}
@@ -376,9 +371,21 @@ function App() {
                     distanceRangeMiles={distanceRangeMiles}
                     selectedReasons={selectedReasons}
                     onReasonsChange={setSelectedReasons}
+                    hiddenDelayReasons={hiddenDelayReasons}
+                    onHiddenDelayReasonsChange={setHiddenDelayReasons}
+                    selectedRouteName={selectedRoute?.name ?? selectedNeighborhood}
                     highlightedRouteIds={highlightedRouteIds}
                     selectedNeighborhood={selectedNeighborhood}
                     onNeighborhoodSelect={handleNeighborhoodSelect}
+                    dataSource={
+                        DATA_URL || routeData.loadError
+                            ? {
+                                  label: routeData.sourceLabel,
+                                  generatedAt: routeData.generatedAt,
+                                  error: routeData.loadError,
+                              }
+                            : null
+                    }
                 />
             </div>
 
