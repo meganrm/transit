@@ -6,7 +6,7 @@ on:
             - main
 
 env:
-    VITE_ROUTES_DATA_URL: ./transit/data/routes.feed.json
+    VITE_ROUTES_DATA_URL: data/routes.feed.json
 
 jobs:
     build:

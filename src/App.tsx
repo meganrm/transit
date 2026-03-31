@@ -16,6 +16,7 @@ import {
     getNeighborhoodMetrics,
 } from "./data/analytics";
 import { METRIC_MODE, TRAFFIC_MODE } from "./types";
+import { resolveRouteDataUrl } from "./utils/routeDataUrl";
 import type { MetricMode, TrafficMode } from "./types";
 import type { Route } from "./types";
 import { transitReasonThresholds } from "./constants";
@@ -64,7 +65,8 @@ function kmToMiles(km: number): number {
 }
 
 function routeMatchesReason(route: Route, reason: string): boolean {
-    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } =
+        transitReasonThresholds;
     switch (reason) {
         case "transfer":
             return route.transitTransfers >= 1;
@@ -73,7 +75,8 @@ function routeMatchesReason(route: Route, reason: string): boolean {
         case "walking":
             return (
                 route.transitWalkMinutes >= longWalkMinutes &&
-                route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+                route.transitMinutes - route.carMinutesPeak >
+                    walkingSlowThresholdMinutes
             );
         default:
             return false;
@@ -82,19 +85,23 @@ function routeMatchesReason(route: Route, reason: string): boolean {
 
 /** Returns the primary delay reason key for a route, matching color priority (longWait > transfer > walking > none). */
 function getRouteDelayReasonKey(route: Route): string {
-    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } = transitReasonThresholds;
+    const { longWaitMinutes, longWalkMinutes, walkingSlowThresholdMinutes } =
+        transitReasonThresholds;
     if (route.transitMaxWaitMinutes >= longWaitMinutes) return "longWait";
     if (route.transitTransfers >= 1) return "transfer";
     if (
         route.transitWalkMinutes >= longWalkMinutes &&
-        route.transitMinutes - route.carMinutesPeak > walkingSlowThresholdMinutes
+        route.transitMinutes - route.carMinutesPeak >
+            walkingSlowThresholdMinutes
     )
         return "walking";
     return "none";
 }
 
-const DATA_URL = import.meta.env.VITE_ROUTES_DATA_URL as string | undefined;
-
+const DATA_URL = resolveRouteDataUrl(
+    import.meta.env.VITE_ROUTES_DATA_URL as string | undefined,
+    import.meta.env.BASE_URL,
+);
 interface RouteDataState {
     routes: Route[];
     sourceLabel: string;
@@ -218,7 +225,9 @@ function App() {
     }, [routeData.routes]);
 
     const distanceRangeMiles = useMemo(() => {
-        const miles = routeData.routes.map((r) => kmToMiles(routeDistanceKm(r)));
+        const miles = routeData.routes.map((r) =>
+            kmToMiles(routeDistanceKm(r)),
+        );
         return {
             min: miles.length > 0 ? Math.floor(Math.min(...miles)) : 0,
             max: miles.length > 0 ? Math.ceil(Math.max(...miles)) : 30,
@@ -236,7 +245,13 @@ function App() {
         const reasonActive = selectedReasons.size > 0;
         const delayHideActive = hiddenDelayReasons.size > 0;
 
-        if (!colorActive && !tierActive && !distanceActive && !reasonActive && !delayHideActive)
+        if (
+            !colorActive &&
+            !tierActive &&
+            !distanceActive &&
+            !reasonActive &&
+            !delayHideActive
+        )
             return null;
 
         const { p33, p67 } = commuterThresholds;
@@ -273,7 +288,10 @@ function App() {
                 )
             )
                 continue;
-            if (delayHideActive && hiddenDelayReasons.has(getRouteDelayReasonKey(route)))
+            if (
+                delayHideActive &&
+                hiddenDelayReasons.has(getRouteDelayReasonKey(route))
+            )
                 continue;
             ids.add(route.id);
         }
@@ -373,7 +391,9 @@ function App() {
                     onReasonsChange={setSelectedReasons}
                     hiddenDelayReasons={hiddenDelayReasons}
                     onHiddenDelayReasonsChange={setHiddenDelayReasons}
-                    selectedRouteName={selectedRoute?.name ?? selectedNeighborhood}
+                    selectedRouteName={
+                        selectedRoute?.name ?? selectedNeighborhood
+                    }
                     highlightedRouteIds={highlightedRouteIds}
                     selectedNeighborhood={selectedNeighborhood}
                     onNeighborhoodSelect={handleNeighborhoodSelect}
