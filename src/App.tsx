@@ -295,7 +295,7 @@ function App() {
                 continue;
             ids.add(route.id);
         }
-        return ids.size > 0 ? ids : null;
+        return ids;
     }, [
         selectedRouteId,
         selectedNeighborhoodRouteIds,
