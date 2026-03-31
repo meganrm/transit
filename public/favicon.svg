@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <!-- Car bar: shorter, slate — the baseline -->
+  <rect x="4" y="9" width="15" height="5" rx="2.5" fill="#475569"/>
+  <!-- Transit bar: green portion = on par with car -->
+  <rect x="4" y="18" width="15" height="5" rx="2.5 0 0 2.5" fill="#22c55e"/>
+  <!-- Transit bar: red portion = the gap -->
+  <rect x="19" y="18" width="9" height="5" rx="0 2.5 2.5 0" fill="#ef4444"/>
+</svg>

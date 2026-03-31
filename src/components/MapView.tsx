@@ -1,8 +1,15 @@
-import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import {
+    MapContainer,
+    TileLayer,
+    ZoomControl,
+    useMap,
+    useMapEvents,
+} from "react-leaflet";
 import L from "leaflet";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
 import { Legend } from "./Legend";
+import { AppHeader } from "./AppHeader";
 import { METRIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
 import type { Route } from "../types";
@@ -116,7 +123,11 @@ interface MapViewProps {
     highlightedRouteIds: Set<number> | null;
     selectedNeighborhood: string | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
-    dataSource: { label: string; generatedAt: string | null; error: string | null } | null;
+    dataSource: {
+        label: string;
+        generatedAt: string | null;
+        error: string | null;
+    } | null;
 }
 
 export function MapView({
@@ -180,14 +191,33 @@ export function MapView({
                 />
                 {[...routes]
                     .sort((a, b) => {
-                        const aDimmed = highlightedRouteIds !== null && !highlightedRouteIds.has(a.id);
-                        const bDimmed = highlightedRouteIds !== null && !highlightedRouteIds.has(b.id);
-                        if (aDimmed !== bDimmed) return Number(aDimmed) - Number(bDimmed);
+                        const aDimmed =
+                            highlightedRouteIds !== null &&
+                            !highlightedRouteIds.has(a.id);
+                        const bDimmed =
+                            highlightedRouteIds !== null &&
+                            !highlightedRouteIds.has(b.id);
+                        if (aDimmed !== bDimmed)
+                            return Number(aDimmed) - Number(bDimmed);
                         // Among visible routes, draw extremes last so they render on top
-                        const breakeven = metricMode === METRIC_MODE.PERSON_MINUTES_LOST ? 0 : 1.0;
-                        const aVal = getRouteMetricValue(a, trafficMode, metricMode);
-                        const bVal = getRouteMetricValue(b, trafficMode, metricMode);
-                        return Math.abs(aVal - breakeven) - Math.abs(bVal - breakeven);
+                        const breakeven =
+                            metricMode === METRIC_MODE.PERSON_MINUTES_LOST
+                                ? 0
+                                : 1.0;
+                        const aVal = getRouteMetricValue(
+                            a,
+                            trafficMode,
+                            metricMode,
+                        );
+                        const bVal = getRouteMetricValue(
+                            b,
+                            trafficMode,
+                            metricMode,
+                        );
+                        return (
+                            Math.abs(aVal - breakeven) -
+                            Math.abs(bVal - breakeven)
+                        );
                     })
                     .map((route) => (
                         <RoutePolyline
@@ -215,6 +245,7 @@ export function MapView({
                     onNeighborhoodSelect={onNeighborhoodSelect}
                 />
             </MapContainer>
+            <AppHeader />
             <Legend
                 trafficMode={trafficMode}
                 onTrafficModeChange={onTrafficModeChange}
