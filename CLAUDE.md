@@ -1,4 +1,4 @@
-# transit — Claude Code Guidelines
+# transit-gap — Claude Code Guidelines
 
 A React + TypeScript + Vite app visualizing transit data using Leaflet maps and Chart.js.
 

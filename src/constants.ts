@@ -52,6 +52,8 @@ export const transitReasonThresholds = {
     walkingSlowThresholdMinutes: 10,
 } as const;
 
+export const GITHUB_REPO_URL = "https://github.com/meganrm/transit-gap";
+
 /** Shared UI literal values used across inline styles/components */
 export const ui = {
     routeNameSeparator: " → ",
