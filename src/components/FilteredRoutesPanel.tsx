@@ -64,6 +64,7 @@ interface Props {
     metricMode: MetricMode;
     isFullRange: boolean;
     onRouteSelect: (id: number) => void;
+    isMobile?: boolean;
 }
 
 function RouteRow({
@@ -177,6 +178,7 @@ export function FilteredRoutesPanel({
     metricMode,
     isFullRange,
     onRouteSelect,
+    isMobile,
 }: Props) {
     const headerLabel = isFullRange
         ? LABELS.header.allRoutes(routes.length)
@@ -185,10 +187,11 @@ export function FilteredRoutesPanel({
     return (
         <div
             style={{
-                width: 340,
+                width: isMobile ? "100%" : 340,
                 height: "100%",
                 backgroundColor: theme.bgDark,
-                borderLeft: "1px solid rgba(148, 163, 184, 0.15)",
+                borderLeft: isMobile ? "none" : "1px solid rgba(148, 163, 184, 0.15)",
+                borderTop: isMobile ? "1px solid rgba(148, 163, 184, 0.15)" : "none",
                 display: "flex",
                 flexDirection: "column",
                 flexShrink: 0,

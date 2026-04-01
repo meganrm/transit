@@ -10,6 +10,7 @@ interface Props {
     maxAvgRatio: number;
     onClose: () => void;
     onRouteSelect: (id: number) => void;
+    isMobile?: boolean;
 }
 
 function scoreLabel(avgRatio: number): string {
@@ -109,6 +110,7 @@ export function NeighborhoodPanel({
     maxAvgRatio,
     onClose,
     onRouteSelect,
+    isMobile,
 }: Props) {
     const [r, g, b] = getRouteRgb({
         transitMinutes: detail.avgRatio * 100,
@@ -137,11 +139,12 @@ export function NeighborhoodPanel({
     return (
         <div
             style={{
-                width: 340,
+                width: isMobile ? "100%" : 340,
                 height: "100%",
                 backgroundColor: theme.bgDark,
                 backgroundImage: accentBg,
-                borderLeft: "1px solid rgba(148, 163, 184, 0.15)",
+                borderLeft: isMobile ? "none" : "1px solid rgba(148, 163, 184, 0.15)",
+                borderTop: isMobile ? "1px solid rgba(148, 163, 184, 0.15)" : "none",
                 display: "flex",
                 flexDirection: "column",
                 overflowY: "auto",

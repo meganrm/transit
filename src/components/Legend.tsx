@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { METRIC_MODE, TRAFFIC_MODE } from "../types";
 import type { MetricMode, TrafficMode, Route } from "../types";
 import { weightScale, theme, ui, transitReasonThresholds } from "../constants";
@@ -250,6 +251,7 @@ interface Props {
     onClearSelection: () => void;
     routes: Route[];
     dataSource: { label: string; generatedAt: string | null; error: string | null } | null;
+    isMobile?: boolean;
 }
 
 function ToggleRow({
@@ -321,7 +323,9 @@ export function Legend({
     onClearSelection,
     routes,
     dataSource,
+    isMobile,
 }: Props) {
+    const [mobileExpanded, setMobileExpanded] = useState(false);
     const gradient = FILTER_SLIDER_GRADIENT_CSS;
 
     const isRouteSelected = selectedRouteName !== null;
@@ -439,22 +443,68 @@ export function Legend({
         onHiddenDelayReasonsChange(next);
     };
 
+    const containerStyle: React.CSSProperties = isMobile
+        ? {
+              position: "relative",
+              width: "100%",
+              background: theme.bgOverlay,
+              color: theme.textPrimary,
+              borderRadius: 0,
+              padding: "10px 16px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              zIndex: 1000,
+              overflowY: mobileExpanded ? "auto" : "hidden",
+              maxHeight: mobileExpanded ? "60vh" : undefined,
+              borderBottom: "1px solid rgba(148,163,184,0.12)",
+          }
+        : {
+              position: "absolute",
+              bottom: 24,
+              left: 12,
+              background: theme.bgOverlay,
+              color: theme.textPrimary,
+              borderRadius: 8,
+              padding: "14px 16px",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+              zIndex: 1000,
+              width: 270,
+          };
+
     return (
-        <div
-            style={{
-                position: "absolute",
-                bottom: 24,
-                left: 12,
-                background: theme.bgOverlay,
-                color: theme.textPrimary,
-                borderRadius: 8,
-                padding: "14px 16px",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
-                zIndex: 1000,
-                width: 270,
-            }}
-        >
-            {isRouteSelected && (
+        <div style={containerStyle}>
+            {isMobile && (
+                <button
+                    onClick={() => setMobileExpanded(!mobileExpanded)}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        paddingBottom: mobileExpanded ? 12 : 0,
+                        cursor: "pointer",
+                        color: theme.textPrimary,
+                    }}
+                >
+                    <span
+                        style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            letterSpacing: "0.05em",
+                            textTransform: "uppercase",
+                            color: theme.textSecondary,
+                        }}
+                    >
+                        Filters
+                    </span>
+                    <span style={{ fontSize: 12, color: theme.textSecondary }}>
+                        {mobileExpanded ? "▴" : "▾"}
+                    </span>
+                </button>
+            )}
+            {(!isMobile || mobileExpanded) && isRouteSelected && (
                 <div
                     style={{
                         background: "rgba(148,163,184,0.07)",
@@ -507,7 +557,7 @@ export function Legend({
                     </button>
                 </div>
             )}
-            <div style={{ opacity: isRouteSelected ? 0.4 : 1 }}>
+            {(!isMobile || mobileExpanded) && <div style={{ opacity: isRouteSelected ? 0.4 : 1 }}>
                 <div style={SECTION_HEADER}>{LABELS.sectionHeader}</div>
                 <ToggleRow
                     label={LABELS.toggle.peakTraffic}
@@ -813,8 +863,8 @@ export function Legend({
                         </div>
                     </>
                 )}
-            </div>
-            {dataSource && (
+            </div>}
+            {(!isMobile || mobileExpanded) && dataSource && (
                 <div
                     style={{
                         borderTop: "1px solid rgba(148,163,184,0.1)",

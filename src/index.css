@@ -80,6 +80,10 @@ body,
     background: var(--color-bg-dark-hover);
 }
 
+@media (max-width: 768px) {
+    .home-button { bottom: 12px; right: 12px; }
+}
+
 /* Guarantee pointer cursor on interactive Leaflet elements */
 .leaflet-interactive {
     cursor: pointer;

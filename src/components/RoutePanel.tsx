@@ -98,6 +98,7 @@ interface Props {
     onClose: () => void;
     trafficMode: TrafficMode;
     metricMode: MetricMode;
+    isMobile?: boolean;
 }
 
 function CarIcon() {
@@ -241,7 +242,7 @@ function BarRow({ icon, label, value, maxValue, accentColor }: BarRowProps) {
     );
 }
 
-export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
+export function RoutePanel({ route, onClose, trafficMode, metricMode, isMobile }: Props) {
     const carBase =
         trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
             ? route.carMinutesPeak
@@ -272,12 +273,13 @@ export function RoutePanel({ route, onClose, trafficMode, metricMode }: Props) {
     return (
         <div
             style={{
-                width: 340,
+                width: isMobile ? "100%" : 340,
                 height: "100%",
                 background: `${theme.bgDark} ${accentBg}`,
                 backgroundImage: accentBg,
                 backgroundColor: theme.bgDark,
-                borderLeft: "1px solid rgba(148, 163, 184, 0.15)",
+                borderLeft: isMobile ? "none" : "1px solid rgba(148, 163, 184, 0.15)",
+                borderTop: isMobile ? "1px solid rgba(148, 163, 184, 0.15)" : "none",
                 display: "flex",
                 flexDirection: "column",
                 overflowY: "auto",

@@ -3,6 +3,8 @@ import { MapView } from "./components/MapView";
 import { RoutePanel } from "./components/RoutePanel";
 import { NeighborhoodPanel } from "./components/NeighborhoodPanel";
 import { FilteredRoutesPanel } from "./components/FilteredRoutesPanel";
+import { Legend } from "./components/Legend";
+import { useIsMobile } from "./hooks/useIsMobile";
 import { routes as fallbackRoutes } from "./data/routes";
 import { loadRouteData } from "./data/routeLoader";
 import {
@@ -110,6 +112,7 @@ interface RouteDataState {
 }
 
 function App() {
+    const isMobile = useIsMobile();
     const [routeData, setRouteData] = useState<RouteDataState>({
         routes: fallbackRoutes,
         sourceLabel: "Bundled demo data",
@@ -364,51 +367,114 @@ function App() {
         setSelectedNeighborhoodRouteIds(null);
     };
 
+    const legendProps = {
+        trafficMode,
+        onTrafficModeChange: setTrafficMode,
+        metricMode,
+        onMetricModeChange: setMetricMode,
+        filterMin,
+        onFilterMinChange: setFilterMin,
+        filterMax,
+        onFilterMaxChange: setFilterMax,
+        hiddenTiers,
+        onHiddenTiersChange: setHiddenTiers,
+        commuterThresholds,
+        distanceMin,
+        onDistanceMinChange: setDistanceMin,
+        distanceMax,
+        onDistanceMaxChange: setDistanceMax,
+        distanceRangeMiles,
+        selectedReasons,
+        onReasonsChange: setSelectedReasons,
+        hiddenDelayReasons,
+        onHiddenDelayReasonsChange: setHiddenDelayReasons,
+        selectedRouteName: selectedRoute?.name ?? selectedNeighborhood,
+        onClearSelection: handleClearSelection,
+        routes: routeData.routes,
+        dataSource:
+            DATA_URL || routeData.loadError
+                ? {
+                      label: routeData.sourceLabel,
+                      generatedAt: routeData.generatedAt,
+                      error: routeData.loadError,
+                  }
+                : null,
+    };
+
+    const mapView = (
+        <MapView
+            routes={routeData.routes}
+            onRouteSelect={handleRouteSelect}
+            onClearSelection={handleClearSelection}
+            trafficMode={trafficMode}
+            metricMode={metricMode}
+            highlightedRouteIds={highlightedRouteIds}
+            selectedNeighborhood={selectedNeighborhood}
+            onNeighborhoodSelect={handleNeighborhoodSelect}
+        />
+    );
+
+    if (isMobile) {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100vh",
+                    width: "100vw",
+                }}
+            >
+                <Legend isMobile {...legendProps} />
+                <div
+                    style={{
+                        flex: 1,
+                        minHeight: 0,
+                        position: "relative",
+                    }}
+                >
+                    {mapView}
+                </div>
+                <div style={{ height: "42vh", flexShrink: 0 }}>
+                    {selectedRoute && (
+                        <RoutePanel
+                            route={selectedRoute}
+                            onClose={() => setSelectedRouteId(null)}
+                            trafficMode={trafficMode}
+                            metricMode={metricMode}
+                            isMobile
+                        />
+                    )}
+                    {neighborhoodDetail && (
+                        <NeighborhoodPanel
+                            detail={neighborhoodDetail}
+                            trafficMode={trafficMode}
+                            maxAvgRatio={maxAvgRatio}
+                            onClose={() => handleNeighborhoodSelect(null)}
+                            onRouteSelect={handleRouteSelect}
+                            isMobile
+                        />
+                    )}
+                    {!selectedRoute && !neighborhoodDetail && (
+                        <FilteredRoutesPanel
+                            routes={highlightedRoutes}
+                            trafficMode={trafficMode}
+                            metricMode={metricMode}
+                            isFullRange={filterMin === 0 && filterMax === 100}
+                            onRouteSelect={handleRouteSelect}
+                            isMobile
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <MapView
-                    routes={routeData.routes}
-                    onRouteSelect={handleRouteSelect}
-                    onClearSelection={handleClearSelection}
-                    trafficMode={trafficMode}
-                    onTrafficModeChange={setTrafficMode}
-                    metricMode={metricMode}
-                    onMetricModeChange={setMetricMode}
-                    filterMin={filterMin}
-                    onFilterMinChange={setFilterMin}
-                    filterMax={filterMax}
-                    onFilterMaxChange={setFilterMax}
-                    hiddenTiers={hiddenTiers}
-                    onHiddenTiersChange={setHiddenTiers}
-                    commuterThresholds={commuterThresholds}
-                    distanceMin={distanceMin}
-                    onDistanceMinChange={setDistanceMin}
-                    distanceMax={distanceMax}
-                    onDistanceMaxChange={setDistanceMax}
-                    distanceRangeMiles={distanceRangeMiles}
-                    selectedReasons={selectedReasons}
-                    onReasonsChange={setSelectedReasons}
-                    hiddenDelayReasons={hiddenDelayReasons}
-                    onHiddenDelayReasonsChange={setHiddenDelayReasons}
-                    selectedRouteName={
-                        selectedRoute?.name ?? selectedNeighborhood
-                    }
-                    highlightedRouteIds={highlightedRouteIds}
-                    selectedNeighborhood={selectedNeighborhood}
-                    onNeighborhoodSelect={handleNeighborhoodSelect}
-                    dataSource={
-                        DATA_URL || routeData.loadError
-                            ? {
-                                  label: routeData.sourceLabel,
-                                  generatedAt: routeData.generatedAt,
-                                  error: routeData.loadError,
-                              }
-                            : null
-                    }
-                />
+            <div style={{ flex: 1, minWidth: 0, position: "relative" }}>
+                {mapView}
+                <Legend {...legendProps} />
             </div>
-
             {selectedRoute && (
                 <RoutePanel
                     route={selectedRoute}

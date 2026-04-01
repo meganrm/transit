@@ -8,7 +8,6 @@ import {
 import L from "leaflet";
 import { RoutePolyline } from "./RoutePolyline";
 import { DestinationLabels } from "./DestinationLabels";
-import { Legend } from "./Legend";
 import { AppHeader } from "./AppHeader";
 import { METRIC_MODE } from "../types";
 import type { MetricMode, TrafficMode } from "../types";
@@ -43,6 +42,18 @@ function FitBounds({
         const c = map.getCenter();
         homeRef.current = { lat: c.lat, lng: c.lng, zoom: map.getZoom() };
     }, [map, homeRef]);
+    return null;
+}
+
+function MapAutoSize() {
+    const map = useMap();
+    useEffect(() => {
+        const observer = new ResizeObserver(() => {
+            map.invalidateSize();
+        });
+        observer.observe(map.getContainer());
+        return () => observer.disconnect();
+    }, [map]);
     return null;
 }
 
@@ -99,66 +110,22 @@ interface MapViewProps {
     routes: Route[];
     onRouteSelect: (id: number) => void;
     trafficMode: TrafficMode;
-    onTrafficModeChange: (mode: TrafficMode) => void;
     metricMode: MetricMode;
-    onMetricModeChange: (mode: MetricMode) => void;
     onClearSelection: () => void;
-    filterMin: number;
-    onFilterMinChange: (val: number) => void;
-    filterMax: number;
-    onFilterMaxChange: (val: number) => void;
-    hiddenTiers: Set<number>;
-    onHiddenTiersChange: (tiers: Set<number>) => void;
-    commuterThresholds: { p33: number; p67: number };
-    distanceMin: number;
-    onDistanceMinChange: (val: number) => void;
-    distanceMax: number;
-    onDistanceMaxChange: (val: number) => void;
-    distanceRangeMiles: { min: number; max: number };
-    selectedReasons: Set<string>;
-    onReasonsChange: (reasons: Set<string>) => void;
-    hiddenDelayReasons: Set<string>;
-    onHiddenDelayReasonsChange: (reasons: Set<string>) => void;
-    selectedRouteName: string | null;
     highlightedRouteIds: Set<number> | null;
     selectedNeighborhood: string | null;
     onNeighborhoodSelect: (name: string | null, routeIds?: Set<number>) => void;
-    dataSource: {
-        label: string;
-        generatedAt: string | null;
-        error: string | null;
-    } | null;
 }
 
 export function MapView({
     routes,
     onRouteSelect,
     trafficMode,
-    onTrafficModeChange,
     metricMode,
-    onMetricModeChange,
     onClearSelection,
-    filterMin,
-    onFilterMinChange,
-    filterMax,
-    onFilterMaxChange,
-    hiddenTiers,
-    onHiddenTiersChange,
-    commuterThresholds,
-    distanceMin,
-    onDistanceMinChange,
-    distanceMax,
-    onDistanceMaxChange,
-    distanceRangeMiles,
-    selectedReasons,
-    onReasonsChange,
-    hiddenDelayReasons,
-    onHiddenDelayReasonsChange,
-    selectedRouteName,
     highlightedRouteIds,
     selectedNeighborhood,
     onNeighborhoodSelect,
-    dataSource,
 }: MapViewProps) {
     const [activeRouteId, setActiveRouteId] = useState<number | null>(null);
     const homeRef = useRef<HomeState | null>(null);
@@ -183,6 +150,7 @@ export function MapView({
             >
                 <FitBounds homeRef={homeRef} />
                 <HomeButton homeRef={homeRef} />
+                <MapAutoSize />
                 <ZoomControl position="bottomright" />
                 <MapClickClear onClear={onClearSelection} />
                 <TileLayer
@@ -246,32 +214,6 @@ export function MapView({
                 />
             </MapContainer>
             <AppHeader />
-            <Legend
-                trafficMode={trafficMode}
-                onTrafficModeChange={onTrafficModeChange}
-                metricMode={metricMode}
-                onMetricModeChange={onMetricModeChange}
-                filterMin={filterMin}
-                onFilterMinChange={onFilterMinChange}
-                filterMax={filterMax}
-                onFilterMaxChange={onFilterMaxChange}
-                hiddenTiers={hiddenTiers}
-                onHiddenTiersChange={onHiddenTiersChange}
-                commuterThresholds={commuterThresholds}
-                distanceMin={distanceMin}
-                onDistanceMinChange={onDistanceMinChange}
-                distanceMax={distanceMax}
-                onDistanceMaxChange={onDistanceMaxChange}
-                distanceRangeMiles={distanceRangeMiles}
-                selectedReasons={selectedReasons}
-                onReasonsChange={onReasonsChange}
-                hiddenDelayReasons={hiddenDelayReasons}
-                onHiddenDelayReasonsChange={onHiddenDelayReasonsChange}
-                selectedRouteName={selectedRouteName}
-                onClearSelection={onClearSelection}
-                routes={routes}
-                dataSource={dataSource}
-            />
         </div>
     );
 }
