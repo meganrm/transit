@@ -7,10 +7,11 @@ const TEXT = {
     feedbackButton: "Feedback",
     aboutTitle: "About Transit Gap",
     aboutBody1:
-        "Transit Gap maps Seattle commute routes and compares transit travel time to peak-hour driving. Routes are color-coded by how much longer transit takes — green routes are competitive with driving; red routes show the largest time gap.",
+        "Transit Gap highlights areas and routes that are currently underserved by transit. By comparing commute routes and transit travel time to peak-hour driving, we can identify gaps in service. The 150 most common routes were chosen using LODES data from 2021, and combined into neighborhood groups for overall commuters per day. Unfortunately, this is the most recent data available and obviously has limitations due to the pandemic, but it still gives a broad overview of where people are commuting in Seattle. ",
     aboutBody2:
-        "Use the filters in the legend to explore by commuter volume, route distance, or delay reason (long waits, transfers, or walking).",
-    aboutAttribution: "Data: King County Metro GTFS · Google Distance Matrix API",
+        "Routes are color-coded by how much longer transit takes — green routes are competitive with driving; pink routes show the largest time gap. Use the filters in the legend to explore by commuter volume, route distance, or delay reason (long waits, transfers, or walking).",
+    aboutAttribution:
+        "Data: King County Metro GTFS · Google Distance Matrix API",
     closeButton: "✕",
     feedbackTitle: "Send Feedback",
     bugLabel: "Bug Report",
@@ -71,8 +72,15 @@ export function AppHeader() {
     const [body, setBody] = useState("");
 
     const handleFeedbackSubmit = () => {
-        const params = new URLSearchParams({ title, body, labels: feedbackType });
-        window.open(`${GITHUB_REPO_URL}/issues/new?${params.toString()}`, "_blank");
+        const params = new URLSearchParams({
+            title,
+            body,
+            labels: feedbackType,
+        });
+        window.open(
+            `${GITHUB_REPO_URL}/issues/new?${params.toString()}`,
+            "_blank",
+        );
         setFeedbackOpen(false);
         setTitle("");
         setBody("");
@@ -140,10 +148,7 @@ export function AppHeader() {
             </div>
 
             {aboutOpen && (
-                <div
-                    style={modalStyle}
-                    onClick={() => setAboutOpen(false)}
-                >
+                <div style={modalStyle} onClick={() => setAboutOpen(false)}>
                     <div
                         style={{ ...modalPanelStyle, width: 420 }}
                         onClick={(e) => e.stopPropagation()}
@@ -214,10 +219,7 @@ export function AppHeader() {
             )}
 
             {feedbackOpen && (
-                <div
-                    style={modalStyle}
-                    onClick={handleFeedbackClose}
-                >
+                <div style={modalStyle} onClick={handleFeedbackClose}>
                     <div
                         style={{ ...modalPanelStyle, width: 380 }}
                         onClick={(e) => e.stopPropagation()}
