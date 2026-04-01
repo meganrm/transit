@@ -1,4 +1,4 @@
-# Transit
+# Transit Gap
 
 React + TypeScript + Vite app for comparing transit commute times with driving.
 
