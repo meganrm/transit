@@ -28,7 +28,6 @@ function computeWorst20FilterMin(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
-    if (metricMode === METRIC_MODE.DELAY_REASON) return 0;
     const nonSupplemental = routes.filter((r) => !r.supplemental);
     if (nonSupplemental.length <= 20) return 0;
     const sorted = [...nonSupplemental].sort(

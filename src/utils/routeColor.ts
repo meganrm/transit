@@ -431,7 +431,7 @@ export function positionToMetric(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
-    const isRatio = metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE;
+    const isRatio = metricMode !== METRIC_MODE.PERSON_MINUTES_LOST;
     const range = isRatio ? ratioRanges[trafficMode] : pmRanges[trafficMode];
     const breakeven = isRatio ? 1.0 : 0;
     const clamped = Math.max(0, Math.min(100, pos));
@@ -449,9 +449,8 @@ export function getRouteSliderPosition(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
-    if (metricMode === METRIC_MODE.DELAY_REASON) return 50;
     const value = getRouteMetricValue(route, trafficMode, metricMode);
-    const isRatio = metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE;
+    const isRatio = metricMode !== METRIC_MODE.PERSON_MINUTES_LOST;
     const range = isRatio ? ratioRanges[trafficMode] : pmRanges[trafficMode];
     const breakeven = isRatio ? 1.0 : 0;
     return metricToPosition(value, range.min, range.max, breakeven);
@@ -463,12 +462,11 @@ export function getRouteMetricValue(
     trafficMode: TrafficMode,
     metricMode: MetricMode,
 ): number {
-    if (metricMode === METRIC_MODE.DELAY_REASON) return 1.0;
     const car =
         trafficMode === TRAFFIC_MODE.PEAK_TRAFFIC
             ? route.carMinutesPeak
             : route.carMinutes;
-    if (metricMode === METRIC_MODE.TRAVEL_TIME_DIFFERENCE) {
+    if (metricMode !== METRIC_MODE.PERSON_MINUTES_LOST) {
         return route.transitMinutes / car;
     }
     return (route.transitMinutes - car) * route.dailyCommuters;

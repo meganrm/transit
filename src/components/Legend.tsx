@@ -580,57 +580,54 @@ export function Legend({
                     onChange={onMetricModeChange}
                 />
 
-                {/* Route filter slider — hidden in delay reason mode */}
-                {!isDelayReason && (
-                    <>
-                        <div
-                            style={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                color: theme.textPrimary,
-                                marginBottom: 3,
-                            }}
-                        >
-                            {sectionTitle}
-                        </div>
-                        <div
-                            style={{
-                                fontSize: 11,
-                                color: theme.textSecondary,
-                                marginBottom: 10,
-                                lineHeight: 1.4,
-                            }}
-                        >
-                            {sectionDescription}
-                        </div>
-                        <RangeSlider
-                            gradient={gradient}
-                            valueMin={filterMin}
-                            valueMax={filterMax}
-                            onMinChange={onFilterMinChange}
-                            onMaxChange={onFilterMaxChange}
-                            staticGradient
-                        />
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                fontSize: 11,
-                                marginBottom: 14,
-                            }}
-                        >
-                            <span style={{ color: ui.accent.positiveLabel }}>
-                                {labelLeft}
-                            </span>
-                            <span style={{ color: theme.textDim }}>
-                                {LABELS.directionLabel.breakeven}
-                            </span>
-                            <span style={{ color: ui.accent.negativeLabel }}>
-                                {labelRight}
-                            </span>
-                        </div>
-                    </>
-                )}
+                <>
+                    <div
+                        style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: theme.textPrimary,
+                            marginBottom: 3,
+                        }}
+                    >
+                        {sectionTitle}
+                    </div>
+                    <div
+                        style={{
+                            fontSize: 11,
+                            color: theme.textSecondary,
+                            marginBottom: 10,
+                            lineHeight: 1.4,
+                        }}
+                    >
+                        {sectionDescription}
+                    </div>
+                    <RangeSlider
+                        gradient={isDelayReason ? distanceGradient : gradient}
+                        valueMin={filterMin}
+                        valueMax={filterMax}
+                        onMinChange={onFilterMinChange}
+                        onMaxChange={onFilterMaxChange}
+                        {...(!isDelayReason ? { staticGradient: true } : {})}
+                    />
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            fontSize: 11,
+                            marginBottom: 14,
+                        }}
+                    >
+                        <span style={{ color: ui.accent.positiveLabel }}>
+                            {labelLeft}
+                        </span>
+                        <span style={{ color: theme.textDim }}>
+                            {LABELS.directionLabel.breakeven}
+                        </span>
+                        <span style={{ color: ui.accent.negativeLabel }}>
+                            {labelRight}
+                        </span>
+                    </div>
+                </>
 
                 {/* Delay reason color key — shown only in delay reason mode */}
                 {isDelayReason && (
